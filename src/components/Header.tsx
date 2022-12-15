@@ -1,100 +1,81 @@
+import React from "react";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import "../styles/Header.scss";
 
-export const Header = (usuario: string) => {
+export const Header = () => {
 	return (
 		<div className="container">
 			<div className="container-max">
 				<header className="header">
-					<div className="header__menu" id="btnmenu">
+					{/* <div className="header__menu" id="btnmenu">
 						<MenuRoundedIcon />
-					</div>
+					</div> */}
 					<div className="header__logo">
 						<h1>Gamertec</h1>
 					</div>
 
-					<ul className="header__links">
-						<li>
-							<a href="http://localhost/gamertec/" className="header__links__item">
-								Inicio
-							</a>
-						</li>
-						<li>
-							<a
-								href="http://localhost/gamertec/productos/?categoria=0"
-								className="header__links__item"
-							>
-								Productos
-							</a>
-						</li>
-						<li>
-							<a
-								href="http://localhost/gamertec/comunidad/"
-								className="header__links__item"
-							>
-								Comunidad
-							</a>
-						</li>
-						<li>
-							<a
-								href="http://localhost/gamertec/about/"
-								className="header__links__item"
-							>
-								Acerca de
-							</a>
-						</li>
-						<li>
-							<a
-								href="http://localhost/gamertec/contac/"
-								className="header__links__item"
-							>
-								Contacto
-							</a>
-						</li>
-					</ul>
+					<div className="header__links">
+						<a href="http://localhost/gamertec/" className="header__links__item">
+							Inicio
+						</a>
+
+						<a
+							href="http://localhost/gamertec/productos/?categoria=0"
+							className="header__links__item"
+						>
+							Productos
+						</a>
+
+						<a
+							href="http://localhost/gamertec/comunidad/"
+							className="header__links__item"
+						>
+							Comunidad
+						</a>
+
+						<a
+							href="http://localhost/gamertec/about/"
+							className="header__links__item"
+						>
+							Acerca de
+						</a>
+
+						<a
+							href="http://localhost/gamertec/contac/"
+							className="header__links__item"
+						>
+							Contacto
+						</a>
+					</div>
 
 					<div className="botones">
-						<a href="http://localhost/gamertec/login/">Acceder</a>
+						<a href="http://localhost/gamertec/login/" className="botones__item">
+							Acceder
+						</a>
 					</div>
 
-					<div id="carrito" className="carrito-compras"></div>
+					<div id="header__carrito" className="header__carrito__compras"></div>
 
-					<div className="login-user">
-						<img
-							id="btn-user"
-							src="<?php echo $ruta_foto ?>"
-							alt="<?php echo $alt ?>"
-						/>
+					<div className="header__user">
+						<img src="" alt="user_foto" className="header__user__photo" />
 					</div>
 
-					<div className="menu-user">
-						<div className="user-texto">
-							{usuario}
-							<span>S/ </span>
+					<div className="header__menu">
+						<div className="header__menu__items">
+							<a href="http://localhost/gamertec/usuario/perfil/">Perfil</a>
+
+							<a href="http://localhost/gamertec/admin/">Panel Administrador 🕵️‍♂️</a>
+
+							<a href="http://localhost/gamertec/usuario/compras/">Compras</a>
+
+							<a href="http://localhost/gamertec/usuario/perfil/actividades/?cambiar=contra">
+								Cambiar contraseña
+							</a>
+
+							<a href="http://localhost/gamertec/login/php/desconectar.php">
+								Cerrar Sesión
+							</a>
 						</div>
-						<nav>
-							<li>
-								<a href="http://localhost/gamertec/usuario/perfil/">Perfil</a>
-							</li>
-
-							<li>
-								<a href="http://localhost/gamertec/admin/">Panel Administrador 🕵️‍♂️</a>
-							</li>
-
-							<li>
-								<a href="http://localhost/gamertec/usuario/compras/">Compras</a>
-							</li>
-
-							<li>
-								<a href="http://localhost/gamertec/usuario/perfil/actividades/?cambiar=contra">
-									Cambiar contraseña
-								</a>
-							</li>
-							<li>
-								<a href="http://localhost/gamertec/login/php/desconectar.php">
-									Cerrar Sesión
-								</a>
-							</li>
-						</nav>
 					</div>
 				</header>
 			</div>

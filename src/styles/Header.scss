@@ -1,0 +1,265 @@
+@import "./config/colores";
+@import "./config/fuentes";
+@import "./config/mixins";
+
+.header {
+	width: 100%;
+	position: fixed;
+	background: #fff;
+	height: 60px;
+	box-shadow: 1px 1px 1px 1px rgba(gray, 0.2);
+	z-index: 1;
+	background: linear-gradient(90deg, $colorApp 50%, #fff 50%);
+
+	&__menu {
+		display: none;
+		background-color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		@media screen and (max-width: 700px) {
+			width: 10%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: $colorApp;
+			height: 60px;
+		}
+	}
+
+	&__logo {
+		width: 20%;
+		min-width: 170px;
+		display: flex;
+		height: 60px;
+		align-items: center;
+		justify-content: center;
+		background-color: $colorApp;
+
+		@media screen and (max-width: 700px) {
+			width: 35%;
+		}
+	}
+	&__links {
+		width: 70%;
+		min-width: 60%;
+		height: 100%;
+		background-color: #fff;
+		font-size: 15px;
+
+		@media screen and (max-width: 700px) {
+			position: absolute;
+			background-color: rgba(#212327, 1);
+			top: 60px;
+			height: 0;
+			overflow: hidden;
+			width: 100%;
+			display: block;
+			transition: 0.9s height;
+		}
+
+		&__lista {
+			width: 100%;
+			display: flex;
+			list-style: none;
+			justify-content: space-around;
+
+			@media screen and (max-width: 700px) {
+				display: block;
+			}
+
+			&__item {
+				text-decoration: none;
+				color: black;
+				font-weight: 400;
+				transition: 0.9s all;
+				display: block;
+				width: 100%;
+				text-align: center;
+
+				&:hover {
+					text-decoration: underline;
+				}
+
+				@media screen and (max-width: 700px) {
+					color: white;
+				}
+			}
+		}
+	}
+
+	&__botones {
+		width: 10%;
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+
+		//border-left: 2px solid rgba($color1, 0.5);
+		@media screen and (max-width: 700px) {
+			width: 40%;
+			margin-left: auto;
+		}
+
+		&__item {
+			text-decoration: none;
+			padding: 10px;
+			border: 1px solid;
+			border-color: $colorApp;
+			border-radius: 5px;
+			color: $colorApp;
+			font-weight: 500;
+			font-size: 0.9em;
+			margin-right: 10px;
+
+			&:hover {
+				transition: 1s ease;
+				background: darken($colorApp, 5%);
+				color: white;
+			}
+		}
+	}
+	&__user {
+		width: 10%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 60px;
+
+		@media screen and (max-width: 700px) {
+			width: 15%;
+		}
+
+		&__photo {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+
+			object-fit: cover;
+			transition: all 0.5s;
+
+			&:hover {
+				//-webkit-box-shadow: 0px 0px 12px 1px rgba(125,119,125,1);
+				//-moz-box-shadow: 0px 0px 12px 1px rgba(125,119,125,1);
+				box-shadow: 0px 0px 12px 1px rgba(gray, 0.7);
+				cursor: pointer;
+			}
+		}
+	}
+}
+.banner {
+	max-width: 1260px;
+	display: flex;
+	margin: auto;
+}
+
+.carrito-compras {
+	width: 10%;
+	height: 60px;
+	display: flex;
+
+	justify-content: center;
+	align-items: center;
+	margin-left: auto;
+
+	@media screen and (max-width: 700px) {
+		width: 15%;
+	}
+
+	a {
+		position: relative;
+		display: flex;
+		align-items: center;
+		color: $color1;
+		text-decoration: none;
+		font-size: 1.3em;
+	}
+
+	svg {
+		fill: $colorApp;
+		width: 28px;
+	}
+	.notificacion {
+		position: absolute;
+		top: -5px;
+		right: -7px;
+		width: 15px;
+		height: 15px;
+		border-radius: 50%;
+		background-color: #f73c57;
+
+		text-align: center;
+		color: white;
+		font-size: 0.5em;
+		font-weight: 700;
+		line-height: 1.38;
+		box-shadow: 0 0 0 1px white;
+	}
+}
+
+.menu-user {
+	width: 100%;
+	position: absolute;
+	top: 60px;
+	width: 300px;
+	//float: right;
+	right: -400px;
+	background-color: #212327;
+
+	display: flex;
+	flex-direction: column;
+
+	border: 0.3px solid rgba(white, 0.2);
+
+	& .user-texto {
+		background-color: #101010;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: 70px;
+		//border:1px solid red;
+		color: rgba(white, 0.9);
+		& h1 {
+			font-size: 1.3em;
+			font-weight: 400;
+		}
+		& span {
+			font-size: 0.8em;
+			color: #f73c57;
+		}
+	}
+
+	& nav {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+
+		& li {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			//height: 50px;
+
+			&:hover {
+				background-color: #313439;
+			}
+			&:hover a {
+				//text-decoration:underline;
+				color: rgba(white, 1);
+			}
+			& a {
+				width: 100%;
+				text-decoration: none;
+				color: rgba(white, 0.3);
+				transition: all 0.7s;
+				display: block;
+				text-align: center;
+				line-height: 4;
+				font-weight: 300;
+			}
+		}
+	}
+}
