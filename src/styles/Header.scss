@@ -4,29 +4,13 @@
 
 .header {
 	width: 100%;
+	display: flex;
 	position: fixed;
-	background: #fff;
 	height: 60px;
-	box-shadow: 1px 1px 1px 1px rgba(gray, 0.2);
 	z-index: 1;
-	background: linear-gradient(90deg, $colorApp 50%, #fff 50%);
+	background: linear-gradient(90deg, $app 50%, #fff 50%);
 
-	&__menu {
-		display: none;
-		background-color: #fff;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		@media screen and (max-width: 700px) {
-			width: 10%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			background-color: $colorApp;
-			height: 60px;
-		}
-	}
+	@include box-shadow;
 
 	&__logo {
 		width: 20%;
@@ -35,18 +19,25 @@
 		height: 60px;
 		align-items: center;
 		justify-content: center;
-		background-color: $colorApp;
+		background-color: $app;
 
 		@media screen and (max-width: 700px) {
 			width: 35%;
 		}
+		&__title {
+			color: $app-title;
+			font-family: Audiowide, sans-serif;
+			font-size: 1.7rem;
+		}
 	}
-	&__links {
+	&__menu {
 		width: 70%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		min-width: 60%;
-		height: 100%;
+		height: 60px;
 		background-color: #fff;
-		font-size: 15px;
 
 		@media screen and (max-width: 700px) {
 			position: absolute;
@@ -59,37 +50,26 @@
 			transition: 0.9s height;
 		}
 
-		&__lista {
+		&__item {
+			text-decoration: none;
+			color: #000;
+			font-weight: 400;
+			transition: 0.9s all;
+			display: block;
 			width: 100%;
-			display: flex;
-			list-style: none;
-			justify-content: space-around;
+			text-align: center;
 
-			@media screen and (max-width: 700px) {
-				display: block;
+			&:hover {
+				text-decoration: underline;
 			}
 
-			&__item {
-				text-decoration: none;
-				color: black;
-				font-weight: 400;
-				transition: 0.9s all;
-				display: block;
-				width: 100%;
-				text-align: center;
-
-				&:hover {
-					text-decoration: underline;
-				}
-
-				@media screen and (max-width: 700px) {
-					color: white;
-				}
+			@media screen and (max-width: 700px) {
+				color: white;
 			}
 		}
 	}
 
-	&__botones {
+	&__login {
 		width: 10%;
 		display: flex;
 		justify-content: flex-end;
@@ -101,22 +81,8 @@
 			margin-left: auto;
 		}
 
-		&__item {
-			text-decoration: none;
-			padding: 10px;
-			border: 1px solid;
-			border-color: $colorApp;
-			border-radius: 5px;
-			color: $colorApp;
-			font-weight: 500;
-			font-size: 0.9em;
-			margin-right: 10px;
-
-			&:hover {
-				transition: 1s ease;
-				background: darken($colorApp, 5%);
-				color: white;
-			}
+		&__buttom {
+			@include buttom-outline;
 		}
 	}
 	&__user {
@@ -146,120 +112,70 @@
 			}
 		}
 	}
-}
-.banner {
-	max-width: 1260px;
-	display: flex;
-	margin: auto;
-}
 
-.carrito-compras {
-	width: 10%;
-	height: 60px;
-	display: flex;
-
-	justify-content: center;
-	align-items: center;
-	margin-left: auto;
-
-	@media screen and (max-width: 700px) {
-		width: 15%;
-	}
-
-	a {
-		position: relative;
+	&__carrito {
+		width: 10%;
+		height: 60px;
 		display: flex;
-		align-items: center;
-		color: $color1;
-		text-decoration: none;
-		font-size: 1.3em;
-	}
 
-	svg {
-		fill: $colorApp;
-		width: 28px;
-	}
-	.notificacion {
-		position: absolute;
-		top: -5px;
-		right: -7px;
-		width: 15px;
-		height: 15px;
-		border-radius: 50%;
-		background-color: #f73c57;
-
-		text-align: center;
-		color: white;
-		font-size: 0.5em;
-		font-weight: 700;
-		line-height: 1.38;
-		box-shadow: 0 0 0 1px white;
-	}
-}
-
-.menu-user {
-	width: 100%;
-	position: absolute;
-	top: 60px;
-	width: 300px;
-	//float: right;
-	right: -400px;
-	background-color: #212327;
-
-	display: flex;
-	flex-direction: column;
-
-	border: 0.3px solid rgba(white, 0.2);
-
-	& .user-texto {
-		background-color: #101010;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
 		justify-content: center;
-		height: 70px;
-		//border:1px solid red;
-		color: rgba(white, 0.9);
-		& h1 {
-			font-size: 1.3em;
-			font-weight: 400;
+		align-items: center;
+		margin-left: auto;
+
+		@media screen and (max-width: 700px) {
+			width: 15%;
 		}
-		& span {
-			font-size: 0.8em;
-			color: #f73c57;
+
+		&__icon {
+			position: relative;
+			display: flex;
+			align-items: center;
+			color: $app;
+			text-decoration: none;
+			font-size: 1.3em;
+		}
+
+		&__notificacion {
+			position: absolute;
+			top: -5px;
+			right: -7px;
+			width: 15px;
+			height: 15px;
+			border-radius: 50%;
+			background-color: #f73c57;
+
+			text-align: center;
+			color: white;
+			font-size: 0.5em;
+			font-weight: 700;
+			line-height: 1.38;
+			box-shadow: 0 0 0 1px white;
 		}
 	}
 
-	& nav {
+	&__menu1 {
 		width: 100%;
+		position: absolute;
+		top: 60px;
+		width: 300px;
+		// right: -400px;
+		right: 0;
+		background-color: #212327;
+
 		display: flex;
 		flex-direction: column;
 
-		& li {
-			width: 100%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			//height: 50px;
+		border: 0.3px solid rgba(white, 0.2);
 
-			&:hover {
-				background-color: #313439;
-			}
-			&:hover a {
-				//text-decoration:underline;
-				color: rgba(white, 1);
-			}
-			& a {
-				width: 100%;
-				text-decoration: none;
-				color: rgba(white, 0.3);
-				transition: all 0.7s;
-				display: block;
-				text-align: center;
-				line-height: 4;
-				font-weight: 300;
-			}
+		&__item {
+			width: 100%;
+			text-decoration: none;
+			color: rgba(white, 0.3);
+			transition: all 0.7s;
+			display: block;
+			text-align: center;
+			line-height: 4;
+			font-weight: 300;
 		}
 	}
 }

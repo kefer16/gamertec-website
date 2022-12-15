@@ -1,5 +1,6 @@
 import React from "react";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import "../styles/Header.scss";
 
 export const Header = () => {
@@ -7,72 +8,92 @@ export const Header = () => {
 		<div className="container">
 			<div className="container-max">
 				<header className="header">
-					{/* <div className="header__menu" id="btnmenu">
-						<MenuRoundedIcon />
-					</div> */}
 					<div className="header__logo">
-						<h1>Gamertec</h1>
+						<h1 className="header__logo__title">Gamertec</h1>
 					</div>
 
-					<div className="header__links">
-						<a href="http://localhost/gamertec/" className="header__links__item">
+					<div className="header__menu">
+						<a className="header__menu__item" href="http://localhost/gamertec/">
 							Inicio
 						</a>
 
 						<a
+							className="header__menu__item"
 							href="http://localhost/gamertec/productos/?categoria=0"
-							className="header__links__item"
 						>
 							Productos
 						</a>
 
 						<a
+							className="header__menu__item"
 							href="http://localhost/gamertec/comunidad/"
-							className="header__links__item"
 						>
 							Comunidad
 						</a>
 
-						<a
-							href="http://localhost/gamertec/about/"
-							className="header__links__item"
-						>
+						<a className="header__menu__item" href="http://localhost/gamertec/about/">
 							Acerca de
 						</a>
 
 						<a
+							className="header__menu__item"
 							href="http://localhost/gamertec/contac/"
-							className="header__links__item"
 						>
 							Contacto
 						</a>
 					</div>
 
-					<div className="botones">
-						<a href="http://localhost/gamertec/login/" className="botones__item">
+					<div className="header__login">
+						<a
+							className="header__login__buttom"
+							href="http://localhost/gamertec/login/"
+						>
 							Acceder
 						</a>
 					</div>
 
-					<div id="header__carrito" className="header__carrito__compras"></div>
-
-					<div className="header__user">
-						<img src="" alt="user_foto" className="header__user__photo" />
+					<div className="header__carrito" id="header__carrito">
+						<a href="local" className="header__carrito__icon">
+							<ShoppingCartIcon />
+						</a>
 					</div>
 
-					<div className="header__menu">
-						<div className="header__menu__items">
-							<a href="http://localhost/gamertec/usuario/perfil/">Perfil</a>
+					<div className="header__user">
+						<img className="header__user__photo" src="" alt="user_foto" />
+						<div className="header__user__perfil">
+							<MenuRoundedIcon />
+							<a
+								className="header__user__perfil__item"
+								href="http://localhost/gamertec/usuario/perfil/"
+							>
+								Perfil
+							</a>
 
-							<a href="http://localhost/gamertec/admin/">Panel Administrador 🕵️‍♂️</a>
+							<a
+								className="header__user__perfil__item"
+								href="http://localhost/gamertec/admin/"
+							>
+								Panel Administrador 🕵️‍♂️
+							</a>
 
-							<a href="http://localhost/gamertec/usuario/compras/">Compras</a>
+							<a
+								className="header__user__perfil__item"
+								href="http://localhost/gamertec/usuario/compras/"
+							>
+								Compras
+							</a>
 
-							<a href="http://localhost/gamertec/usuario/perfil/actividades/?cambiar=contra">
+							<a
+								className="header__user__perfil__item"
+								href="http://localhost/gamertec/usuario/perfil/actividades/?cambiar=contra"
+							>
 								Cambiar contraseña
 							</a>
 
-							<a href="http://localhost/gamertec/login/php/desconectar.php">
+							<a
+								className="header__user__perfil__item"
+								href="http://localhost/gamertec/login/php/desconectar.php"
+							>
 								Cerrar Sesión
 							</a>
 						</div>
