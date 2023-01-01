@@ -1,49 +1,78 @@
-import React from "react";
+import React, { useState } from "react";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import useLocalStorage from "use-local-storage";
+
 import "../styles/Header.scss";
 
 export const Header = () => {
+	const defaultDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+	const [theme, setTheme] = useLocalStorage(
+		"theme",
+		defaultDark ? "dark" : "light"
+	);
+
+	const [openMenu, setOpenMenu] = useState(false);
+
+	const switchTheme = () => {
+		const newTheme = theme === "light" ? "dark" : "light";
+		setTheme(newTheme);
+	};
+
+	const switchMenu = () => {
+		const closeMenu: boolean = !openMenu;
+		setOpenMenu(closeMenu);
+	};
 	return (
-		<div className="container">
-			<div className="container-max">
-				<header className="header">
-					<div className="header__logo">
-						<h1 className="header__logo__title">Gamertec</h1>
-					</div>
+		<>
+			<div className="container-fixed" data-theme={theme}>
+				<div className="container-max">
+					<header className="header">
+						<div className="header__menu-icon" onClick={switchMenu}>
+							<MenuRoundedIcon />
+						</div>
 
-					<div className="header__menu">
-						<a className="header__menu__item" href="http://localhost/gamertec/">
-							Inicio
-						</a>
+						<div className="header__logo">
+							<h1 className="header__logo__title">Gamertec</h1>
+						</div>
 
-						<a
-							className="header__menu__item"
-							href="http://localhost/gamertec/productos/?categoria=0"
+						<div
+							className={`header__menu ${openMenu ? "header__menu-open" : ""}`.trim()}
 						>
-							Productos
-						</a>
+							<a className="header__menu__item" href="http://localhost/gamertec/">
+								Inicio
+							</a>
 
-						<a
-							className="header__menu__item"
-							href="http://localhost/gamertec/comunidad/"
-						>
-							Comunidad
-						</a>
+							<a
+								className="header__menu__item"
+								href="http://localhost/gamertec/productos/?categoria=0"
+							>
+								Productos
+							</a>
 
-						<a className="header__menu__item" href="http://localhost/gamertec/about/">
-							Acerca de
-						</a>
+							<a
+								className="header__menu__item"
+								href="http://localhost/gamertec/comunidad/"
+							>
+								Comunidad
+							</a>
 
-						<a
-							className="header__menu__item"
-							href="http://localhost/gamertec/contac/"
-						>
-							Contacto
-						</a>
-					</div>
+							<a
+								className="header__menu__item"
+								href="http://localhost/gamertec/about/"
+							>
+								Acerca de
+							</a>
 
-					<div className="header__login">
+							<a
+								className="header__menu__item"
+								href="http://localhost/gamertec/contac/"
+							>
+								Contacto
+							</a>
+						</div>
+
+						{/* <div className="header__login">
 						<a
 							className="header__login__buttom"
 							href="http://localhost/gamertec/login/"
@@ -56,12 +85,15 @@ export const Header = () => {
 						<a href="local" className="header__carrito__icon">
 							<ShoppingCartIcon />
 						</a>
-					</div>
+					</div> */}
 
-					<div className="header__user">
+						<button className="header__theme" onClick={switchTheme}>
+							{theme === "light" ? "🌜" : "☀️"}
+						</button>
+
+						{/* <div className="header__user">
 						<img className="header__user__photo" src="" alt="user_foto" />
 						<div className="header__user__perfil">
-							<MenuRoundedIcon />
 							<a
 								className="header__user__perfil__item"
 								href="http://localhost/gamertec/usuario/perfil/"
@@ -97,9 +129,11 @@ export const Header = () => {
 								Cerrar Sesión
 							</a>
 						</div>
-					</div>
-				</header>
+					</div> */}
+					</header>
+				</div>
 			</div>
-		</div>
+			<div className="padding__header"></div>
+		</>
 	);
 };

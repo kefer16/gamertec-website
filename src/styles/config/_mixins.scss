@@ -1,21 +1,21 @@
-@import "./fuentes";
-@import "./colores";
+// @import "./fuentes";
+// @import "./colores";
 
 @mixin box-shadow {
-	box-shadow: 1px 1px 1px 1px rgba(#555, 0.2);
+	box-shadow: 0 0 2px rgba(#777, 0.7);
 }
 
-@mixin buttom-outline {
-	text-decoration: none;
-	padding: 0.7rem 1rem;
-	border: 0.1rem solid $app;
-	border-radius: 0.5rem;
-	color: $app;
-	font-weight: 500;
-	font-size: 0.9rem;
-	&:hover {
-		transition: 1s ease;
-		background: darken(($app), 5%);
-		color: $buttom-hover-color;
-	}
-}
+// @mixin buttom-outline {
+// 	text-decoration: none;
+// 	padding: 0.7rem 1rem;
+// 	border: 0.1rem solid $app;
+// 	border-radius: 0.5rem;
+// 	color: $app;
+// 	font-weight: 500;
+// 	font-size: 0.9rem;
+// 	&:hover {
+// 		transition: 1s ease;
+// 		background: darken(($app), 5%);
+// 		color: $buttom-hover-color;
+// 	}
+// }

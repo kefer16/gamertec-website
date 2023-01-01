@@ -1,0 +1,19 @@
+.container {
+	width: 100%;
+	background-color: var(--background);
+}
+
+.container-fixed {
+	width: 100%;
+	position: relative;
+	position: fixed;
+	background-color: var(--background);
+}
+
+.container-max {
+	background-color: var(--background);
+	max-width: 1240px;
+	height: auto;
+	background-color: var(--background);
+	margin: 0 auto;
+}

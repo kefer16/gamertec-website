@@ -1,0 +1,30 @@
+@import "./config/reset";
+@import "./config/colors";
+@import "./config/fuentes";
+@import "./config/mixins";
+
+.banner {
+	width: 100%;
+	height: auto;
+	position: relative;
+
+	&-img {
+		width: 100%;
+		height: calc(100vh - 6px);
+		object-fit: cover;
+	}
+	&__text {
+		position: absolute;
+		width: 100%;
+		height: calc(100vh - 6px);
+		top: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		&__slogan {
+			color: var(--background);
+			// background-color: red;
+		}
+	}
+}

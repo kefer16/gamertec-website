@@ -1,15 +1,16 @@
-@import "./config/colores";
+@import "./config/reset";
+@import "./config/colors";
 @import "./config/fuentes";
 @import "./config/mixins";
+@import "./config/breackpoints";
+@import "./config/containers";
 
 .header {
 	width: 100%;
 	display: flex;
-	position: fixed;
 	height: 60px;
 	z-index: 1;
-	background: linear-gradient(90deg, $app 50%, #fff 50%);
-
+	align-items: center;
 	@include box-shadow;
 
 	&__logo {
@@ -19,13 +20,13 @@
 		height: 60px;
 		align-items: center;
 		justify-content: center;
-		background-color: $app;
 
-		@media screen and (max-width: 700px) {
+		@include tablet {
 			width: 35%;
 		}
+
 		&__title {
-			color: $app-title;
+			color: var(--text-primary);
 			font-family: Audiowide, sans-serif;
 			font-size: 1.7rem;
 		}
@@ -37,35 +38,48 @@
 		align-items: center;
 		min-width: 60%;
 		height: 60px;
-		background-color: #fff;
-
-		@media screen and (max-width: 700px) {
+		background-color: var(--background);
+		transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+		@include tablet {
 			position: absolute;
-			background-color: rgba(#212327, 1);
-			top: 60px;
-			height: 0;
-			overflow: hidden;
+			z-index: -40;
 			width: 100%;
-			display: block;
-			transition: 0.9s height;
+			height: auto;
+			top: 60px;
+			left: 0;
+			justify-content: start;
+			flex-direction: column;
+			transform: translateY(-400px);
+			opacity: 0;
+			&-open {
+				transform: translateY(0px);
+				opacity: 1;
+			}
 		}
 
 		&__item {
-			text-decoration: none;
-			color: #000;
-			font-weight: 400;
-			transition: 0.9s all;
-			display: block;
 			width: 100%;
 			text-align: center;
+			text-decoration: none;
+			color: var(--text-primary);
+			font-weight: 400;
 
+			@include tablet {
+				padding: 20px;
+				@include box-shadow;
+			}
 			&:hover {
 				text-decoration: underline;
 			}
-
-			@media screen and (max-width: 700px) {
-				color: white;
-			}
+		}
+		&-icon {
+			// background-color: var(--background);
+			color: var(--text-primary);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 7px 20px;
+			cursor: pointer;
 		}
 	}
 
@@ -75,14 +89,13 @@
 		justify-content: flex-end;
 		align-items: center;
 
-		//border-left: 2px solid rgba($color1, 0.5);
 		@media screen and (max-width: 700px) {
 			width: 40%;
 			margin-left: auto;
 		}
 
 		&__buttom {
-			@include buttom-outline;
+			// @include buttom-outline;
 		}
 	}
 	&__user {
@@ -130,7 +143,7 @@
 			position: relative;
 			display: flex;
 			align-items: center;
-			color: $app;
+			color: #000;
 			text-decoration: none;
 			font-size: 1.3em;
 		}
@@ -178,4 +191,21 @@
 			font-weight: 300;
 		}
 	}
+
+	&__theme {
+		background-color: var(--text-primary);
+		border: none;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		padding: 10px;
+		cursor: pointer;
+	}
+}
+
+.padding__header {
+	padding-bottom: 60px;
 }
