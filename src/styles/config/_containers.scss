@@ -1,3 +1,6 @@
+@import "./colors";
+@import "./mixins";
+
 .container {
 	width: 100%;
 	background-color: var(--background);
@@ -5,15 +8,21 @@
 
 .container-fixed {
 	width: 100%;
-	position: relative;
 	position: fixed;
+	top: 0;
+	z-index: 40;
 	background-color: var(--background);
+	@include box-shadow;
+}
+
+.container-footer {
+	width: 100%;
+	background-color: var(--background-footer);
 }
 
 .container-max {
-	background-color: var(--background);
+	// background-color: var(--background);
 	max-width: 1240px;
 	height: auto;
-	background-color: var(--background);
 	margin: 0 auto;
 }

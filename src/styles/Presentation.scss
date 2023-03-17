@@ -1,0 +1,97 @@
+@import "./config/reset";
+@import "./config/breackpoints";
+@import "./config/colors";
+@import "./config/mixins";
+
+.presentation {
+	width: 100%;
+	min-height: 151px;
+	text-align: center;
+	padding: 50px 0;
+
+	&__welcome {
+		width: 100%;
+		padding: 40px 0;
+
+		@include tablet {
+			padding: 20px 30px;
+		}
+		&-title {
+			width: 100%;
+			@include title_2;
+		}
+		&-text {
+			margin: 20px 0 50px 0;
+			text-align: center;
+			@include parraf;
+		}
+	}
+
+	&__servis {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 2em;
+		// &:last-child {
+		// 	margin-bottom: 50px;
+		// }
+		&:nth-last-child(odd) {
+			// background-color: lighten($colorApp, 60%);
+		}
+
+		@include tablet {
+			width: 100%;
+			padding: 30px;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+
+		&__content {
+			width: 100%;
+			display: flex;
+			gap: 2em;
+
+			@include tablet {
+				flex-direction: column;
+			}
+
+			&-image {
+				width: 40%;
+				display: block;
+				height: 350px;
+				object-fit: scale-down;
+				// filter: drop-shadow(0 2px 5px rgba(131, 24, 193, 0.5));
+
+				@include tablet {
+					width: 100%;
+				}
+			}
+			&__text {
+				width: 60%;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-evenly;
+				color: var(--text-primary);
+
+				@include tablet {
+					width: 100%;
+					order: 1;
+					padding: 0;
+				}
+				&-title {
+					letter-spacing: 4px;
+					@include title_3;
+				}
+				&-description {
+					text-align: justify;
+
+					@include parraf;
+					@include tablet {
+						margin-top: 20px;
+					}
+				}
+			}
+		}
+	}
+}

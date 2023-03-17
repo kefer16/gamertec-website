@@ -1,21 +1,100 @@
-// @import "./fuentes";
-// @import "./colores";
+@import "./fuentes";
+@import "./colors";
 
 @mixin box-shadow {
-	box-shadow: 0 0 2px rgba(#777, 0.7);
+	box-shadow: 0 0 0 rgba(#0c0b0b, 0.7);
 }
 
-// @mixin buttom-outline {
-// 	text-decoration: none;
-// 	padding: 0.7rem 1rem;
-// 	border: 0.1rem solid $app;
-// 	border-radius: 0.5rem;
-// 	color: $app;
-// 	font-weight: 500;
-// 	font-size: 0.9rem;
-// 	&:hover {
-// 		transition: 1s ease;
-// 		background: darken(($app), 5%);
-// 		color: $buttom-hover-color;
-// 	}
-// }
+@mixin buttom-outline {
+	text-decoration: none;
+	padding: 0.7rem 1rem;
+	border: 0.1rem solid var(--background);
+	border-radius: 0.3rem;
+	color: var(--text-primary);
+	font-weight: 500;
+	font-size: 0.9rem;
+	&:hover {
+		transition: 1s ease;
+		background: darken(#fff, 5%);
+		color: var(--text-primary);
+		cursor: pointer;
+	}
+}
+
+@mixin buttom-banner {
+	text-decoration: none;
+
+	padding: 7px 20px;
+	border: 1px solid #fff;
+	background-color: rgba(0, 0, 0, 0.3);
+	border-radius: 0.5rem;
+	color: #fff;
+	font-weight: 500;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+
+	cursor: pointer;
+}
+
+@mixin title_1 {
+	color: var(--text-primary);
+	font-size: 2em;
+	font-family: Audiowide;
+}
+@mixin title_2 {
+	color: var(--text-primary);
+	font-size: 1.8em;
+	font-family: Audiowide;
+}
+@mixin title_3 {
+	color: var(--text-primary);
+	font-size: 1.6em;
+	font-family: Audiowide;
+}
+@mixin title_4 {
+	color: var(--text-primary);
+	font-size: 1.4em;
+	font-family: Audiowide;
+}
+
+@mixin title_5 {
+	color: var(--text-primary);
+	font-size: 1.2em;
+}
+
+@mixin title_6 {
+	color: var(--text-primary);
+	font-size: 1.1em;
+}
+@mixin parraf {
+	color: var(--text-primary);
+	font-size: 1em;
+	font-weight: 300;
+}
+
+@mixin input {
+	height: 40px;
+	background-color: var(--background);
+	color: var(--text-primary);
+	padding: 10px;
+	font-size: 0.9em;
+	border: 1px solid gray;
+}
+
+@mixin buttom {
+	text-decoration: none;
+	padding: 0.7rem 1rem;
+	border: none;
+	border-radius: 0.3rem;
+	color: #fff;
+	font-weight: 600;
+	font-size: 0.9rem;
+	background-color: var(--app);
+	text-transform: uppercase;
+	&:hover {
+		transition: 1s ease;
+		background: rgba(var(--app-rgb), 0.6);
+		color: #fff;
+		cursor: pointer;
+	}
+}

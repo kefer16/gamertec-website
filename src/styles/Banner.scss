@@ -5,26 +5,36 @@
 
 .banner {
 	width: 100%;
+
 	height: auto;
 	position: relative;
-
 	&-img {
 		width: 100%;
-		height: calc(100vh - 6px);
+		height: 700px;
+		display: block;
 		object-fit: cover;
 	}
 	&__text {
 		position: absolute;
 		width: 100%;
-		height: calc(100vh - 6px);
+		height: 700px;
 		top: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		&__slogan {
-			color: var(--background);
-			// background-color: red;
+		&-slogan {
+			color: #fff;
+			font-size: 1.3em;
+			font-weight: 300;
+		}
+		&-button {
+			margin-top: 20px;
+			@include buttom-banner;
+			transition: transform 0.2s ease-in;
+			&:hover {
+				transform: scale(1.05);
+			}
 		}
 	}
 }

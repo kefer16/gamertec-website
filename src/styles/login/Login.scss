@@ -1,0 +1,51 @@
+@import "../config/reset";
+@import "../config/breackpoints";
+@import "../config/colors";
+@import "../config/mixins";
+
+.login {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: calc(100vh - 60px);
+	width: 100%;
+	background: rgb(2, 0, 36);
+	background: linear-gradient(
+		90deg,
+		rgba(2, 0, 36, 1) 0%,
+		rgba(103, 103, 181, 1) 40%,
+		rgba(0, 212, 255, 1) 100%
+	);
+	&__img {
+		width: 60%;
+	}
+	&__form {
+		width: 40%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		background-color: var(--background);
+		border-radius: 10px;
+		border: none;
+		@include box-shadow;
+
+		&__titles {
+			&-welcome {
+				@include title_5;
+			}
+			&-subtitle {
+				@include parraf;
+			}
+		}
+		&__mensaje {
+			width: 100%;
+			min-height: 30px;
+		}
+		&__inputs {
+			&-input {
+				@include input;
+			}
+		}
+	}
+}

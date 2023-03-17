@@ -4,6 +4,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import useLocalStorage from "use-local-storage";
 
 import "../styles/Header.scss";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
 	const defaultDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -16,16 +17,19 @@ export const Header = () => {
 
 	const switchTheme = () => {
 		const newTheme = theme === "light" ? "dark" : "light";
+		document.body.setAttribute("data-theme", newTheme);
 		setTheme(newTheme);
 	};
 
 	const switchMenu = () => {
 		const closeMenu: boolean = !openMenu;
+		console.log(closeMenu);
+
 		setOpenMenu(closeMenu);
 	};
 	return (
 		<>
-			<div className="container-fixed" data-theme={theme}>
+			<div className="container-fixed">
 				<div className="container-max">
 					<header className="header">
 						<div className="header__menu-icon" onClick={switchMenu}>
@@ -33,43 +37,32 @@ export const Header = () => {
 						</div>
 
 						<div className="header__logo">
-							<h1 className="header__logo__title">Gamertec</h1>
+							<Link to={`/`}>
+								<h1 className="header__logo__title">Gamertec</h1>
+							</Link>
 						</div>
 
 						<div
 							className={`header__menu ${openMenu ? "header__menu-open" : ""}`.trim()}
 						>
-							<a className="header__menu__item" href="http://localhost/gamertec/">
+							<Link className="header__menu__item" to={`/`}>
 								Inicio
-							</a>
+							</Link>
 
-							<a
-								className="header__menu__item"
-								href="http://localhost/gamertec/productos/?categoria=0"
-							>
+							<Link className="header__menu__item" to={`/products/`}>
 								Productos
-							</a>
+							</Link>
 
-							<a
-								className="header__menu__item"
-								href="http://localhost/gamertec/comunidad/"
-							>
-								Comunidad
-							</a>
-
-							<a
-								className="header__menu__item"
-								href="http://localhost/gamertec/about/"
-							>
+							<Link className="header__menu__item" to={`/about/`}>
 								Acerca de
-							</a>
+							</Link>
 
-							<a
-								className="header__menu__item"
-								href="http://localhost/gamertec/contac/"
-							>
+							<Link className="header__menu__item" to={`/contact/`}>
 								Contacto
-							</a>
+							</Link>
+							<Link className="header__menu__item" to={`/login/`}>
+								Acceder
+							</Link>
 						</div>
 
 						{/* <div className="header__login">

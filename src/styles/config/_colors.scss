@@ -1,12 +1,23 @@
+@function hexToRGB($hex) {
+	@return red($hex), green($hex), blue($hex);
+}
+
 :root {
-	--background: white;
+	--app: #5f3a9b;
+	--app-rgb: #{hexToRGB(#50185e)};
+	--background: #fff;
+	--background-footer: #9d9b9b;
 	--text-primary: black;
 	--text-secondary: royalblue;
 	--accent: purple;
 }
+
 [data-theme="dark"] {
-	--background: black;
-	--text-primary: white;
-	--text-secondary: grey;
+	// --app: #59a928;
+	// --app-rgb: #{hexToRGB(#59a928)};
+	--background: #2b3945;
+	--background-footer: #1d252c;
+	--text-primary: #fff;
+	--text-secondary: #bbb;
 	--accent: darkred;
 }

@@ -1,0 +1,56 @@
+@import "./config/colors";
+@import "./config/breackpoints";
+@import "./config/mixins";
+
+.footer {
+	width: 100%;
+	padding: 20px;
+	// background-color: var(--background);
+	color: var(--text-primary);
+	display: flex;
+	flex-direction: column;
+	&__info {
+		width: 100%;
+		max-width: 1260px;
+		margin: auto;
+		display: flex;
+		padding-bottom: 20px;
+
+		@include tablet {
+			flex-direction: column;
+		}
+		&__section {
+			width: 25%;
+			padding: 20px;
+			display: flex;
+			flex-direction: column;
+			@include tablet {
+				width: 100%;
+			}
+			&-title {
+				margin-bottom: 10px;
+				@include title_6;
+			}
+			&-text {
+				line-height: 1.5;
+				margin-bottom: 10px;
+				@include parraf;
+			}
+			&-link {
+				text-decoration: none;
+				transition: 0.5s all;
+				@include parraf;
+
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+
+	&__creator {
+		width: 100%;
+		text-align: center;
+		font-size: 0.9em;
+	}
+}
