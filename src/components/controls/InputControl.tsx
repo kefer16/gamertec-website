@@ -1,26 +1,34 @@
 import React, { ReactNode } from "react";
+import "./styles/InputControl.scss";
 
-interface Input {
-	icon?: ReactNode;
+interface InterfaceInputControl {
+	icon?: ReactNode | null;
+	type?: "text" | "password" | "email";
+	name: string;
+	value: string;
 	placeholder?: string;
-	type?: "text" | "password";
+	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputControl: React.FC<Input> = ({
+export const InputControl: React.FC<InterfaceInputControl> = ({
 	icon,
+	type,
+	name,
+	value,
 	placeholder,
-	type = "button",
+	onChange,
 }) => {
 	return (
-		<div className="input__control">
-			<div className="input__control-icon">{icon}</div>
+		<div className="inputcontrol">
+			<div className="inputcontrol-icon">{icon}</div>
 			<input
-				className="input__control-input"
+				className="inputcontrol-input"
+				name={name}
 				type={type}
+				value={value}
 				placeholder={placeholder}
+				onChange={onChange}
 			/>
 		</div>
 	);
 };
-
-export default InputControl;

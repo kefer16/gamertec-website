@@ -5,10 +5,15 @@ import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { Link } from "react-router-dom";
 import img_realidad_virtual from "../../images/chico_realidad_virtual.svg";
-import "../../styles/login/Login.scss";
-import InputControl from "../controls/InputControl";
+import LoginRoundedIcon from "@mui/icons-material/LoginRounded";
+import "./styles/Login.scss";
+import { InputControl } from "../controls/InputControl";
+import { ButtonControl } from "../controls/ButtonControl";
+import { useState } from "react";
 
 export const Login = () => {
+	const [credencial, setCredencial] = useState({ user: "", password: "" });
+	const { user, password } = credencial;
 	return (
 		<>
 			<div className="constainer">
@@ -23,24 +28,29 @@ export const Login = () => {
 							</div>
 							<div className="login__form__message"></div>
 
-							<div className="login__form__inputs">
-								<InputControl
-									icon={<AccountCircleRoundedIcon />}
-									placeholder="Usuario"
-									type="text"
-								/>
-							</div>
-							<div className="login__form-inputs">
-								<LockRoundedIcon />
+							<InputControl
+								icon={<AccountCircleRoundedIcon />}
+								name="usuario"
+								placeholder="Usuario"
+								type="text"
+								value={user}
+								onChange={(e) => {}}
+							/>
 
-								<input
-									className="login__form__inputs-input"
-									type="password"
-									name="contrasenia"
-									placeholder="Contraseña"
-								/>
-							</div>
-							<input type="submit" value="Ingresar" />
+							<InputControl
+								icon={<LockRoundedIcon />}
+								placeholder="Contraseña"
+								type="password"
+								name="constrasenia"
+								value={password}
+								onChange={(e) => {}}
+							/>
+
+							<ButtonControl
+								icon={<LoginRoundedIcon />}
+								type="submit"
+								text="Ingresar"
+							/>
 
 							<div className="login__register">
 								<span className="login__register-question">¿No tienes cuenta?</span>

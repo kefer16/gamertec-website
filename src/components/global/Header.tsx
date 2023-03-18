@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import useLocalStorage from "use-local-storage";
 
-import "../styles/Header.scss";
+import "./styles/Header.scss";
 import { Link } from "react-router-dom";
 
 export const Header = () => {

@@ -1,4 +1,4 @@
-import "../../styles/products/products.scss";
+import "./styles/products.scss";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState } from "react";

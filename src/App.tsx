@@ -3,6 +3,7 @@ import { TabContact } from "./components/contact/TabContact";
 import { TabHome } from "./components/home/TabHome";
 import { TabLogin } from "./components/login/TabLogin";
 import { TabProducts } from "./components/products/TabProducs";
+import { TabRegister } from "./components/register/TabRegister";
 import { TabShoppingCart } from "./components/user/shopping_cart/TabShoppingCart";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
 				<Route path="/contact/" element={<TabContact />} />
 				<Route path="/shopping/" element={<TabShoppingCart />} />
 				<Route path="/login/" element={<TabLogin />} />
+				<Route path="/register/" element={<TabRegister />} />
 			</Routes>
 		</Router>
 	);

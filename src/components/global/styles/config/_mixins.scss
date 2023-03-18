@@ -68,7 +68,7 @@
 }
 @mixin parraf {
 	color: var(--text-primary);
-	font-size: 1em;
+	font-size: 0.9em;
 	font-weight: 300;
 }
 
@@ -79,6 +79,17 @@
 	padding: 10px;
 	font-size: 0.9em;
 	border: 1px solid gray;
+}
+@mixin form_title {
+	color: #448aff;
+	font-size: 1.4em;
+	font-family: Poppins;
+	font-weight: 800;
+}
+@mixin form_subtitle {
+	font-size: 0.9em;
+	font-family: Poppins;
+	font-weight: 300;
 }
 
 @mixin buttom {

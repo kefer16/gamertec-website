@@ -1,4 +1,4 @@
-import "../../styles/Presentation.scss";
+import "./styles/Presentation.scss";
 import img_amigo_jugando from "../../images/amigos_jugando.svg";
 import img_realidad_virtual from "../../images/realidad-virtual.svg";
 import img_video_juegos from "../../images/video_juegos.svg";

@@ -1,7 +1,5 @@
-@import "./config/reset";
-@import "./config/breackpoints";
-@import "./config/colors";
-@import "./config/mixins";
+@import "../../global/styles/config/mixins";
+@import "../../global/styles/config/breackpoints";
 
 .presentation {
 	width: 100%;

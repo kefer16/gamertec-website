@@ -1,4 +1,4 @@
-import { Header } from "../Header";
+import { Header } from "../global/Header";
 import { Login } from "./Login";
 
 export const TabLogin = () => {

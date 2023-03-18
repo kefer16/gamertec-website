@@ -1,6 +1,6 @@
 import { Banner } from "./Banner";
-import { Footer } from "../Footer";
-import { Header } from "../Header";
+import { Footer } from "../global/Footer";
+import { Header } from "../global/Header";
 import { Presentation } from "./Presentation";
 
 export const TabHome = () => {

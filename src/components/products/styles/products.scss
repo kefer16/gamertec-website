@@ -1,8 +1,5 @@
-@import "../config/reset";
-@import "../config/colors";
-@import "../config/breackpoints";
-@import "../config/colors";
-@import "../config/mixins";
+@import "../../global/styles/config/mixins";
+@import "../../global/styles/config/breackpoints";
 
 .products {
 	width: 100%;

@@ -1,4 +1,4 @@
-import "../../styles/Banner.scss";
+import "./styles/Banner.scss";
 import banneImg from "../../images/banner.jpg";
 export const Banner = () => {
 	return (
