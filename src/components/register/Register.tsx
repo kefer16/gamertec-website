@@ -10,16 +10,16 @@ import { Link } from "react-router-dom";
 import { ButtonControl } from "../controls/ButtonControl";
 import React, { useState } from "react";
 import axios from "axios";
+import { AlerControl, InterfaceAlertControl } from "../controls/AlertControl";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-interface InterfaceAlert {
-	type: "error" | "warning" | "info" | "success";
-	text: string;
-}
-
 export const Register = () => {
-	const [alert, setAlert] = useState<InterfaceAlert | null>(null);
+	const [alert, setAlert] = useState<InterfaceAlertControl>({
+		active: false,
+		type: "info",
+		text: "",
+	});
 
 	const [formData, setFormData] = useState({
 		name: "",
@@ -76,6 +76,7 @@ export const Register = () => {
 
 		if (!name) {
 			setAlert({
+				active: true,
 				type: "warning",
 				text: "complete el campo nombre",
 			});
@@ -83,6 +84,7 @@ export const Register = () => {
 		}
 		if (!lastname) {
 			setAlert({
+				active: true,
 				type: "warning",
 				text: "complete el campo apellido",
 			});
@@ -91,6 +93,7 @@ export const Register = () => {
 
 		if (!validateEmail(email)) {
 			setAlert({
+				active: true,
 				type: "warning",
 				text: "se introdujo una direccion de correo inválida",
 			});
@@ -99,6 +102,7 @@ export const Register = () => {
 
 		if (!validateUserName(user)) {
 			setAlert({
+				active: true,
 				type: "warning",
 				text:
 					"nombre de usuario, solo caracteres: [ a-z, A-Z, _, 0-9] y longitud: [3-16]",
@@ -108,6 +112,7 @@ export const Register = () => {
 
 		if (password !== repeat_password) {
 			setAlert({
+				active: true,
 				type: "warning",
 				text: "las contraseñas tiene que ser las mismas",
 			});
@@ -137,20 +142,19 @@ export const Register = () => {
 			const res = await axios.post(`${API_URL}/usuario/registrar`, body, config);
 			console.log(res.data);
 
-			if (res.data.code === 200) {
-				setAlert({
-					type: "success",
-					text: "Se registró correctamente, ahora debe iniciar sesión",
-				});
-				handleReset();
-			} else {
-				setAlert({
-					type: "warning",
-					text: "Hubo un error en la Aplicación, volver a intentar",
-				});
+			if (res.status === 200) {
+				if (res.data.code === 200) {
+					setAlert({
+						active: true,
+						type: "success",
+						text: "Se registró correctamente, ahora debe iniciar sesión",
+					});
+					handleReset();
+				}
 			}
 		} catch (err: any) {
 			setAlert({
+				active: true,
 				type: "error",
 				text: "Hubo un error en la Aplicación, avise al administrador",
 			});
@@ -169,7 +173,7 @@ export const Register = () => {
 							</p>
 						</div>
 
-						{alert ? <p className={`alert-${alert.type}`}>{alert.text}</p> : ""}
+						<AlerControl active={alert.active} type={alert.type} text={alert.text} />
 
 						<InputControl
 							icon={<PhotoCameraFrontRoundedIcon />}
