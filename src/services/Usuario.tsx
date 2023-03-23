@@ -1,4 +1,8 @@
-class Usuario {
+import axios, { AxiosResponse } from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+export class UsuarioService {
 	private id_usuario: string;
 	private nombre: string;
 	private apellido_paterno: string;
@@ -9,7 +13,7 @@ class Usuario {
 	private foto: string;
 	private fecha_registro: Date;
 	private activo: boolean;
-	private id_privilegio: number;
+	private fk_privilegio: number;
 
 	constructor(
 		id_usuario: string,
@@ -21,7 +25,7 @@ class Usuario {
 		dinero: number,
 		foto: string,
 		activo: boolean,
-		id_privilegio: number
+		fk_privilegio: number
 	) {
 		this.id_usuario = id_usuario;
 		this.nombre = nombre;
@@ -33,8 +37,24 @@ class Usuario {
 		this.foto = foto;
 		this.fecha_registro = new Date();
 		this.activo = activo;
-		this.id_privilegio = id_privilegio;
+		this.fk_privilegio = fk_privilegio;
+	}
+
+	static async Logearse(
+		usuario: string,
+		contrasenia: string
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify({ usuario, contrasenia });
+			return await axios.post(`${API_URL}/usuario/login`, body, config);
+		} catch (err: any) {
+			// console.log(err);
+			return Promise.reject(err);
+		}
 	}
 }
-
-export default Usuario;

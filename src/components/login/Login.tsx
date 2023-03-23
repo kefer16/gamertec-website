@@ -10,10 +10,9 @@ import "./styles/Login.scss";
 import { InputControl } from "../controls/InputControl";
 import { ButtonControl } from "../controls/ButtonControl";
 import { useState } from "react";
-import axios from "axios";
 import { AlerControl, InterfaceAlertControl } from "../controls/AlertControl";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { UsuarioService } from "../../services/Usuario";
+import { PrivilegioService } from "../../services/Privilegio";
 
 export const Login = () => {
 	const [alert, setAlert] = useState<InterfaceAlertControl>({
@@ -39,6 +38,11 @@ export const Login = () => {
 		});
 	};
 
+	const saveSessionLogin = (user: UsuarioService, priv: PrivilegioService) => {
+		sessionStorage.setItem("gamertec-user", JSON.stringify(user));
+		sessionStorage.setItem("gamertec-privilegio", JSON.stringify(priv));
+	};
+
 	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
@@ -59,48 +63,42 @@ export const Login = () => {
 			});
 			return;
 		}
-
-		const Credenciales = {
-			usuario: user,
-			contrasenia: password,
-		};
-
-		console.log(Credenciales);
-
-		try {
-			const config = {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-			const body = JSON.stringify(Credenciales);
-			const res = await axios.post(`${API_URL}/usuario/login`, body, config);
-			console.log(res.data);
-
-			if (res.status === 200) {
-				if (res.data.code === 200) {
+		await UsuarioService.Logearse(user, password)
+			.then((response) => {
+				if (response.data.code === 200) {
 					setAlert({
 						active: true,
 						type: "success",
 						text: "Se logeó exitosamente, redirigiendo...",
 					});
+
 					handleReset();
 				}
-				if (res.data.code === 404) {
+				if (response.data.code === 404) {
 					setAlert({
 						active: true,
 						type: "warning",
 						text: "Usuario o contraseña incorrecta",
 					});
 				}
-			}
-		} catch (err: any) {
-			setAlert({
-				active: true,
-				type: "error",
-				text: "Hubo un error en la Aplicación, avise al administrador",
+			})
+			.catch((error) => {
+				setAlert({
+					active: true,
+					type: "error",
+					text: "Hubo un error, contacte al administrador...",
+				});
 			});
-		}
+
+		//  const res_privilegio = await PrivilegioService.BuscarPorID(
+		// 	response.data.data[0].fk_privilegio
+		// );
+
+		// if (response.status === 200) {
+		// 	if (response.data.code === 200) {
+		// 		saveSessionLogin(response.data.data[0], res_privilegio.data.data[0]);
+		// 	}
+		// }
 	};
 
 	return (
