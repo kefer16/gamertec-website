@@ -3,41 +3,52 @@ import axios, { AxiosResponse } from "axios";
 const API_URL = process.env.REACT_APP_API_URL;
 
 export class UsuarioService {
-	private id_usuario: string;
-	private nombre: string;
-	private apellido_paterno: string;
-	private apellido_materno: string;
-	private usuario: string;
-	private contrasenia: string;
-	private dinero: number;
-	private foto: string;
-	private fecha_registro: Date;
-	private activo: boolean;
-	private fk_privilegio: number;
+	private _id_usuario: string;
+	private _nombre: string;
+	private _apellido: string;
+	private _correo: string;
+	private _usuario: string;
+	private _contrasenia: string;
+	private _dinero: number;
+	private _foto: string;
+	private _fecha_registro: string;
+	private _activo: boolean;
+	private _fk_privilegio: string;
+
+	private static url: string = `${API_URL}/usuario`;
 
 	constructor(
-		id_usuario: string,
-		nombre: string,
-		apellido_paterno: string,
-		apellido_materno: string,
-		usuario: string,
-		contrasenia: string,
-		dinero: number,
-		foto: string,
-		activo: boolean,
-		fk_privilegio: number
+		id_usuario: string = "",
+		nombre: string = "",
+		apellido: string = "",
+		correo: string = "",
+		usuario: string = "",
+		contrasenia: string = "",
+		dinero: number = 0,
+		foto: string = "",
+		fecha_registro: string = "",
+		activo: boolean = false,
+		fk_privilegio: string = ""
 	) {
-		this.id_usuario = id_usuario;
-		this.nombre = nombre;
-		this.apellido_paterno = apellido_paterno;
-		this.apellido_materno = apellido_materno;
-		this.usuario = usuario;
-		this.contrasenia = contrasenia;
-		this.dinero = dinero;
-		this.foto = foto;
-		this.fecha_registro = new Date();
-		this.activo = activo;
-		this.fk_privilegio = fk_privilegio;
+		this._id_usuario = id_usuario;
+		this._nombre = nombre;
+		this._apellido = apellido;
+		this._correo = correo;
+		this._usuario = usuario;
+		this._contrasenia = contrasenia;
+		this._dinero = dinero;
+		this._foto = foto;
+		this._fecha_registro = fecha_registro;
+		this._activo = activo;
+		this._fk_privilegio = fk_privilegio;
+	}
+
+	get usuario(): string {
+		return this._usuario;
+	}
+
+	set usuario(usuario: string) {
+		this._usuario = usuario;
 	}
 
 	static async Logearse(
@@ -51,10 +62,36 @@ export class UsuarioService {
 				},
 			};
 			const body = JSON.stringify({ usuario, contrasenia });
-			return await axios.post(`${API_URL}/usuario/login`, body, config);
+			return await axios.post(`${this.url}/login`, body, config);
 		} catch (err: any) {
 			// console.log(err);
 			return Promise.reject(err);
 		}
+	}
+
+	static async Registrar(data_usuario: UsuarioService): Promise<AxiosResponse> {
+		try {
+			const config = {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify(data_usuario);
+			return await axios.post(`${this.url}/registrar`, body, config);
+		} catch (err: any) {
+			console.log(err);
+
+			return Promise.reject(err);
+		}
+	}
+
+	static LeerSesionStorage(): UsuarioService {
+		const usuarioJSON = sessionStorage.getItem("gamertec-user");
+		let usuario: UsuarioService = new UsuarioService();
+		if (usuarioJSON !== null) {
+			usuario = JSON.parse(usuarioJSON);
+		}
+
+		return usuario;
 	}
 }

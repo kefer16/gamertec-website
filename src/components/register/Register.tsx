@@ -9,10 +9,8 @@ import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import { Link } from "react-router-dom";
 import { ButtonControl } from "../controls/ButtonControl";
 import React, { useState } from "react";
-import axios from "axios";
 import { AlerControl, InterfaceAlertControl } from "../controls/AlertControl";
-
-const API_URL = process.env.REACT_APP_API_URL;
+import { UsuarioService } from "../../services/Usuario";
 
 export const Register = () => {
 	const [alert, setAlert] = useState<InterfaceAlertControl>({
@@ -39,8 +37,6 @@ export const Register = () => {
 		const shouldTrim = ["email", "user", "password", "repeat_password"].includes(
 			name
 		);
-
-		console.log(name);
 
 		// Asignar el valor correspondiente al estado 'formData', aplicando 'trim()' si es necesario
 		setFormData((prevState) => ({
@@ -119,46 +115,43 @@ export const Register = () => {
 			return;
 		}
 
-		const newUser = {
-			nombre: name,
-			apellido: lastname,
-			correo: email,
-			usuario: user,
-			contrasenia: password,
-			dinero: 0,
-			foto: "",
-			fk_privilegio: "439970EC-9465-42A1-8DBE-BD858DFC460E",
-		};
+		const data_usuario: UsuarioService = new UsuarioService(
+			"",
+			name,
+			lastname,
+			email,
+			user,
+			password,
+			0,
+			"",
+			Date(),
+			true,
+			"439970EC-9465-42A1-8DBE-BD858DFC460E"
+		);
 
-		console.log(newUser);
-
-		try {
-			const config = {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-			const body = JSON.stringify(newUser);
-			const res = await axios.post(`${API_URL}/usuario/registrar`, body, config);
-			console.log(res.data);
-
-			if (res.status === 200) {
-				if (res.data.code === 200) {
+		await UsuarioService.Registrar(data_usuario)
+			.then((response) => {
+				if (response.data.data.code === 200) {
 					setAlert({
 						active: true,
 						type: "success",
 						text: "Se registró correctamente, ahora debe iniciar sesión",
 					});
 					handleReset();
+
+					return;
 				}
-			}
-		} catch (err: any) {
-			setAlert({
-				active: true,
-				type: "error",
-				text: "Hubo un error en la Aplicación, avise al administrador",
+			})
+			.catch((error) => {
+				console.log(error);
+				setAlert({
+					active: true,
+					type: "error",
+					text: "Hubo un error en la Aplicación, avise al administrador",
+				});
+
+				return;
 			});
-		}
 	};
 
 	return (

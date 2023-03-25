@@ -63,14 +63,28 @@ export const Login = () => {
 			});
 			return;
 		}
+
+		let data_usuario: UsuarioService;
+		let id_privilegio: string = "";
+
 		await UsuarioService.Logearse(user, password)
 			.then((response) => {
 				if (response.data.code === 200) {
-					setAlert({
-						active: true,
-						type: "success",
-						text: "Se logeó exitosamente, redirigiendo...",
-					});
+					data_usuario = new UsuarioService(
+						response.data.data[0].id_usuario,
+						response.data.data[0].nombre,
+						response.data.data[0].apellido,
+						response.data.data[0].correo,
+						response.data.data[0].usuario,
+						response.data.data[0].contrasenia,
+						response.data.data[0].dinero,
+						response.data.data[0].foto,
+						response.data.data[0].fecha_registro,
+						response.data.data[0].activo,
+						response.data.data[0].fk_privilegio
+					);
+
+					id_privilegio = response.data.data[0].fk_privilegio;
 
 					handleReset();
 				}
@@ -80,25 +94,55 @@ export const Login = () => {
 						type: "warning",
 						text: "Usuario o contraseña incorrecta",
 					});
+
+					return;
 				}
 			})
 			.catch((error) => {
+				console.log(error);
 				setAlert({
 					active: true,
 					type: "error",
 					text: "Hubo un error, contacte al administrador...",
 				});
+
+				return;
 			});
 
-		//  const res_privilegio = await PrivilegioService.BuscarPorID(
-		// 	response.data.data[0].fk_privilegio
-		// );
+		if (!id_privilegio) {
+			return;
+		}
 
-		// if (response.status === 200) {
-		// 	if (response.data.code === 200) {
-		// 		saveSessionLogin(response.data.data[0], res_privilegio.data.data[0]);
-		// 	}
-		// }
+		let data_privilegio: PrivilegioService;
+
+		await PrivilegioService.BuscarPorID(id_privilegio)
+			.then((response) => {
+				if (response.data.code === 200) {
+					data_privilegio = new PrivilegioService(
+						response.data.data[0].idprivilegio,
+						response.data.data[0].tipo,
+						response.data.data[0].activo,
+						response.data.data[0].abreviatura
+					);
+					saveSessionLogin(data_usuario, data_privilegio);
+
+					setAlert({
+						active: true,
+						type: "success",
+						text: `Hola ${data_usuario.usuario}, Bienvenido...`,
+					});
+					return;
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				setAlert({
+					active: true,
+					type: "error",
+					text: "Hubo un error, contacte al administrador...",
+				});
+				return;
+			});
 	};
 
 	return (

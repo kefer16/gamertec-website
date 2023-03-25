@@ -1,7 +1,7 @@
 import { useState } from "react";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import useLocalStorage from "use-local-storage";
-
+import imgUsuarioProfile from "../../images/usuario.png";
 import "./styles/Header.scss";
 import { Link } from "react-router-dom";
 
@@ -52,9 +52,9 @@ export const Header = () => {
 								Productos
 							</Link>
 
-							<Link className="header__menu__item" to={`/about/`}>
+							{/* <Link className="header__menu__item" to={`/about/`}>
 								Acerca de
-							</Link>
+							</Link> */}
 
 							<Link className="header__menu__item" to={`/contact/`}>
 								Contacto
@@ -62,66 +62,40 @@ export const Header = () => {
 							<Link className="header__menu__item" to={`/login/`}>
 								Acceder
 							</Link>
+							<div className="header__menu__item">
+								<img
+									className="header__menu__item-profileimg"
+									src={imgUsuarioProfile}
+									alt="fdf"
+								/>
+							</div>
 						</div>
 
-						{/* <div className="header__login">
-						<a
-							className="header__login__buttom"
-							href="http://localhost/gamertec/login/"
-						>
-							Acceder
-						</a>
-					</div>
-
-					<div className="header__carrito" id="header__carrito">
-						<a href="local" className="header__carrito__icon">
-							<ShoppingCartIcon />
-						</a>
-					</div> */}
-
-						<button className="header__theme" onClick={switchTheme}>
+						{/* <button className="header__theme" onClick={switchTheme}>
 							{theme === "light" ? "🌜" : "☀️"}
-						</button>
+						</button> */}
 
-						{/* <div className="header__user">
-						<img className="header__user__photo" src="" alt="user_foto" />
-						<div className="header__user__perfil">
-							<a
-								className="header__user__perfil__item"
-								href="http://localhost/gamertec/usuario/perfil/"
-							>
+						<div className="header__profile">
+							<Link className="header__profile-item" to={`/profile/`}>
 								Perfil
-							</a>
+							</Link>
 
-							<a
-								className="header__user__perfil__item"
-								href="http://localhost/gamertec/admin/"
-							>
-								Panel Administrador 🕵️‍♂️
-							</a>
+							<Link className="header__profile-item" to={`/profile/`}>
+								Panel Administrador
+							</Link>
 
-							<a
-								className="header__user__perfil__item"
-								href="http://localhost/gamertec/usuario/compras/"
-							>
+							<Link className="header__profile-item" to={`/profile/`}>
 								Compras
-							</a>
+							</Link>
 
-							<a
-								className="header__user__perfil__item"
-								href="http://localhost/gamertec/usuario/perfil/actividades/?cambiar=contra"
-							>
-								Cambiar contraseña
-							</a>
+							<Link className="header__profile-item" to={`/profile/`}>
+								Cambiar Constraseña
+							</Link>
 
-							<a
-								className="header__user__perfil__item"
-								href="http://localhost/gamertec/login/php/desconectar.php"
-							>
-								Cerrar Sesión
-							</a>
+							<Link className="header__profile-item" to={`/profile/`}>
+								Cerrar Sessión
+							</Link>
 						</div>
-					</div> */}
 					</header>
 				</div>
 			</div>

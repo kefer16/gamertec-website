@@ -60,7 +60,9 @@
 
 		&__item {
 			width: 100%;
-			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			text-decoration: none;
 			color: var(--text-primary);
 			font-weight: 400;
@@ -72,15 +74,13 @@
 			&:hover {
 				text-decoration: underline;
 			}
-		}
-		&-icon {
-			// background-color: var(--background);
-			color: var(--text-primary);
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 7px 20px;
-			cursor: pointer;
+			&-profileimg {
+				width: 35px;
+				height: 35px;
+				border-radius: 50%;
+				box-shadow: 0 1px 10px 1px rgba(#000, 0.3);
+				overflow: hidden;
+			}
 		}
 	}
 
