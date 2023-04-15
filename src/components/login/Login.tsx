@@ -65,13 +65,15 @@ export const Login = () => {
 		}
 
 		let data_usuario: UsuarioService;
-		let id_privilegio: string = "";
+		let id_privilegio: number = 0;
 
 		await UsuarioService.Logearse(user, password)
 			.then((response) => {
+				console.log(response.data);
+
 				if (response.data.code === 200) {
 					data_usuario = new UsuarioService(
-						response.data.data[0].id_usuario,
+						response.data.data[0].usuario_id,
 						response.data.data[0].nombre,
 						response.data.data[0].apellido,
 						response.data.data[0].correo,
@@ -114,9 +116,12 @@ export const Login = () => {
 		}
 
 		let data_privilegio: PrivilegioService;
+		console.log("id_privilegio", id_privilegio);
 
 		await PrivilegioService.BuscarPorID(id_privilegio)
 			.then((response) => {
+				console.log(response.data);
+
 				if (response.data.code === 200) {
 					data_privilegio = new PrivilegioService(
 						response.data.data[0].idprivilegio,

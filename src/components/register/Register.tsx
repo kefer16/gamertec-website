@@ -116,7 +116,7 @@ export const Register = () => {
 		}
 
 		const data_usuario: UsuarioService = new UsuarioService(
-			"",
+			0,
 			name,
 			lastname,
 			email,
@@ -126,17 +126,18 @@ export const Register = () => {
 			"",
 			Date(),
 			true,
-			"439970EC-9465-42A1-8DBE-BD858DFC460E"
+			1
 		);
 
 		await UsuarioService.Registrar(data_usuario)
 			.then((response) => {
-				if (response.data.data.code === 200) {
+				if (response.data.code === 200) {
 					setAlert({
 						active: true,
 						type: "success",
 						text: "Se registró correctamente, ahora debe iniciar sesión",
 					});
+
 					handleReset();
 
 					return;

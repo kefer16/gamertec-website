@@ -1,30 +1,52 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import useLocalStorage from "use-local-storage";
+// import useLocalStorage from "use-local-storage";
 import imgUsuarioProfile from "../../images/usuario.png";
 import "./styles/Header.scss";
 import { Link } from "react-router-dom";
+import {
+	Avatar,
+	Box,
+	IconButton,
+	Menu,
+	MenuItem,
+	Tooltip,
+	Typography,
+} from "@mui/material";
 
+const settings = ["Cuenta", "Administrador", "Dashboard", "Cerrar Sessión"];
 export const Header = () => {
-	const defaultDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-	const [theme, setTheme] = useLocalStorage(
-		"theme",
-		defaultDark ? "dark" : "light"
-	);
+	// const defaultDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+	// const [theme, setTheme] = useLocalStorage(
+	// 	"theme",
+	// 	defaultDark ? "dark" : "light"
+	// );
 
 	const [openMenu, setOpenMenu] = useState(false);
 
-	const switchTheme = () => {
-		const newTheme = theme === "light" ? "dark" : "light";
-		document.body.setAttribute("data-theme", newTheme);
-		setTheme(newTheme);
-	};
+	// const switchTheme = () => {
+	// 	const newTheme = theme === "light" ? "dark" : "light";
+	// 	document.body.setAttribute("data-theme", newTheme);
+	// 	setTheme(newTheme);
+	// };
 
 	const switchMenu = () => {
 		const closeMenu: boolean = !openMenu;
 		console.log(closeMenu);
 
 		setOpenMenu(closeMenu);
+	};
+
+	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+		null
+	);
+
+	const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorElUser(event.currentTarget);
+	};
+
+	const handleCloseUserMenu = () => {
+		setAnchorElUser(null);
 	};
 	return (
 		<>
@@ -63,39 +85,43 @@ export const Header = () => {
 								Acceder
 							</Link>
 							<div className="header__menu__item">
-								<img
-									className="header__menu__item-profileimg"
-									src={imgUsuarioProfile}
-									alt="fdf"
-								/>
+								<Box sx={{ flexGrow: 0 }}>
+									<Tooltip title="Open settings">
+										<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+											<Avatar alt="Remy Sharp" src={imgUsuarioProfile} />
+										</IconButton>
+									</Tooltip>
+									<Menu
+										sx={{ mt: "45px" }}
+										id="menu-appbar"
+										anchorEl={anchorElUser}
+										anchorOrigin={{
+											vertical: "top",
+											horizontal: "right",
+										}}
+										keepMounted
+										transformOrigin={{
+											vertical: "top",
+											horizontal: "right",
+										}}
+										open={Boolean(anchorElUser)}
+										onClose={handleCloseUserMenu}
+									>
+										{settings.map((setting) => (
+											<MenuItem key={setting} onClick={handleCloseUserMenu}>
+												<Link to={`/admin/`}>
+													<Typography textAlign="center">{setting}</Typography>
+												</Link>
+											</MenuItem>
+										))}
+									</Menu>
+								</Box>
 							</div>
 						</div>
 
 						{/* <button className="header__theme" onClick={switchTheme}>
 							{theme === "light" ? "🌜" : "☀️"}
 						</button> */}
-
-						<div className="header__profile">
-							<Link className="header__profile-item" to={`/profile/`}>
-								Perfil
-							</Link>
-
-							<Link className="header__profile-item" to={`/profile/`}>
-								Panel Administrador
-							</Link>
-
-							<Link className="header__profile-item" to={`/profile/`}>
-								Compras
-							</Link>
-
-							<Link className="header__profile-item" to={`/profile/`}>
-								Cambiar Constraseña
-							</Link>
-
-							<Link className="header__profile-item" to={`/profile/`}>
-								Cerrar Sessión
-							</Link>
-						</div>
 					</header>
 				</div>
 			</div>
