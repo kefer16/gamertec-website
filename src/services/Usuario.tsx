@@ -16,7 +16,7 @@ export class UsuarioService {
 		public activo: boolean = false,
 		public fk_privilegio: number = 0
 	) {}
-
+	public index: number = 0;
 	private static url: string = `${API_URL}/usuario`;
 
 	static async Logearse(
@@ -47,6 +47,29 @@ export class UsuarioService {
 			const body = JSON.stringify(data_usuario);
 
 			return await axios.post(`${this.url}/registrar`, body, config);
+		} catch (err: any) {
+			console.log(err);
+
+			return Promise.reject(err);
+		}
+	}
+
+	static async Actualizar(
+		idUsuario: number,
+		data_usuario: UsuarioService
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id: idUsuario,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify(data_usuario);
+
+			return await axios.put(`${this.url}/actualizar`, body, config);
 		} catch (err: any) {
 			console.log(err);
 

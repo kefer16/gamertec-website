@@ -4,6 +4,7 @@
 	"private": true,
 	"dependencies": {
 		"@artsy/fresnel": "^6.1.0",
+		"@ionic/react": "^7.0.2",
 		"@mui/icons-material": "^5.10.16",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",
