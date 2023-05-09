@@ -34,13 +34,14 @@ import { IonIcon } from "@ionic/react";
 import { UsuarioService } from "../../../services/Usuario";
 import { convertirFecha } from "../../../utils/Funciones";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
+import { ModalHistoria } from "../../controls/ModalHistoria";
 
 interface Props {
 	usuarios: UsuarioService[];
 	funcionActualizarTabla: () => void;
 }
 
-export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
+export const User = ({ usuarios, funcionActualizarTabla }: Props) => {
 	// const classes = useStyles();
 	const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
 	const [esEdicion, setEsEdicion] = useState(false);
@@ -60,6 +61,7 @@ export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
 		}
 	};
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
+	const [abrirHistoria, setAbrirHistoria] = useState(false);
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
 		active: false,
 		type: "info",
@@ -76,6 +78,35 @@ export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
 			text: text,
 		});
 	};
+
+	const ClickAbrirHistoria = () => {
+		const usuarioSeleccionado = usuarios.find(
+			(usuario) => usuario.usuario_id === selectedTodos[0]
+		);
+		if (usuarioSeleccionado?.usuario_id === undefined) {
+			EjecutarAlerta("warning", "Escoja un usuario");
+			MostrarAlerta();
+			return;
+		}
+		setUsuarioSeleccionado(
+			new UsuarioService(
+				usuarioSeleccionado?.usuario_id,
+				usuarioSeleccionado?.nombre,
+				usuarioSeleccionado?.apellido,
+				usuarioSeleccionado?.correo,
+				usuarioSeleccionado?.usuario,
+				usuarioSeleccionado?.contrasenia,
+				usuarioSeleccionado?.dinero,
+				"",
+				usuarioSeleccionado?.fecha_registro,
+				usuarioSeleccionado?.activo,
+				usuarioSeleccionado?.fk_privilegio
+			)
+		);
+
+		setAbrirHistoria(true);
+	};
+
 	// Define el estado para manejar la apertura y cierre del modal
 
 	// Define la función para manejar el evento onClick del botón
@@ -103,7 +134,6 @@ export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
 		const usuarioSeleccionado = usuarios.find(
 			(usuario) => usuario.usuario_id === selectedTodos[0]
 		);
-		console.log(usuarioSeleccionado?.usuario_id);
 
 		if (usuarioSeleccionado?.usuario_id === undefined) {
 			EjecutarAlerta("warning", "Elija un usuario para poder editar");
@@ -141,6 +171,11 @@ export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
 	const CerrarAlerta = () => {
 		setAbrirAlerta(false);
 	};
+
+	const CerrarHistoria = () => {
+		setAbrirHistoria(false);
+	};
+
 	return (
 		<>
 			<Container maxWidth="lg">
@@ -161,7 +196,7 @@ export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
 					<IconButton style={{ color: "#d50000" }}>
 						<IonIcon icon={trashOutline} size="30" />
 					</IconButton>
-					<IconButton style={{ color: "#7c4dff" }}>
+					<IconButton style={{ color: "#7c4dff" }} onClick={ClickAbrirHistoria}>
 						<IonIcon icon={analyticsOutline} size="30" />
 					</IconButton>
 				</Toolbar>
@@ -239,6 +274,11 @@ export const Admin = ({ usuarios, funcionActualizarTabla }: Props) => {
 							funcionActualizarTabla={funcionActualizarTabla}
 							funcionEjecutarAlerta={EjecutarAlerta}
 							funcionAbrirAlerta={MostrarAlerta}
+						/>
+						<ModalHistoria
+							itemSeleccionado={usuarioSeleccionado}
+							modalHistoria={abrirHistoria}
+							funcionCerrarHistoria={CerrarHistoria}
 						/>
 					</Table>
 				</TableContainer>
@@ -367,7 +407,7 @@ export const ModalUsuario = ({
 						top: "50%",
 						left: "50%",
 						transform: "translate(-50%, -50%)",
-						width: "50%",
+						width: "500px",
 
 						border: "1px solid #ccc",
 						borderRadius: 10,

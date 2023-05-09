@@ -1,5 +1,5 @@
-import { Footer } from "../../global/Footer";
-import { Header } from "../../global/Header";
+import { Footer } from "../global/Footer";
+import { Header } from "../global/Header";
 import { ShoppingCart } from "./ShoppingCart";
 
 export const TabShoppingCart = () => {

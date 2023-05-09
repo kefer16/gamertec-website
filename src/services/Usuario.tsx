@@ -14,7 +14,10 @@ export class UsuarioService {
 		public foto: string = "",
 		public fecha_registro: string = "",
 		public activo: boolean = false,
-		public fk_privilegio: number = 0
+		public fk_privilegio: number = 0,
+		public fecha_inicial: string = "",
+		public fecha_final: string = "",
+		public cambia: string = ""
 	) {}
 	public index: number = 0;
 	private static url: string = `${API_URL}/usuario`;
@@ -96,6 +99,24 @@ export class UsuarioService {
 			};
 
 			return await axios.get(`${this.url}/todos`, config);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
+
+	static async Historial(idUsuario: number): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id: idUsuario,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+
+			return await axios.get(`${this.url}/historial`, config);
 		} catch (err: any) {
 			console.log(err);
 			return Promise.reject(err);

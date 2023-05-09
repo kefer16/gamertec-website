@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { UsuarioService } from "../../../services/Usuario";
 import { Header } from "../../global/Header";
-import { Admin } from "./Admin";
+import { User } from "./User";
 import { Footer } from "../../global/Footer";
 
-export const TabAdmin = () => {
+export const TabUser = () => {
 	const [usuarios, setUsuarios] = useState<UsuarioService[]>([]);
 	const [actualizarTabla, setActualizar] = useState(false);
 
@@ -17,7 +17,6 @@ export const TabAdmin = () => {
 			element.index = index + 1;
 			usuarios.push(element);
 		});
-		console.log(usuarios);
 
 		setUsuarios(usuarios);
 	}
@@ -28,7 +27,7 @@ export const TabAdmin = () => {
 	return (
 		<>
 			<Header />
-			<Admin usuarios={usuarios} funcionActualizarTabla={ListarUsuarios} />
+			<User usuarios={usuarios} funcionActualizarTabla={ListarUsuarios} />
 			<Footer />
 		</>
 	);
