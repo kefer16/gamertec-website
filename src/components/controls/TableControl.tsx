@@ -1,92 +1,53 @@
+import { useState } from "react";
+
 import {
-	TableContainer,
-	Table,
-	TableHead,
-	TableRow,
-	TableCell,
-	TableBody,
-	TableFooter,
-	TablePagination,
-	Paper,
-} from "@mui/material";
-import { useState, useEffect } from "react";
+	DataGrid,
+	GridRowsProp,
+	GridColDef,
+	GridValidRowModel,
+	GridColumnVisibilityModel,
+} from "@mui/x-data-grid";
 
-interface Props<Entidad> {
-	dataHeader: PropsTableHeader[];
-	dataBody: Entidad[];
+interface Props {
+	rows: GridRowsProp;
+	columns: GridColDef<GridValidRowModel>[];
 }
 
-export interface PropsTableHeader {
-	key: number;
-	title: string;
-}
+export const TableControl = ({ rows, columns }: Props) => {
+	const [selectedRow, setSelectedRow] = useState<number | null>(null);
 
-export const TableControl = <Entidad extends object>({
-	dataHeader,
-	dataBody,
-}: Props<Entidad>) => {
-	const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const [columnVisibilityModel, setColumnVisibilityModel] =
+		useState<GridColumnVisibilityModel>({
+			id: false,
+			brokerId: false,
+			status: false,
+		});
+	const handleRowClick = (params: any) => {
+		setSelectedRow(params.id === selectedRow ? null : params.id);
+	};
 
-	const RenderColumn = ({ columns }: any) => {
-		const [array, setArray] = useState<any[]>([]);
-
-		useEffect(() => {
-			const newarray = [];
-			for (const prop in columns) {
-				if (columns.hasOwnProperty(prop)) {
-					newarray.push(columns[prop]);
-				}
-			}
-			setArray(newarray);
-			console.log(newarray);
-		}, []);
-
-		return (
-			<>
-				{array.map((item: any) => {
-					return <TableCell>{item}</TableCell>;
-				})}
-			</>
-		);
+	const handleRowCheck = (params: any) => {
+		const item = params[params.length - 1];
+		setSelectedRow(item === undefined ? null : item);
 	};
 
 	return (
-		<TableContainer component={Paper}>
-			<Table aria-label="Todo table">
-				<TableHead>
-					<TableRow>
-						{dataHeader.map((d: PropsTableHeader) => {
-							return <TableCell>{d.title}</TableCell>;
-						})}
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{dataBody.map((d: Entidad, index) => (
-						<TableRow>
-							<TableCell>{index + 1}</TableCell>
-							<RenderColumn columns={d} />
-						</TableRow>
-					))}
-				</TableBody>
-				<TableFooter>
-					<TableRow>
-						<TablePagination
-							rowsPerPageOptions={[10, 15, 20, { label: "All", value: -1 }]}
-							count={dataBody.length}
-							page={page}
-							onPageChange={(event: any, newPage: number) => {
-								setPage(newPage);
-							}}
-							rowsPerPage={rowsPerPage}
-							onRowsPerPageChange={(event: any) => {
-								setRowsPerPage(+event.target.value);
-								setPage(0);
-							}}
-						/>
-					</TableRow>
-				</TableFooter>
-			</Table>
-		</TableContainer>
+		<div style={{ height: 400, width: "100%" }}>
+			<DataGrid
+				rows={rows}
+				columns={columns}
+				initialState={{
+					pagination: {
+						paginationModel: { page: 0, pageSize: 5 },
+					},
+				}}
+				pageSizeOptions={[5, 10]}
+				checkboxSelection
+				onRowClick={handleRowClick}
+				rowSelectionModel={selectedRow !== null ? [selectedRow] : []}
+				onRowSelectionModelChange={handleRowCheck}
+				columnVisibilityModel={columnVisibilityModel}
+			/>
+		</div>
 	);
 };
