@@ -11,25 +11,23 @@ import {
 interface Props {
 	rows: GridRowsProp;
 	columns: GridColDef<GridValidRowModel>[];
+	filaSeleccionada: number | null;
+	funcionClickFila: (params: any) => void;
+	funcionCheckFila: (params: any) => void;
 }
 
-export const TableControl = ({ rows, columns }: Props) => {
-	const [selectedRow, setSelectedRow] = useState<number | null>(null);
-
+export const TableControl = ({
+	rows,
+	columns,
+	filaSeleccionada,
+	funcionClickFila,
+	funcionCheckFila,
+}: Props) => {
 	const [columnVisibilityModel, setColumnVisibilityModel] =
 		useState<GridColumnVisibilityModel>({
 			id: false,
-			brokerId: false,
-			status: false,
+			estado: false,
 		});
-	const handleRowClick = (params: any) => {
-		setSelectedRow(params.id === selectedRow ? null : params.id);
-	};
-
-	const handleRowCheck = (params: any) => {
-		const item = params[params.length - 1];
-		setSelectedRow(item === undefined ? null : item);
-	};
 
 	return (
 		<div style={{ height: 400, width: "100%" }}>
@@ -43,9 +41,9 @@ export const TableControl = ({ rows, columns }: Props) => {
 				}}
 				pageSizeOptions={[5, 10]}
 				checkboxSelection
-				onRowClick={handleRowClick}
-				rowSelectionModel={selectedRow !== null ? [selectedRow] : []}
-				onRowSelectionModelChange={handleRowCheck}
+				onRowClick={funcionClickFila}
+				rowSelectionModel={filaSeleccionada !== null ? [filaSeleccionada] : []}
+				onRowSelectionModelChange={funcionCheckFila}
 				columnVisibilityModel={columnVisibilityModel}
 			/>
 		</div>

@@ -8,17 +8,17 @@ import {
 } from "ionicons/icons";
 
 interface Props {
-	functionNew?: () => void;
-	functionUpdate?: () => void;
-	functionDelete?: () => void;
-	functionHistory?: () => void;
+	functionCrear?: () => void;
+	functionActualizar?: () => void;
+	functionEliminar?: () => void;
+	functionHistoria?: () => void;
 }
 
 export const ToolbarControl = ({
-	functionNew,
-	functionUpdate,
-	functionDelete,
-	functionHistory,
+	functionCrear,
+	functionActualizar,
+	functionEliminar,
+	functionHistoria,
 }: Props) => {
 	return (
 		<Toolbar
@@ -26,16 +26,16 @@ export const ToolbarControl = ({
 				justifyContent: "flex-end",
 			}}
 		>
-			<IconButton style={{ color: "#00c853" }} onClick={functionNew}>
+			<IconButton style={{ color: "#00c853" }} onClick={functionCrear}>
 				<IonIcon icon={addOutline} size="30" color="#00c853" />
 			</IconButton>
-			<IconButton style={{ color: "#448aff" }} onClick={functionUpdate}>
+			<IconButton style={{ color: "#448aff" }} onClick={functionActualizar}>
 				<IonIcon icon={createOutline} size="30" />
 			</IconButton>
-			<IconButton style={{ color: "#d50000" }} onClick={functionDelete}>
+			<IconButton style={{ color: "#d50000" }} onClick={functionEliminar}>
 				<IonIcon icon={trashOutline} size="30" />
 			</IconButton>
-			<IconButton style={{ color: "#7c4dff" }} onClick={functionHistory}>
+			<IconButton style={{ color: "#7c4dff" }} onClick={functionHistoria}>
 				<IonIcon icon={analyticsOutline} size="30" />
 			</IconButton>
 		</Toolbar>

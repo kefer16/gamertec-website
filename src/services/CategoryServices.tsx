@@ -27,13 +27,13 @@ export class CategoryService {
 	}
 
 	static async Actualizar(
-		id_categoria: number,
+		categoria_id: number,
 		data_usuario: CategoryService
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
-					categoria_id: id_categoria,
+					categoria_id,
 				},
 				headers: {
 					"Content-Type": "application/json",
