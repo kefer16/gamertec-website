@@ -1,28 +1,57 @@
 import { Typography, Container, Snackbar, Alert } from "@mui/material";
 import { TableControl } from "../../controls/TableControl";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { CategoryService } from "../../../services/CategoryServices";
+import { CategoryService } from "../../../services/CategoriaService";
 import { useEffect, useState } from "react";
-import { GridRowsProp, GridColDef, GridValidRowModel } from "@mui/x-data-grid";
-import { CategoryRegister } from "./CategoryRegister";
+import {
+	GridRowsProp,
+	GridColDef,
+	GridValidRowModel,
+	GridColumnVisibilityModel,
+} from "@mui/x-data-grid";
+import { CategoryRegister } from "./CategoriaRegistro";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
+import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
+import { relative } from "path";
 
 const columnsCategorias: GridColDef<GridValidRowModel>[] = [
-	{
-		field: "id",
-		headerName: "ID",
-	},
-	{
-		field: "index",
-		headerName: "N°",
-		width: 100,
-	},
+	{ field: "id", headerName: "ID", width: 0 },
+	{ field: "index", headerName: "N°", width: 60 },
+	{ field: "fecha_registro", headerName: "Fecha Registro", width: 0 },
+	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
 	{ field: "nombre", headerName: "Nombre", width: 200 },
-	{ field: "estado", headerName: "" },
-	{ field: "estado_nombre", headerName: "Estado", width: 130 },
+	{ field: "activo", headerName: "", width: 0 },
+	{ field: "activo_nombre", headerName: "Estado", width: 130 },
 ];
+const columasVisibles: GridColumnVisibilityModel = {
+	id: false,
+	activo: false,
+	fecha_registro: false,
+};
+interface Props {
+	nombreFormulario: string;
+}
 
-export const Category = () => {
+export interface SelectProps {
+	valor: number;
+	descripcion: string;
+}
+
+export const funcionObtenerCategorias = async (): Promise<SelectProps[]> => {
+	const array: SelectProps[] = [];
+	await CategoryService.ListarTodos()
+		.then((respuesta) => {
+			respuesta.data.data.forEach((element: CategoryService) => {
+				array.push({ valor: element.categoria_id, descripcion: element.nombre });
+			});
+		})
+		.catch((error: any) => {
+			console.log(error);
+		});
+	return array;
+};
+
+export const Categoria = ({ nombreFormulario }: Props) => {
 	const [rowsCategorias, setRowsCategorias] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
@@ -75,8 +104,11 @@ export const Category = () => {
 						id: element.categoria_id,
 						index: index + 1,
 						nombre: element.nombre,
-						estado: element.activo,
-						estado_nombre: element.activo ? "Activo" : "Inactivo",
+						fecha_registro: element.fecha_registro,
+						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
+						fecha_actualizacion: element.fecha_actualizacion,
+						activo: element.activo,
+						activo_nombre: element.activo ? "Activo" : "Inactivo",
 					};
 					arrayCategorias.push(newRow);
 				});
@@ -89,7 +121,9 @@ export const Category = () => {
 	};
 
 	const funcionCrearCategoria = () => {
-		setCategoriaSeleccionada(new CategoryService(0, "", false));
+		setCategoriaSeleccionada(
+			new CategoryService(0, "", false, crearFechaISO(), crearFechaISO())
+		);
 		setEsEdicion(false);
 		setAbrirModal(true);
 	};
@@ -110,7 +144,9 @@ export const Category = () => {
 			new CategoryService(
 				categoriaSeleccionada?.id,
 				categoriaSeleccionada?.nombre,
-				categoriaSeleccionada?.estado
+				categoriaSeleccionada?.activo,
+				categoriaSeleccionada?.fecha_registro,
+				categoriaSeleccionada?.fecha_actualizacion
 			)
 		);
 
@@ -129,7 +165,7 @@ export const Category = () => {
 	return (
 		<Container maxWidth="lg">
 			<Typography variant="h5" component={"h2"} style={{ textAlign: "center" }}>
-				Categoria
+				{nombreFormulario}
 			</Typography>
 			<ToolbarControl
 				functionCrear={funcionCrearCategoria}
@@ -141,9 +177,11 @@ export const Category = () => {
 				filaSeleccionada={filaSeleccionada}
 				funcionClickFila={funcionClickFila}
 				funcionCheckFila={funcionCheckFila}
+				columnsVisivility={columasVisibles}
 			/>
 
 			<CategoryRegister
+				nombreFormulario={nombreFormulario}
 				abrir={abrirModal}
 				esEdicion={esEdicion}
 				itemSeleccionado={categoriaSeleccionada}

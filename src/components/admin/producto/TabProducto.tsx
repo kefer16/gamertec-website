@@ -1,12 +1,12 @@
 import { Footer } from "../../global/Footer";
 import { Header } from "../../global/Header";
-import { Category } from "./Category";
+import { Producto } from "./Producto";
 
-export const TabCategory = () => {
+const TabProducto = () => {
 	return (
 		<>
 			<Header />
-			<Category />
+			<Producto nombreFormulario="Producto" />
 			<Footer />
 		</>
 	);

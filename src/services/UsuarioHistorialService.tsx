@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { UsuarioService } from "./Usuario";
+import { UsuarioService } from "./UsuarioService";
 
 const API_URL = process.env.REACT_APP_API_URL;
 

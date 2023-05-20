@@ -40,14 +40,14 @@ export class UsuarioService {
 		}
 	}
 
-	static async Registrar(data_usuario: UsuarioService): Promise<AxiosResponse> {
+	static async Registrar(data: UsuarioService): Promise<AxiosResponse> {
 		try {
 			const config = {
 				headers: {
 					"Content-Type": "application/json",
 				},
 			};
-			const body = JSON.stringify(data_usuario);
+			const body = JSON.stringify(data);
 
 			return await axios.post(`${this.url}/registrar`, body, config);
 		} catch (err: any) {
@@ -58,19 +58,19 @@ export class UsuarioService {
 	}
 
 	static async Actualizar(
-		idUsuario: number,
-		data_usuario: UsuarioService
+		ID: number,
+		data: UsuarioService
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
-					usuario_id: idUsuario,
+					usuario_id: ID,
 				},
 				headers: {
 					"Content-Type": "application/json",
 				},
 			};
-			const body = JSON.stringify(data_usuario);
+			const body = JSON.stringify(data);
 
 			return await axios.put(`${this.url}/actualizar`, body, config);
 		} catch (err: any) {

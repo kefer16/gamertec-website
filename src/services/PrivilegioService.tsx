@@ -1,22 +1,27 @@
 import axios, { AxiosResponse } from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
-export class CategoryService {
-	constructor(
-		public categoria_id: number = 0,
-		public nombre: string = "",
-		public activo: boolean = false
-	) {}
-	private static url: string = `${API_URL}/categoria`;
 
-	static async Registrar(data_usuario: CategoryService): Promise<AxiosResponse> {
+export class PrivilegioService {
+	constructor(
+		public privilegio_id: number = 0,
+		public tipo: string = "",
+		public activo: boolean = false,
+		public abreviatura: string = "",
+		public fecha_registro: string = ""
+	) {}
+
+	private static url: string = `${API_URL}/privilegio`;
+
+	static async Registrar(data: PrivilegioService): Promise<AxiosResponse> {
 		try {
 			const config = {
 				headers: {
 					"Content-Type": "application/json",
 				},
 			};
-			const body = JSON.stringify(data_usuario);
+
+			const body = JSON.stringify(data);
 
 			return await axios.post(`${this.url}/registrar`, body, config);
 		} catch (err: any) {
@@ -27,19 +32,19 @@ export class CategoryService {
 	}
 
 	static async Actualizar(
-		categoria_id: number,
-		data_usuario: CategoryService
+		ID: number,
+		data: PrivilegioService
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
-					categoria_id,
+					privilegio_id: ID,
 				},
 				headers: {
 					"Content-Type": "application/json",
 				},
 			};
-			const body = JSON.stringify(data_usuario);
+			const body = JSON.stringify(data);
 
 			return await axios.put(`${this.url}/actualizar`, body, config);
 		} catch (err: any) {
@@ -64,11 +69,11 @@ export class CategoryService {
 		}
 	}
 
-	static async Historial(id_categoria: number): Promise<AxiosResponse> {
+	static async Historial(ID: number): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
-					categoria_id: id_categoria,
+					categoria_id: ID,
 				},
 				headers: {
 					"Content-Type": "application/json",
@@ -76,6 +81,20 @@ export class CategoryService {
 			};
 
 			return await axios.get(`${this.url}/historial`, config);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
+
+	static async BuscarPorID(ID: number): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					privilegio_id: ID,
+				},
+			};
+			return await axios.get(`${this.url}/uno`, config);
 		} catch (err: any) {
 			console.log(err);
 			return Promise.reject(err);

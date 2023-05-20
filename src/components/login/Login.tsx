@@ -11,8 +11,8 @@ import { InputControl } from "../controls/InputControl";
 import { ButtonControl } from "../controls/ButtonControl";
 import { useState } from "react";
 import { AlerControl, InterfaceAlertControl } from "../controls/AlertControl";
-import { UsuarioService } from "../../services/Usuario";
-import { PrivilegioService } from "../../services/Privilegio";
+import { UsuarioService } from "../../services/UsuarioService";
+import { PrivilegioService } from "../../services/PrivilegioService";
 
 export const Login = () => {
 	const [alert, setAlert] = useState<InterfaceAlertControl>({

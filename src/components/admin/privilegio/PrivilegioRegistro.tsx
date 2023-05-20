@@ -1,6 +1,7 @@
 import {
 	Box,
 	Button,
+	FormControl,
 	Grid,
 	InputLabel,
 	MenuItem,
@@ -10,13 +11,20 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
+
 import { useEffect, useState } from "react";
-import { CategoryService } from "../../../services/CategoryServices";
+
+import {
+	convertirFechaSQL,
+	convertirFechaVisual,
+} from "../../../utils/Funciones";
+import { PrivilegioService } from "../../../services/PrivilegioService";
 
 interface Props {
+	nombreFormulario: string;
 	abrir: boolean;
 	esEdicion: boolean;
-	itemSeleccionado: CategoryService;
+	itemSeleccionado: PrivilegioService;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
 	funcionEjecutarAlerta: (
@@ -26,7 +34,8 @@ interface Props {
 	funcionAbrirAlerta: () => void;
 }
 
-export const CategoryRegister = ({
+export const PrivilegioRegistro = ({
+	nombreFormulario,
 	abrir,
 	esEdicion,
 	itemSeleccionado,
@@ -35,14 +44,18 @@ export const CategoryRegister = ({
 	funcionEjecutarAlerta,
 	funcionAbrirAlerta,
 }: Props) => {
-	const [categoriaId, setCategoriaId] = useState(0);
-	const [nombre, setNombre] = useState("");
+	const [privilegioId, setPrivilegioId] = useState(0);
+	const [tipo, setTipo] = useState("");
 	const [activo, setActivo] = useState("");
+	const [fecha_registro, setFecha_registro] = useState("");
+	const [abreviatura, setAbreviatura] = useState("");
 
 	useEffect(() => {
-		setCategoriaId(itemSeleccionado.categoria_id);
-		setNombre(itemSeleccionado.nombre);
+		setPrivilegioId(itemSeleccionado.privilegio_id);
+		setTipo(itemSeleccionado.tipo);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
+		setAbreviatura(itemSeleccionado.abreviatura);
+		setFecha_registro(itemSeleccionado.fecha_registro);
 	}, [itemSeleccionado]);
 
 	const funcionCambiarEstado = (event: SelectChangeEvent) => {
@@ -54,19 +67,22 @@ export const CategoryRegister = ({
 	) => {
 		event.preventDefault();
 
-		const dataCategoria: CategoryService = new CategoryService(
-			categoriaId,
-			nombre,
-			activo === "1"
+		const data: PrivilegioService = new PrivilegioService(
+			privilegioId,
+			tipo,
+			activo === "1",
+			abreviatura,
+			convertirFechaSQL(fecha_registro)
 		);
 
-		console.log(dataCategoria);
-
 		if (esEdicion) {
-			await CategoryService.Actualizar(categoriaId, dataCategoria)
+			await PrivilegioService.Actualizar(privilegioId, data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta("success", "Usuario se actualizó correctamente");
+						funcionEjecutarAlerta(
+							"success",
+							`${nombreFormulario} se actualizó correctamente`
+						);
 
 						funcionAbrirAlerta();
 						funcionActualizarTabla();
@@ -81,10 +97,13 @@ export const CategoryRegister = ({
 					return;
 				});
 		} else {
-			await CategoryService.Registrar(dataCategoria)
+			await PrivilegioService.Registrar(data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta("success", "Usuario se registró correctamente");
+						funcionEjecutarAlerta(
+							"success",
+							`${nombreFormulario} se registró correctamente`
+						);
 
 						funcionAbrirAlerta();
 						funcionActualizarTabla();
@@ -109,8 +128,8 @@ export const CategoryRegister = ({
 						top: "50%",
 						left: "50%",
 						transform: "translate(-50%, -50%)",
-						width: "500px",
-
+						width: "90%",
+						maxWidth: "500px",
 						border: "1px solid #ccc",
 						borderRadius: 10,
 						overflow: "hidden",
@@ -119,7 +138,7 @@ export const CategoryRegister = ({
 					}}
 				>
 					<Typography variant="h5" component={"h2"} style={{ marginBottom: 20 }}>
-						Registro de Categorias
+						{`Registro de ${nombreFormulario}`}
 					</Typography>
 					<Box
 						sx={{ flexGrow: 1 }}
@@ -129,34 +148,59 @@ export const CategoryRegister = ({
 						<Grid
 							container
 							direction={"column"}
-							rowSpacing={3}
+							rowSpacing={2}
 							columnSpacing={{ xs: 1, sm: 2, md: 3 }}
 						>
 							<Grid item xs={1}>
 								<TextField
 									fullWidth
-									label="Nombre"
+									label="Fecha Registro"
 									variant="outlined"
-									value={nombre}
-									name="name"
-									// style={{ textTransform: "capitalize" }}
-									onChange={(event) => setNombre(event.target.value)}
+									value={convertirFechaVisual(fecha_registro)}
+									name="fecha_registro"
+									disabled
 								/>
 							</Grid>
 							<Grid item xs={1}>
-								<InputLabel id="estado-select-label">Estado</InputLabel>
-
-								<Select
-									labelId="estado-select-label"
-									id="estado-select"
-									value={activo}
-									label="Estado"
+								<TextField
+									required
 									fullWidth
-									onChange={funcionCambiarEstado}
-								>
-									<MenuItem value={"1"}>ACTIVO</MenuItem>
-									<MenuItem value={"0"}>INACTIVO</MenuItem>
-								</Select>
+									label="Nombre"
+									variant="outlined"
+									value={tipo}
+									name="name"
+									onChange={(event) => setTipo(event.target.value)}
+								/>
+							</Grid>
+							<Grid item xs={1}>
+								<TextField
+									required
+									fullWidth
+									label="Abreviatura"
+									variant="outlined"
+									value={abreviatura}
+									name="name"
+									onChange={(event) => setAbreviatura(event.target.value)}
+									inputProps={{
+										maxLength: 3,
+									}}
+									helperText="solo 3 caracteres"
+								/>
+							</Grid>
+							<Grid item xs={1}>
+								<FormControl fullWidth>
+									<InputLabel id="estado-select-label">Estado</InputLabel>
+									<Select
+										labelId="estado-select-label"
+										id="estado-select"
+										value={activo}
+										label="Estado"
+										onChange={funcionCambiarEstado}
+									>
+										<MenuItem value={"1"}>ACTIVO</MenuItem>
+										<MenuItem value={"0"}>INACTIVO</MenuItem>
+									</Select>
+								</FormControl>
 							</Grid>
 
 							<Grid item xs={1}>

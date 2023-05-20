@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { ButtonControl } from "../controls/ButtonControl";
 import React, { useState } from "react";
 import { AlerControl, InterfaceAlertControl } from "../controls/AlertControl";
-import { UsuarioService } from "../../services/Usuario";
+import { UsuarioService } from "../../services/UsuarioService";
 
 export const Register = () => {
 	const [alert, setAlert] = useState<InterfaceAlertControl>({
