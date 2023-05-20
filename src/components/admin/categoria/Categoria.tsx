@@ -12,7 +12,6 @@ import {
 import { CategoryRegister } from "./CategoriaRegistro";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
-import { relative } from "path";
 
 const columnsCategorias: GridColDef<GridValidRowModel>[] = [
 	{ field: "id", headerName: "ID", width: 0 },

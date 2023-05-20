@@ -57,6 +57,7 @@ export const Contact = () => {
 						<div className="contact__maps">
 							<h3 className="contact__maps-title">Ubicación</h3>
 							<iframe
+								title="mapa"
 								className="contact__maps-map"
 								src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63197.59930288774!2d-79.02007239999999!3d-8.116755649999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91ad3d7fe3fae92d%3A0xd3bc7d125d4e8508!2sTrujillo!5e0!3m2!1ses-419!2spe!4v1675395176450!5m2!1ses-419!2spe"
 								width="600"

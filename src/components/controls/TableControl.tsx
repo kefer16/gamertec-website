@@ -7,7 +7,6 @@ import {
 	GridValidRowModel,
 	GridColumnVisibilityModel,
 } from "@mui/x-data-grid";
-import { Backdrop, CircularProgress } from "@mui/material";
 
 interface Props {
 	rows: GridRowsProp;

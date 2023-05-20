@@ -47,14 +47,12 @@ export const CategoryRegister = ({
 	const [nombre, setNombre] = useState("");
 	const [activo, setActivo] = useState("");
 	const [fecha_registro, setFecha_registro] = useState("");
-	const [fecha_actualizacion, setFecha_actualizacion] = useState("");
 
 	useEffect(() => {
 		setCategoriaId(itemSeleccionado.categoria_id);
 		setNombre(itemSeleccionado.nombre);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
 		setFecha_registro(itemSeleccionado.fecha_registro);
-		setFecha_actualizacion(itemSeleccionado.fecha_actualizacion);
 	}, [itemSeleccionado]);
 
 	const funcionCambiarEstado = (event: SelectChangeEvent) => {

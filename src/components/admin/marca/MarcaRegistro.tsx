@@ -18,7 +18,7 @@ import {
 	convertirFechaVisual,
 } from "../../../utils/Funciones";
 import { MarcaService } from "../../../services/MarcaService";
-import { SelectProps, funcionObtenerCategorias } from "../categoria/Categoria";
+import { SelectProps } from "../categoria/Categoria";
 
 interface Props {
 	nombreFormulario: string;
