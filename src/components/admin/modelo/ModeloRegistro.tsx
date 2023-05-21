@@ -81,12 +81,14 @@ export const ModeloRegistro = ({
 		setStock(String(itemSeleccionado.stock));
 		setNumeroSeries(itemSeleccionado.numero_series);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
-		// setFkMarca(String(itemSeleccionado.fk_marca));
-		// setFkCategoria(String(itemSeleccionado.fk_categoria));
+		setFkMarca(String(itemSeleccionado.fk_marca));
+		setFkCategoria(String(itemSeleccionado.fk_categoria));
 		funcionObtenerMarcaPorCategoria({
 			valorCategoria: String(itemSeleccionado.fk_categoria),
 			valorMarca: String(itemSeleccionado.fk_marca),
 		});
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [itemSeleccionado]);
 
 	const funcionObtenerMarcaPorCategoria = ({
@@ -97,12 +99,7 @@ export const ModeloRegistro = ({
 		const arrayNuevo: SelectAnidadoProps[] = arrayMarcas.filter(
 			(item) => item.valor === parseInt(valorCategoria)
 		);
-		// console.log(arrayNuevo);
-		console.log(valorMarca);
 
-		// const encuentraValor = arrayNuevo.find(
-		// 	(item) => item.valorAnidado === parseInt(valorMarca)
-		// )?.valorAnidado;
 		setArrayAnidadoMarca(arrayNuevo);
 		setFkMarca(valorMarca);
 	};
