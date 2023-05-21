@@ -12,7 +12,7 @@ import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
 import { PrivilegioService } from "../../../services/PrivilegioService";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
-import { SelectProps } from "../categoria/Categoria";
+import { SelectProps } from "../../../utils/Interfaces";
 
 const columnsCategorias: GridColDef<GridValidRowModel>[] = [
 	{

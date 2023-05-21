@@ -12,6 +12,7 @@ import {
 import { CategoryRegister } from "./CategoriaRegistro";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
+import { SelectProps } from "../../../utils/Interfaces";
 
 const columnsCategorias: GridColDef<GridValidRowModel>[] = [
 	{ field: "id", headerName: "ID", width: 0 },
@@ -29,11 +30,6 @@ const columasVisibles: GridColumnVisibilityModel = {
 };
 interface Props {
 	nombreFormulario: string;
-}
-
-export interface SelectProps {
-	valor: number;
-	descripcion: string;
 }
 
 export const funcionObtenerCategorias = async (): Promise<SelectProps[]> => {

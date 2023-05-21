@@ -21,9 +21,10 @@ import {
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
-import { MarcaRegistro } from "./MarcaRegistro";
-import { MarcaService } from "../../../services/MarcaService";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
+import { ModeloRegistro } from "./ModeloRegistro";
+import { ModeloService } from "../../../services/ModeloService";
+import { funcionObtenerMarcas } from "../marca/Marca";
 import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
@@ -31,23 +32,43 @@ const columnas: GridColDef<GridValidRowModel>[] = [
 		field: "id",
 		headerName: "ID",
 	},
-
 	{
 		field: "index",
 		headerName: "N°",
 		width: 60,
 	},
-
 	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-
 	{
 		field: "nombre_categoria",
 		headerName: "Categoria",
 		width: 150,
 	},
 	{
-		field: "nombre",
+		field: "nombre_marca",
 		headerName: "Marca",
+		width: 150,
+	},
+	{
+		field: "nombre",
+		headerName: "Modelo",
+		width: 150,
+	},
+
+	{
+		field: "descripcion",
+		headerName: "Nombre Producto",
+		width: 250,
+	},
+
+	{
+		field: "precio",
+		headerName: "Precio",
+		width: 150,
+	},
+
+	{
+		field: "stock",
+		headerName: "Stock",
 		width: 150,
 	},
 	{ field: "activo_nombre", headerName: "Estado", width: 130 },
@@ -61,26 +82,9 @@ interface Props {
 }
 
 let arrayCategoria: SelectProps[] = [];
+let arrayMarca: SelectAnidadoProps[] = [];
 
-export const funcionObtenerMarcas = async (): Promise<SelectAnidadoProps[]> => {
-	const array: SelectAnidadoProps[] = [];
-	await MarcaService.ListarTodos()
-		.then((respuesta) => {
-			respuesta.data.data.forEach((element: MarcaService) => {
-				array.push({
-					valor: element.fk_categoria,
-					valorAnidado: element.marca_id,
-					descripcion: element.nombre,
-				});
-			});
-		})
-		.catch((error: any) => {
-			console.log(error);
-		});
-	return array;
-};
-
-export const Marca = ({ nombreFormulario }: Props) => {
+export const Modelo = ({ nombreFormulario }: Props) => {
 	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
@@ -117,8 +121,8 @@ export const Marca = ({ nombreFormulario }: Props) => {
 		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
-	const [itemSeleccionado, setItemSeleccionado] = useState<MarcaService>(
-		new MarcaService()
+	const [itemSeleccionado, setItemSeleccionado] = useState<ModeloService>(
+		new ModeloService()
 	);
 
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
@@ -148,21 +152,32 @@ export const Marca = ({ nombreFormulario }: Props) => {
 
 	const funcionListar = async () => {
 		let array: {}[] = [];
-		await MarcaService.ListarTodos()
+		await ModeloService.ListarTodos()
 			.then((response) => {
 				console.log(response.data.data);
 
-				response.data.data.forEach((element: MarcaService, index: number) => {
+				response.data.data.forEach((element: ModeloService, index: number) => {
 					const newRow = {
-						id: element.marca_id,
+						id: element.modelo_id,
 						index: index + 1,
-						nombre: element.nombre,
 						fecha_registro: element.fecha_registro,
 						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
 						fk_categoria: element.fk_categoria,
 						nombre_categoria: arrayCategoria.find(
 							(categoria: SelectProps) => categoria.valor === element.fk_categoria
 						)?.descripcion,
+						fk_marca: element.fk_marca,
+						nombre_marca: arrayMarca.find(
+							(marca: SelectAnidadoProps) => marca.valorAnidado === element.fk_marca
+						)?.descripcion,
+						nombre: element.nombre,
+						descripcion: element.descripcion,
+						foto: element.foto,
+						caracteristicas: element.caracteristicas,
+						color: element.color,
+						precio: element.precio,
+						stock: element.stock,
+						numero_series: element.numero_series,
 						activo: element.activo,
 						activo_nombre: element.activo ? "Activo" : "Inactivo",
 					};
@@ -178,7 +193,23 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionCrear = () => {
-		setItemSeleccionado(new MarcaService(0, "", false, 0, crearFechaISO()));
+		setItemSeleccionado(
+			new ModeloService(
+				0,
+				"",
+				"",
+				"",
+				"",
+				"",
+				0,
+				crearFechaISO(),
+				0,
+				"",
+				false,
+				0,
+				0
+			)
+		);
 		setEsEdicion(false);
 		setAbrirModal(true);
 	};
@@ -199,12 +230,20 @@ export const Marca = ({ nombreFormulario }: Props) => {
 		}
 
 		setItemSeleccionado(
-			new MarcaService(
+			new ModeloService(
 				itemEdicion.id,
 				itemEdicion.nombre,
+				itemEdicion.descripcion,
+				itemEdicion.foto,
+				itemEdicion.caracteristicas,
+				itemEdicion.color,
+				itemEdicion.precio,
+				itemEdicion.fecha_registro,
+				itemEdicion.stock,
+				itemEdicion.numero_series,
 				itemEdicion.activo,
-				itemEdicion.fk_categoria,
-				itemEdicion.fecha_registro
+				itemEdicion.fk_marca,
+				itemEdicion.fk_categoria
 			)
 		);
 
@@ -227,7 +266,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 			return;
 		}
 
-		await MarcaService.EliminarUno(itemEdicion.id)
+		await ModeloService.EliminarUno(itemEdicion.id)
 			.then((response) => {
 				if (response.data.code === 200) {
 					funcionAsignarAlerta(
@@ -254,13 +293,19 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	useEffect(() => {
-		const obtenerCategorias = async () => {
-			return await funcionObtenerCategorias();
+		const obtenerData = async () => {
+			await funcionObtenerCategorias().then((result) => {
+				arrayCategoria = result;
+			});
+
+			await funcionObtenerMarcas().then((result) => {
+				arrayMarca = result;
+			});
+
+			await funcionListar();
 		};
-		obtenerCategorias().then((result) => {
-			arrayCategoria = result;
-			funcionListar();
-		});
+
+		obtenerData();
 	}, []);
 
 	return (
@@ -282,7 +327,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 				columnsVisivility={columasVisibles}
 			/>
 
-			<MarcaRegistro
+			<ModeloRegistro
 				nombreFormulario={nombreFormulario}
 				abrir={abrirModal}
 				esEdicion={esEdicion}
@@ -292,6 +337,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 				funcionAsignarAlerta={funcionAsignarAlerta}
 				funcionAbrirAlerta={funcionAbrirAlerta}
 				arrayCategorias={arrayCategoria}
+				arrayMarcas={arrayMarca}
 			/>
 			<Snackbar
 				open={abrirAlerta}

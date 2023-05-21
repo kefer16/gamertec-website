@@ -17,7 +17,7 @@ import {
 	convertirFechaVisual,
 } from "../../../utils/Funciones";
 import { UsuarioService } from "../../../services/UsuarioService";
-import { SelectProps } from "../categoria/Categoria";
+import { SelectProps } from "../../../utils/Interfaces";
 
 interface Props {
 	nombreFormulario: string;
@@ -143,31 +143,58 @@ export const UsuarioRegistro = ({
 		<>
 			<Modal open={abrir} onClose={funcionCerrarModal}>
 				<Box
-					sx={{ flexGrow: 1 }}
-					style={{
+					sx={{
+						flexGrow: 1,
 						position: "absolute",
 						top: "50%",
 						left: "50%",
 						transform: "translate(-50%, -50%)",
 						width: "90%",
 						maxWidth: "500px",
-
-						border: "1px solid #ccc",
-						borderRadius: 10,
 						overflow: "hidden",
-						padding: 20,
+						border: "1px solid #ccc",
+						borderRadius: "10px",
 						background: "#fff",
 					}}
 				>
-					<Typography variant="h5" component={"h2"} style={{ marginBottom: 20 }}>
-						{`Registro de ${nombreFormulario}`}
+					<Typography
+						sx={[
+							{
+								position: "fixed",
+								zIndex: "99",
+								width: "100%",
+								height: "60px",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								color: "#ffffff",
+								// border: "1px solid red",
+							},
+							esEdicion
+								? { backgroundColor: "#448aff" }
+								: { backgroundColor: "#00c853" },
+						]}
+						variant="h5"
+						component={"h2"}
+					>
+						{`${esEdicion ? "Edición" : "Registro"} de ${nombreFormulario}`}
 					</Typography>
 					<Box
-						sx={{ flexGrow: 1 }}
+						sx={{
+							position: "relative",
+							flexGrow: 1,
+							background: "#fff",
+							overflow: "hidden",
+							overflowY: "scroll",
+							height: "auto",
+							maxHeight: "500px",
+							padding: "20px",
+						}}
 						component={"form"}
 						onSubmit={funcionEnviarCategoria}
 					>
 						<Grid
+							sx={{ marginTop: "50px" }}
 							container
 							direction={"column"}
 							rowSpacing={2}

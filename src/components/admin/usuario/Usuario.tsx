@@ -14,7 +14,7 @@ import { TableControl } from "../../controls/TableControl";
 import { UsuarioService } from "../../../services/UsuarioService";
 import { UsuarioRegistro } from "./UsuarioRegistro";
 import { funcionObtenerPrivilegios } from "../privilegio/Privilegio";
-import { SelectProps } from "../categoria/Categoria";
+import { SelectProps } from "../../../utils/Interfaces";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
 	{

@@ -1,6 +1,7 @@
 import {
 	Box,
 	Button,
+	FormControl,
 	Grid,
 	InputLabel,
 	MenuItem,
@@ -119,31 +120,58 @@ export const CategoryRegister = ({
 		<>
 			<Modal open={abrir} onClose={funcionCerrarModal}>
 				<Box
-					sx={{ flexGrow: 1 }}
-					style={{
+					sx={{
+						flexGrow: 1,
 						position: "absolute",
 						top: "50%",
 						left: "50%",
 						transform: "translate(-50%, -50%)",
 						width: "90%",
 						maxWidth: "500px",
-
-						border: "1px solid #ccc",
-						borderRadius: 10,
 						overflow: "hidden",
-						padding: 20,
+						border: "1px solid #ccc",
+						borderRadius: "10px",
 						background: "#fff",
 					}}
 				>
-					<Typography variant="h5" component={"h2"} style={{ marginBottom: 20 }}>
-						{`Registro de ${nombreFormulario}`}
+					<Typography
+						sx={[
+							{
+								position: "fixed",
+								zIndex: "99",
+								width: "100%",
+								height: "60px",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								color: "#ffffff",
+								// border: "1px solid red",
+							},
+							esEdicion
+								? { backgroundColor: "#448aff" }
+								: { backgroundColor: "#00c853" },
+						]}
+						variant="h5"
+						component={"h2"}
+					>
+						{`${esEdicion ? "Edición" : "Registro"} de ${nombreFormulario}`}
 					</Typography>
 					<Box
-						sx={{ flexGrow: 1 }}
+						sx={{
+							position: "relative",
+							flexGrow: 1,
+							background: "#fff",
+							overflow: "hidden",
+							overflowY: "scroll",
+							height: "auto",
+							maxHeight: "500px",
+							padding: "20px",
+						}}
 						component={"form"}
 						onSubmit={funcionEnviarCategoria}
 					>
 						<Grid
+							sx={{ marginTop: "50px" }}
 							container
 							direction={"column"}
 							rowSpacing={3}
@@ -171,19 +199,20 @@ export const CategoryRegister = ({
 								/>
 							</Grid>
 							<Grid item xs={1}>
-								<InputLabel id="estado-select-label">Estado</InputLabel>
+								<FormControl fullWidth>
+									<InputLabel id="estado-select-label">Estado</InputLabel>
 
-								<Select
-									labelId="estado-select-label"
-									id="estado-select"
-									value={activo}
-									label="Estado"
-									fullWidth
-									onChange={funcionCambiarEstado}
-								>
-									<MenuItem value={"1"}>ACTIVO</MenuItem>
-									<MenuItem value={"0"}>INACTIVO</MenuItem>
-								</Select>
+									<Select
+										labelId="estado-select-label"
+										id="estado-select"
+										value={activo}
+										label="Estado"
+										onChange={funcionCambiarEstado}
+									>
+										<MenuItem value={"1"}>ACTIVO</MenuItem>
+										<MenuItem value={"0"}>INACTIVO</MenuItem>
+									</Select>
+								</FormControl>
 							</Grid>
 
 							<Grid item xs={1}>
