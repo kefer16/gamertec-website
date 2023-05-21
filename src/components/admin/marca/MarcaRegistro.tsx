@@ -58,7 +58,6 @@ export const MarcaRegistro = ({
 		setFecha_registro(itemSeleccionado.fecha_registro);
 		setFkCategoria(String(itemSeleccionado.fk_categoria));
 		setActivo(itemSeleccionado.activo ? "1" : "0");
-		console.log("marca_id", itemSeleccionado.marca_id);
 	}, [itemSeleccionado]);
 
 	const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {

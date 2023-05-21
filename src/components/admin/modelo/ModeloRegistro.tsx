@@ -12,14 +12,13 @@ import {
 	Typography,
 } from "@mui/material";
 
-import { Component, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
 } from "../../../utils/Funciones";
 import { ModeloService } from "../../../services/ModeloService";
 import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
-import { relative } from "path";
 
 interface Props {
 	nombreFormulario: string;
@@ -82,8 +81,8 @@ export const ModeloRegistro = ({
 		setStock(String(itemSeleccionado.stock));
 		setNumeroSeries(itemSeleccionado.numero_series);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
-		setFkMarca(String(itemSeleccionado.fk_marca));
-		setFkCategoria(String(itemSeleccionado.fk_categoria));
+		// setFkMarca(String(itemSeleccionado.fk_marca));
+		// setFkCategoria(String(itemSeleccionado.fk_categoria));
 		funcionObtenerMarcaPorCategoria({
 			valorCategoria: String(itemSeleccionado.fk_categoria),
 			valorMarca: String(itemSeleccionado.fk_marca),
