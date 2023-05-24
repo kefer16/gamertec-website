@@ -11,6 +11,7 @@ import { TabPrivilege } from "./components/admin/privilegio/TabPrivilegio";
 import { TabUsuario } from "./components/admin/usuario/TabUsuario";
 import { TabMarca } from "./components/admin/marca/TabMarca";
 import { TabModelo } from "./components/admin/modelo/TabModelo";
+import { TabProducto } from "./components/admin/producto/TabProducto";
 
 function App() {
 	return (
@@ -28,6 +29,7 @@ function App() {
 				<Route path="/admin/user/" element={<TabUsuario />} />
 				<Route path="/admin/brand/" element={<TabMarca />} />
 				<Route path="/admin/model/" element={<TabModelo />} />
+				<Route path="/admin/product/" element={<TabProducto />} />
 			</Routes>
 		</Router>
 	);

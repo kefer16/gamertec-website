@@ -27,7 +27,7 @@ interface Props {
 	itemSeleccionado: PrivilegioService;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
-	funcionEjecutarAlerta: (
+	funcionAsignarAlerta: (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => void;
@@ -41,7 +41,7 @@ export const PrivilegioRegistro = ({
 	itemSeleccionado,
 	funcionCerrarModal,
 	funcionActualizarTabla,
-	funcionEjecutarAlerta,
+	funcionAsignarAlerta,
 	funcionAbrirAlerta,
 }: Props) => {
 	const [privilegioId, setPrivilegioId] = useState(0);
@@ -79,7 +79,7 @@ export const PrivilegioRegistro = ({
 			await PrivilegioService.Actualizar(privilegioId, data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se actualizó correctamente`
 						);
@@ -91,7 +91,7 @@ export const PrivilegioRegistro = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
 					return;
@@ -100,7 +100,7 @@ export const PrivilegioRegistro = ({
 			await PrivilegioService.Registrar(data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se registró correctamente`
 						);
@@ -112,7 +112,7 @@ export const PrivilegioRegistro = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
 				});

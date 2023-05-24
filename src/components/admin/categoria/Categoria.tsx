@@ -1,4 +1,15 @@
-import { Typography, Container, Snackbar, Alert } from "@mui/material";
+import {
+	Typography,
+	Container,
+	Snackbar,
+	Alert,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	DialogActions,
+	Button,
+} from "@mui/material";
 import { TableControl } from "../../controls/TableControl";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { CategoryService } from "../../../services/CategoriaService";
@@ -47,11 +58,33 @@ export const funcionObtenerCategorias = async (): Promise<SelectProps[]> => {
 };
 
 export const Categoria = ({ nombreFormulario }: Props) => {
-	const [rowsCategorias, setRowsCategorias] = useState<GridRowsProp>([]);
+	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
 	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+	const [dialogo, setDialogo] = useState(false);
+
+	const funcionCerrarDialogo = () => {
+		setDialogo(false);
+	};
+
+	const funcionAbrirDialogo = () => {
+		const itemEdicion = filas.find((item) =>
+			item.id === filaSeleccionada ? item : undefined
+		);
+
+		if (itemEdicion === undefined) {
+			funcionAsignarAlerta(
+				"warning",
+				`Elija un ${nombreFormulario} para poder eliminar`
+			);
+			funcionAbrirAlerta();
+
+			return;
+		}
+		setDialogo(true);
+	};
 
 	const funcionClickFila = (params: any) => {
 		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
@@ -71,7 +104,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 		text: "",
 	});
 
-	const funcionActivarAlerta = (
+	const funcionAsignarAlerta = (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => {
@@ -82,7 +115,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 		});
 	};
 
-	const funcionMostrarAlerta = () => {
+	const funcionAbrirAlerta = () => {
 		setAbrirAlerta(true);
 	};
 
@@ -90,7 +123,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 		setAbrirAlerta(false);
 	};
 
-	const funcionListarCategorias = async () => {
+	const funcionListar = async () => {
 		let arrayCategorias: {}[] = [];
 		await CategoryService.ListarTodos()
 			.then((response) => {
@@ -107,7 +140,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 					};
 					arrayCategorias.push(newRow);
 				});
-				setRowsCategorias(arrayCategorias);
+				setFilas(arrayCategorias);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -124,13 +157,13 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEditarCategoria = () => {
-		const categoriaSeleccionada = rowsCategorias.find((categoria) =>
+		const categoriaSeleccionada = filas.find((categoria) =>
 			categoria.id === filaSeleccionada ? categoria : undefined
 		);
 
 		if (categoriaSeleccionada === undefined) {
-			funcionActivarAlerta("warning", "Elija un usuario para poder editar");
-			funcionMostrarAlerta();
+			funcionAsignarAlerta("warning", "Elija un usuario para poder editar");
+			funcionAbrirAlerta();
 
 			return;
 		}
@@ -149,25 +182,67 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 		setAbrirModal(true);
 	};
 
+	const funcionEliminar = async () => {
+		const itemEdicion = filas.find((item) =>
+			item.id === filaSeleccionada ? item : undefined
+		);
+
+		if (itemEdicion === undefined) {
+			funcionAsignarAlerta(
+				"warning",
+				`Elija un ${nombreFormulario} para poder eliminar`
+			);
+			funcionAbrirAlerta();
+			funcionCerrarDialogo();
+			return;
+		}
+
+		await CategoryService.EliminarUno(itemEdicion.id)
+			.then((response) => {
+				if (response.data.code === 200) {
+					funcionAsignarAlerta(
+						"success",
+						`${nombreFormulario} se eliminó correctamente`
+					);
+					funcionAbrirAlerta();
+					funcionCerrarDialogo();
+					funcionListar();
+					return;
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				funcionAsignarAlerta("error", "Hubo un error");
+				funcionAbrirAlerta();
+				funcionCerrarDialogo();
+				return;
+			});
+	};
+
 	const funcionCerrarModal = () => {
 		setAbrirModal(false);
 	};
 
 	useEffect(() => {
-		funcionListarCategorias();
+		funcionListar();
 	}, []);
 
 	return (
 		<Container maxWidth="lg">
-			<Typography variant="h5" component={"h2"} style={{ textAlign: "center" }}>
+			<Typography
+				variant="h5"
+				component={"h2"}
+				style={{ textAlign: "center", margin: "50px 0 20px 0" }}
+			>
 				{nombreFormulario}
 			</Typography>
 			<ToolbarControl
 				functionCrear={funcionCrearCategoria}
 				functionActualizar={funcionEditarCategoria}
+				functionEliminar={funcionAbrirDialogo}
 			/>
 			<TableControl
-				rows={rowsCategorias}
+				rows={filas}
 				columns={columnsCategorias}
 				filaSeleccionada={filaSeleccionada}
 				funcionClickFila={funcionClickFila}
@@ -181,9 +256,9 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 				esEdicion={esEdicion}
 				itemSeleccionado={categoriaSeleccionada}
 				funcionCerrarModal={funcionCerrarModal}
-				funcionActualizarTabla={funcionListarCategorias}
-				funcionEjecutarAlerta={funcionActivarAlerta}
-				funcionAbrirAlerta={funcionMostrarAlerta}
+				funcionActualizarTabla={funcionListar}
+				funcionAsignarAlerta={funcionAsignarAlerta}
+				funcionAbrirAlerta={funcionAbrirAlerta}
 			/>
 			<Snackbar
 				open={abrirAlerta}
@@ -195,6 +270,32 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 					{alerta.text}
 				</Alert>
 			</Snackbar>
+			<Dialog
+				open={dialogo}
+				onClose={funcionCerrarDialogo}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle id="alert-dialog-title">{` ¿Desea continuar?`}</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
+							filas.find(
+								(item) =>
+									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
+							)?.nombre
+						}`}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={funcionCerrarDialogo} autoFocus>
+						Cancelar
+					</Button>
+					<Button color="error" onClick={funcionEliminar}>
+						Eliminar
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Container>
 	);
 };

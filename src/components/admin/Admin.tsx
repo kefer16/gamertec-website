@@ -11,6 +11,7 @@ export const Admin = () => {
 				<Link to={`/admin/category/`}>Ir a Categoria</Link>
 				<Link to={`/admin/brand/`}>Ir a Marca</Link>
 				<Link to={`/admin/model/`}>Ir a Modelo</Link>
+				<Link to={`/admin/product/`}>Ir a Productos</Link>
 				<Link to={`/admin/privilege/`}>Ir a Privilegio</Link>
 				<Link to={`/admin/user/`}>Ir a Usuario</Link>
 			</Box>

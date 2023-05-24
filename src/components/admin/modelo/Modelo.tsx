@@ -84,6 +84,24 @@ interface Props {
 let arrayCategoria: SelectProps[] = [];
 let arrayMarca: SelectAnidadoProps[] = [];
 
+export const funcionObteneModelo = async (): Promise<SelectAnidadoProps[]> => {
+	const array: SelectAnidadoProps[] = [];
+	await ModeloService.ListarTodos()
+		.then((respuesta) => {
+			respuesta.data.data.forEach((element: ModeloService) => {
+				array.push({
+					valor: element.fk_marca,
+					valorAnidado: element.modelo_id,
+					descripcion: element.nombre,
+				});
+			});
+		})
+		.catch((error: any) => {
+			console.log(error);
+		});
+	return array;
+};
+
 export const Modelo = ({ nombreFormulario }: Props) => {
 	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
@@ -310,7 +328,11 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
 	return (
 		<Container maxWidth="lg">
-			<Typography variant="h5" component={"h2"} style={{ textAlign: "center" }}>
+			<Typography
+				variant="h5"
+				component={"h2"}
+				style={{ textAlign: "center", margin: "50px 0 20px 0" }}
+			>
 				{nombreFormulario}
 			</Typography>
 			<ToolbarControl

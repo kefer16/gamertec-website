@@ -7,7 +7,18 @@ import {
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
-import { Alert, Container, Snackbar, Typography } from "@mui/material";
+import {
+	Alert,
+	Button,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	Snackbar,
+	Typography,
+} from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
 import { PrivilegioService } from "../../../services/PrivilegioService";
@@ -61,12 +72,32 @@ export const funcionObtenerPrivilegios = async (): Promise<SelectProps[]> => {
 };
 
 export const Privilegio = ({ nombreFormulario }: Props) => {
-	const [rowsCategorias, setRowsCategorias] = useState<GridRowsProp>([]);
+	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
 	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+	const [dialogo, setDialogo] = useState(false);
+	const funcionCerrarDialogo = () => {
+		setDialogo(false);
+	};
 
+	const funcionAbrirDialogo = () => {
+		const itemEdicion = filas.find((item) =>
+			item.id === filaSeleccionada ? item : undefined
+		);
+
+		if (itemEdicion === undefined) {
+			funcionAsignarAlerta(
+				"warning",
+				`Elija un ${nombreFormulario} para poder eliminar`
+			);
+			funcionAbrirAlerta();
+
+			return;
+		}
+		setDialogo(true);
+	};
 	const funcionClickFila = (params: any) => {
 		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
 	};
@@ -86,7 +117,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 		text: "",
 	});
 
-	const funcionActivarAlerta = (
+	const funcionAsignarAlerta = (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => {
@@ -97,7 +128,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 		});
 	};
 
-	const funcionMostrarAlerta = () => {
+	const funcionAbrirAlerta = () => {
 		setAbrirAlerta(true);
 	};
 
@@ -124,7 +155,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 					};
 					array.push(newRow);
 				});
-				setRowsCategorias(array);
+				setFilas(array);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -139,13 +170,13 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEditar = () => {
-		const itemEdicion = rowsCategorias.find((categoria) =>
+		const itemEdicion = filas.find((categoria) =>
 			categoria.id === filaSeleccionada ? categoria : undefined
 		);
 
 		if (itemEdicion === undefined) {
-			funcionActivarAlerta("warning", "Elija un usuario para poder editar");
-			funcionMostrarAlerta();
+			funcionAsignarAlerta("warning", "Elija un usuario para poder editar");
+			funcionAbrirAlerta();
 
 			return;
 		}
@@ -164,6 +195,42 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 		setAbrirModal(true);
 	};
 
+	const funcionEliminar = async () => {
+		const itemEdicion = filas.find((item) =>
+			item.id === filaSeleccionada ? item : undefined
+		);
+
+		if (itemEdicion === undefined) {
+			funcionAsignarAlerta(
+				"warning",
+				`Elija un ${nombreFormulario} para poder eliminar`
+			);
+			funcionAbrirAlerta();
+			funcionCerrarDialogo();
+			return;
+		}
+
+		await PrivilegioService.EliminarUno(itemEdicion.id)
+			.then((response) => {
+				if (response.data.code === 200) {
+					funcionAsignarAlerta(
+						"success",
+						`${nombreFormulario} se eliminó correctamente`
+					);
+					funcionAbrirAlerta();
+					funcionCerrarDialogo();
+					funcionListar();
+					return;
+				}
+			})
+			.catch((error) => {
+				funcionAsignarAlerta("error", "Hubo un error");
+				funcionAbrirAlerta();
+				funcionCerrarDialogo();
+				return;
+			});
+	};
+
 	const funcionCerrarModal = () => {
 		setAbrirModal(false);
 	};
@@ -174,15 +241,20 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 
 	return (
 		<Container maxWidth="lg">
-			<Typography variant="h5" component={"h2"} style={{ textAlign: "center" }}>
+			<Typography
+				variant="h5"
+				component={"h2"}
+				style={{ textAlign: "center", margin: "50px 0 20px 0" }}
+			>
 				{nombreFormulario}
 			</Typography>
 			<ToolbarControl
 				functionCrear={funcionCrear}
 				functionActualizar={funcionEditar}
+				functionEliminar={funcionAbrirDialogo}
 			/>
 			<TableControl
-				rows={rowsCategorias}
+				rows={filas}
 				columns={columnsCategorias}
 				filaSeleccionada={filaSeleccionada}
 				funcionClickFila={funcionClickFila}
@@ -197,8 +269,8 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 				itemSeleccionado={itemSeleccionado}
 				funcionCerrarModal={funcionCerrarModal}
 				funcionActualizarTabla={funcionListar}
-				funcionEjecutarAlerta={funcionActivarAlerta}
-				funcionAbrirAlerta={funcionMostrarAlerta}
+				funcionAsignarAlerta={funcionAsignarAlerta}
+				funcionAbrirAlerta={funcionAbrirAlerta}
 			/>
 			<Snackbar
 				open={abrirAlerta}
@@ -210,6 +282,32 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 					{alerta.text}
 				</Alert>
 			</Snackbar>
+			<Dialog
+				open={dialogo}
+				onClose={funcionCerrarDialogo}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle id="alert-dialog-title">{` ¿Desea continuar?`}</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
+							filas.find(
+								(item) =>
+									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
+							)?.nombre
+						}`}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={funcionCerrarDialogo} autoFocus>
+						Cancelar
+					</Button>
+					<Button color="error" onClick={funcionEliminar}>
+						Eliminar
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Container>
 	);
 };

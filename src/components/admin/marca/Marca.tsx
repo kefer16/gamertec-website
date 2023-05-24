@@ -265,7 +265,11 @@ export const Marca = ({ nombreFormulario }: Props) => {
 
 	return (
 		<Container maxWidth="lg">
-			<Typography variant="h5" component={"h2"} style={{ textAlign: "center" }}>
+			<Typography
+				variant="h5"
+				component={"h2"}
+				style={{ textAlign: "center", margin: "50px 0 20px 0" }}
+			>
 				{nombreFormulario}
 			</Typography>
 			<ToolbarControl

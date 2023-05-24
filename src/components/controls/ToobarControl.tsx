@@ -22,7 +22,11 @@ export const ToolbarControl = ({
 }: Props) => {
 	return (
 		<Toolbar
-			style={{
+			sx={{
+				backgroundColor: "#99999936",
+
+				borderTopLeftRadius: "10px",
+				borderTopRightRadius: "10px",
 				justifyContent: "flex-end",
 			}}
 		>

@@ -6,13 +6,14 @@ export class ProductoService {
 	constructor(
 		public producto_id: number = 0,
 		public numero_serie: string = "",
-		public pk_modelo: number = 0,
-		public pk_marca: number = 0,
-		public pk_categoria: number = 0,
-		public fecha_registro: string = ""
+		public fk_modelo: number = 0,
+		public fk_marca: number = 0,
+		public fk_categoria: number = 0,
+		public fecha_registro: string = "",
+		public activo: boolean = false
 	) {}
 
-	private static url: string = `${API_URL}/privilegio`;
+	private static url: string = `${API_URL}/producto`;
 
 	static async Registrar(data: ProductoService): Promise<AxiosResponse> {
 		try {
@@ -96,6 +97,19 @@ export class ProductoService {
 				},
 			};
 			return await axios.get(`${this.url}/uno`, config);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
+	static async EliminarUno(ID: number): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					producto_id: ID,
+				},
+			};
+			return await axios.delete(`${this.url}/eliminar`, config);
 		} catch (err: any) {
 			console.log(err);
 			return Promise.reject(err);

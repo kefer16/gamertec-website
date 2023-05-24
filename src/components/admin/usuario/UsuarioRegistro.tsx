@@ -26,7 +26,7 @@ interface Props {
 	itemSeleccionado: UsuarioService;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
-	funcionEjecutarAlerta: (
+	funcionAsignarAlerta: (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => void;
@@ -41,7 +41,7 @@ export const UsuarioRegistro = ({
 	itemSeleccionado,
 	funcionCerrarModal,
 	funcionActualizarTabla,
-	funcionEjecutarAlerta,
+	funcionAsignarAlerta,
 	funcionAbrirAlerta,
 	arrayPrivilegios,
 }: Props) => {
@@ -101,7 +101,7 @@ export const UsuarioRegistro = ({
 			await UsuarioService.Actualizar(usuarioId, data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se actualizó correctamente`
 						);
@@ -113,7 +113,7 @@ export const UsuarioRegistro = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
 					return;
@@ -122,7 +122,7 @@ export const UsuarioRegistro = ({
 			await UsuarioService.Registrar(data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se registró correctamente`
 						);
@@ -133,7 +133,7 @@ export const UsuarioRegistro = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
 				});

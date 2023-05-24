@@ -36,8 +36,12 @@ export const TableControl = ({
 	}, []);
 
 	return (
-		<div style={{ height: 650, width: "100%" }}>
+		<div style={{ height: 650, width: "100%", marginBottom: "50px" }}>
 			<DataGrid
+				style={{
+					borderBottomLeftRadius: "10px",
+					borderBottomRightRadius: "10px",
+				}}
 				rows={rows}
 				columns={columns}
 				initialState={{

@@ -7,78 +7,101 @@ import {
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
-import { Alert, Container, Snackbar, Typography } from "@mui/material";
+import {
+	Alert,
+	Button,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	Snackbar,
+	Typography,
+} from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
-
-import { UsuarioService } from "../../../services/UsuarioService";
+import { funcionObtenerCategorias } from "../categoria/Categoria";
+import { funcionObtenerMarcas } from "../marca/Marca";
+import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
 import { ProductoRegistro } from "./ProductoRegistro";
+import { funcionObteneModelo } from "../modelo/Modelo";
+import { ProductoService } from "../../../services/ProductService";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
 	{
 		field: "id",
 		headerName: "ID",
 	},
-
 	{
 		field: "index",
 		headerName: "N°",
 		width: 60,
 	},
-	{ field: "fecha_registro", headerName: "", width: 0 },
 	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-
 	{
-		field: "nombre",
-		headerName: "Nombre",
+		field: "nombre_categoria",
+		headerName: "Categoria",
 		width: 150,
 	},
 	{
-		field: "apellido",
-		headerName: "Apellido",
+		field: "nombre_marca",
+		headerName: "Marca",
 		width: 150,
 	},
 	{
-		field: "correo",
-		headerName: "Correo",
-		width: 200,
+		field: "nombre_modelo",
+		headerName: "Modelo",
+		width: 150,
 	},
 	{
-		field: "usuario",
-		headerName: "Usuario",
-		width: 100,
-	},
-	{
-		field: "contrasenia",
-		headerName: "",
-		width: 0,
-	},
-	{
-		field: "dinero",
-		headerName: "Dinero",
-		width: 100,
+		field: "numero_serie",
+		headerName: "Número de Serie",
+		width: 150,
 	},
 
-	{ field: "activo", headerName: "" },
 	{ field: "activo_nombre", headerName: "Estado", width: 130 },
 ];
 
 const columasVisibles: GridColumnVisibilityModel = {
 	id: false,
-	activo: false,
-	contrasenia: false,
-	fecha_registro: false,
 };
 interface Props {
 	nombreFormulario: string;
 }
+
+let arrayCategoria: SelectProps[] = [];
+let arrayMarca: SelectAnidadoProps[] = [];
+let arrayModelo: SelectAnidadoProps[] = [];
+
 export const Producto = ({ nombreFormulario }: Props) => {
 	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
 	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+	const [dialogo, setDialogo] = useState(false);
 
+	const funcionCerrarDialogo = () => {
+		setDialogo(false);
+	};
+
+	const funcionAbrirDialogo = () => {
+		const itemEdicion = filas.find((item) =>
+			item.id === filaSeleccionada ? item : undefined
+		);
+
+		if (itemEdicion === undefined) {
+			funcionAsignarAlerta(
+				"warning",
+				`Elija un ${nombreFormulario} para poder eliminar`
+			);
+			funcionAbrirAlerta();
+
+			return;
+		}
+		setDialogo(true);
+	};
 	const funcionClickFila = (params: any) => {
 		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
 	};
@@ -88,8 +111,8 @@ export const Producto = ({ nombreFormulario }: Props) => {
 		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
-	const [itemSeleccionado, setItemSeleccionado] = useState<UsuarioService>(
-		new UsuarioService()
+	const [itemSeleccionado, setItemSeleccionado] = useState<ProductoService>(
+		new ProductoService()
 	);
 
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
@@ -98,7 +121,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 		text: "",
 	});
 
-	const funcionActivarAlerta = (
+	const funcionAsignarAlerta = (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => {
@@ -109,7 +132,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 		});
 	};
 
-	const funcionMostrarAlerta = () => {
+	const funcionAbrirAlerta = () => {
 		setAbrirAlerta(true);
 	};
 
@@ -119,27 +142,35 @@ export const Producto = ({ nombreFormulario }: Props) => {
 
 	const funcionListar = async () => {
 		let array: {}[] = [];
-		await UsuarioService.ListarTodos()
+		await ProductoService.ListarTodos()
 			.then((response) => {
 				console.log(response.data.data);
 
-				response.data.data.forEach((element: UsuarioService, index: number) => {
+				response.data.data.forEach((element: ProductoService, index: number) => {
 					const newRow = {
-						id: element.usuario_id,
+						id: element.producto_id,
 						index: index + 1,
-						nombre: element.nombre,
-						apellido: element.apellido,
-						correo: element.correo,
-						usuario: element.usuario,
-						dinero: element.dinero,
-						foto: element.foto,
 						fecha_registro: element.fecha_registro,
 						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
+						fk_categoria: element.fk_categoria,
+						nombre_categoria: arrayCategoria.find(
+							(categoria: SelectProps) => categoria.valor === element.fk_categoria
+						)?.descripcion,
+						fk_marca: element.fk_marca,
+						nombre_marca: arrayMarca.find(
+							(marca: SelectAnidadoProps) => marca.valorAnidado === element.fk_marca
+						)?.descripcion,
+						fk_modelo: element.fk_modelo,
+						nombre_modelo: arrayModelo.find(
+							(modelo: SelectAnidadoProps) => modelo.valorAnidado === element.fk_modelo
+						)?.descripcion,
+						numero_serie: element.numero_serie,
 						activo: element.activo,
 						activo_nombre: element.activo ? "Activo" : "Inactivo",
 					};
 					array.push(newRow);
 				});
+
 				setFilas(array);
 			})
 			.catch((error: any) => {
@@ -150,7 +181,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 
 	const funcionCrear = () => {
 		setItemSeleccionado(
-			new UsuarioService(0, "", "", "", "", "", 0, "", crearFechaISO(), false, 0)
+			new ProductoService(0, "", 0, 0, 0, crearFechaISO(), false)
 		);
 		setEsEdicion(false);
 		setAbrirModal(true);
@@ -162,28 +193,24 @@ export const Producto = ({ nombreFormulario }: Props) => {
 		);
 
 		if (itemEdicion === undefined) {
-			funcionActivarAlerta(
+			funcionAsignarAlerta(
 				"warning",
 				`Elija un ${nombreFormulario} para poder editar`
 			);
-			funcionMostrarAlerta();
+			funcionAbrirAlerta();
 
 			return;
 		}
 
 		setItemSeleccionado(
-			new UsuarioService(
-				itemEdicion.usuario_id,
-				itemEdicion.nombre,
-				itemEdicion.apellido,
-				itemEdicion.correo,
-				itemEdicion.usuario,
-				itemEdicion.contrasenia,
-				itemEdicion.dinero,
-				itemEdicion.foto,
+			new ProductoService(
+				itemEdicion.id,
+				itemEdicion.numero_serie,
+				itemEdicion.fk_modelo,
+				itemEdicion.fk_marca,
+				itemEdicion.fk_categoria,
 				itemEdicion.fecha_registro,
-				itemEdicion.activo,
-				itemEdicion.fk_privilegio
+				itemEdicion.activo
 			)
 		);
 
@@ -191,22 +218,80 @@ export const Producto = ({ nombreFormulario }: Props) => {
 		setAbrirModal(true);
 	};
 
+	const funcionEliminar = async () => {
+		const itemEdicion = filas.find((item) =>
+			item.id === filaSeleccionada ? item : undefined
+		);
+
+		if (itemEdicion === undefined) {
+			funcionAsignarAlerta(
+				"warning",
+				`Elija un ${nombreFormulario} para poder eliminar`
+			);
+			funcionAbrirAlerta();
+			funcionCerrarDialogo();
+			return;
+		}
+
+		await ProductoService.EliminarUno(itemEdicion.id)
+			.then((response) => {
+				if (response.data.code === 200) {
+					funcionAsignarAlerta(
+						"success",
+						`${nombreFormulario} se eliminó correctamente`
+					);
+					funcionAbrirAlerta();
+					funcionCerrarDialogo();
+					funcionListar();
+					return;
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				funcionAsignarAlerta("error", "Hubo un error");
+				funcionAbrirAlerta();
+				funcionCerrarDialogo();
+				return;
+			});
+	};
+
 	const funcionCerrarModal = () => {
 		setAbrirModal(false);
 	};
 
 	useEffect(() => {
-		funcionListar();
+		const obtenerData = async () => {
+			await funcionObtenerCategorias().then((result) => {
+				arrayCategoria = result;
+			});
+
+			await funcionObtenerMarcas().then((result) => {
+				arrayMarca = result;
+			});
+
+			await funcionObteneModelo().then((result) => {
+				arrayModelo = result;
+			});
+
+			await funcionListar();
+		};
+
+		obtenerData();
 	}, []);
 
 	return (
 		<Container maxWidth="lg">
-			<Typography variant="h5" component={"h2"} style={{ textAlign: "center" }}>
-				Usuario
+			<Typography
+				variant="h5"
+				component={"h2"}
+				style={{ textAlign: "center", margin: "50px 0 20px 0" }}
+			>
+				{nombreFormulario}
 			</Typography>
 			<ToolbarControl
 				functionCrear={funcionCrear}
 				functionActualizar={funcionEditar}
+				functionEliminar={funcionAbrirDialogo}
 			/>
 			<TableControl
 				rows={filas}
@@ -224,8 +309,11 @@ export const Producto = ({ nombreFormulario }: Props) => {
 				itemSeleccionado={itemSeleccionado}
 				funcionCerrarModal={funcionCerrarModal}
 				funcionActualizarTabla={funcionListar}
-				funcionEjecutarAlerta={funcionActivarAlerta}
-				funcionAbrirAlerta={funcionMostrarAlerta}
+				funcionAsignarAlerta={funcionAsignarAlerta}
+				funcionAbrirAlerta={funcionAbrirAlerta}
+				arrayCategorias={arrayCategoria}
+				arrayMarcas={arrayMarca}
+				arrayModelos={arrayModelo}
 			/>
 			<Snackbar
 				open={abrirAlerta}
@@ -237,6 +325,32 @@ export const Producto = ({ nombreFormulario }: Props) => {
 					{alerta.text}
 				</Alert>
 			</Snackbar>
+			<Dialog
+				open={dialogo}
+				onClose={funcionCerrarDialogo}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle id="alert-dialog-title">{` ¿Desea continuar?`}</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
+							filas.find(
+								(item) =>
+									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
+							)?.nombre
+						}`}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={funcionCerrarDialogo} autoFocus>
+						Cancelar
+					</Button>
+					<Button color="error" onClick={funcionEliminar}>
+						Eliminar
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Container>
 	);
 };

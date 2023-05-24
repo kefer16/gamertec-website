@@ -13,29 +13,34 @@ import {
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
-import { CategoryService } from "../../../services/CategoriaService";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
-	crearFechaISO,
 } from "../../../utils/Funciones";
-import { PrivilegioService } from "../../../services/PrivilegioService";
-import { UsuarioService } from "../../../services/UsuarioService";
+import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
+import { ProductoService } from "../../../services/ProductService";
 
 interface Props {
 	nombreFormulario: string;
 	abrir: boolean;
 	esEdicion: boolean;
-	itemSeleccionado: UsuarioService;
+	itemSeleccionado: ProductoService;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
-	funcionEjecutarAlerta: (
+	funcionAsignarAlerta: (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => void;
 	funcionAbrirAlerta: () => void;
+	arrayCategorias: SelectProps[];
+	arrayMarcas: SelectAnidadoProps[];
+	arrayModelos: SelectAnidadoProps[];
 }
 
+interface ChangeValueSelect {
+	valor: string;
+	valorAnidado: string;
+}
 export const ProductoRegistro = ({
 	nombreFormulario,
 	abrir,
@@ -43,66 +48,93 @@ export const ProductoRegistro = ({
 	itemSeleccionado,
 	funcionCerrarModal,
 	funcionActualizarTabla,
-	funcionEjecutarAlerta,
+	funcionAsignarAlerta,
 	funcionAbrirAlerta,
+	arrayCategorias,
+	arrayMarcas,
+	arrayModelos,
 }: Props) => {
-	const [usuarioId, setUsuarioId] = useState(0);
-	const [nombre, setNombre] = useState("");
-	const [apellido, setApellido] = useState("");
-	const [correo, setCorreo] = useState("");
-	const [usuario, setUsuario] = useState("");
-	const [contrasenia, setContrasenia] = useState("");
-	const [dinero, setDinero] = useState("0");
-	const [foto, setFoto] = useState("");
-	const [fecha_registro, setFecha_registro] = useState("");
+	const [productoId, setProductoId] = useState(0);
+	const [numeroSerie, setNumeroSerie] = useState("");
+	const [fkModelo, setFkModelo] = useState("0");
+	const [fkMarca, setFkMarca] = useState("0");
+	const [fkCategoria, setFkCategoria] = useState("0");
+	const [fechaRegistro, setFechaRegistro] = useState("");
 	const [activo, setActivo] = useState("0");
-	const [fk_privilegio, setFk_privilegio] = useState("0");
+
+	const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
+		SelectAnidadoProps[]
+	>([]);
+	const [arrayAnidadoModelo, setArrayAnidadoModelo] = useState<
+		SelectAnidadoProps[]
+	>([]);
 
 	useEffect(() => {
-		setUsuarioId(itemSeleccionado.usuario_id);
-		setNombre(itemSeleccionado.nombre);
-		setApellido(itemSeleccionado.apellido);
-		setCorreo(itemSeleccionado.correo);
-		setUsuario(itemSeleccionado.usuario);
-		setContrasenia(itemSeleccionado.contrasenia);
-		setDinero(String(itemSeleccionado.dinero));
-		setFoto(itemSeleccionado.foto);
-		setFecha_registro(itemSeleccionado.fecha_registro);
+		setProductoId(itemSeleccionado.producto_id);
+		setFechaRegistro(itemSeleccionado.fecha_registro);
+		setNumeroSerie(itemSeleccionado.numero_serie);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
-		setFk_privilegio(String(itemSeleccionado.fk_privilegio));
-	}, [itemSeleccionado]);
 
-	const funcionCambiarPrivilegio = (event: SelectChangeEvent) => {
-		setFk_privilegio(event.target.value as string);
-	};
-	const funcionCambiarEstado = (event: SelectChangeEvent) => {
-		setActivo(event.target.value as string);
-	};
+		setFkCategoria(String(itemSeleccionado.fk_categoria));
 
-	const funcionEnviarCategoria = async (
-		event: React.FormEvent<HTMLFormElement>
-	) => {
-		event.preventDefault();
+		const nuevoArrayMarca: SelectAnidadoProps[] = arrayMarcas.filter(
+			(item) => item.valor === itemSeleccionado.fk_categoria
+		);
+		setArrayAnidadoMarca(nuevoArrayMarca);
+		setFkMarca(String(itemSeleccionado.fk_marca));
 
-		const data: UsuarioService = new UsuarioService(
-			usuarioId,
-			nombre,
-			apellido,
-			correo,
-			usuario,
-			contrasenia,
-			parseInt(dinero),
-			foto,
-			convertirFechaSQL(fecha_registro),
-			activo === "0",
-			parseInt(fk_privilegio)
+		const nuevoArrayModelo: SelectAnidadoProps[] = arrayModelos.filter(
+			(item) => item.valor === itemSeleccionado.fk_marca
+		);
+		setArrayAnidadoModelo(nuevoArrayModelo);
+		setFkModelo(String(itemSeleccionado.fk_modelo));
+	}, [itemSeleccionado, arrayMarcas, arrayModelos]);
+
+	const funcionObtenerMarcaPorCategoria = ({
+		valor,
+		valorAnidado,
+	}: ChangeValueSelect) => {
+		setFkCategoria(valor);
+		const arrayNuevo: SelectAnidadoProps[] = arrayMarcas.filter(
+			(item) => item.valor === parseInt(valor)
 		);
 
+		setArrayAnidadoMarca(arrayNuevo);
+		setFkMarca(valorAnidado);
+	};
+
+	const funcionObtenerModeloPorMarca = ({
+		valor,
+		valorAnidado,
+	}: ChangeValueSelect) => {
+		setFkMarca(valor);
+		const arrayNuevo: SelectAnidadoProps[] = arrayModelos.filter(
+			(item) => item.valor === parseInt(valor)
+		);
+
+		setArrayAnidadoModelo(arrayNuevo);
+		setFkModelo(valorAnidado);
+	};
+
+	const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+
+		const data: ProductoService = new ProductoService(
+			productoId,
+			numeroSerie,
+			parseInt(fkModelo),
+			parseInt(fkMarca),
+			parseInt(fkCategoria),
+			convertirFechaSQL(fechaRegistro),
+			activo === "1"
+		);
+		console.log(data, esEdicion);
+
 		if (esEdicion) {
-			await UsuarioService.Actualizar(usuarioId, data)
+			await ProductoService.Actualizar(productoId, data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se actualizó correctamente`
 						);
@@ -114,16 +146,17 @@ export const ProductoRegistro = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					console.log(error);
+					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
 					return;
 				});
 		} else {
-			await UsuarioService.Registrar(data)
+			await ProductoService.Registrar(data)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se registró correctamente`
 						);
@@ -134,7 +167,7 @@ export const ProductoRegistro = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
 				});
@@ -144,31 +177,58 @@ export const ProductoRegistro = ({
 		<>
 			<Modal open={abrir} onClose={funcionCerrarModal}>
 				<Box
-					sx={{ flexGrow: 1 }}
-					style={{
+					sx={{
+						flexGrow: 1,
 						position: "absolute",
 						top: "50%",
 						left: "50%",
 						transform: "translate(-50%, -50%)",
 						width: "90%",
 						maxWidth: "500px",
-
-						border: "1px solid #ccc",
-						borderRadius: 10,
 						overflow: "hidden",
-						padding: 20,
+						border: "1px solid #ccc",
+						borderRadius: "10px",
 						background: "#fff",
 					}}
 				>
-					<Typography variant="h5" component={"h2"} style={{ marginBottom: 20 }}>
-						{`Registro de ${nombreFormulario}`}
+					<Typography
+						sx={[
+							{
+								position: "fixed",
+								zIndex: "99",
+								width: "100%",
+								height: "60px",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+								color: "#ffffff",
+								// border: "1px solid red",
+							},
+							esEdicion
+								? { backgroundColor: "#448aff" }
+								: { backgroundColor: "#00c853" },
+						]}
+						variant="h5"
+						component={"h2"}
+					>
+						{`${esEdicion ? "Edición" : "Registro"} de ${nombreFormulario}`}
 					</Typography>
 					<Box
-						sx={{ flexGrow: 1 }}
+						sx={{
+							position: "relative",
+							flexGrow: 1,
+							background: "#fff",
+							overflow: "hidden",
+							overflowY: "scroll",
+							height: "auto",
+							maxHeight: "500px",
+							padding: "20px",
+						}}
 						component={"form"}
-						onSubmit={funcionEnviarCategoria}
+						onSubmit={funcionGuardar}
 					>
 						<Grid
+							sx={{ marginTop: "50px" }}
 							container
 							direction={"column"}
 							rowSpacing={2}
@@ -179,116 +239,105 @@ export const ProductoRegistro = ({
 									fullWidth
 									label="Fecha Registro"
 									variant="outlined"
-									value={convertirFechaVisual(fecha_registro)}
+									value={convertirFechaVisual(fechaRegistro)}
 									name="date"
 									disabled
 								/>
 							</Grid>
 							<Grid item xs={1}>
 								<FormControl fullWidth>
-									<InputLabel id="estado-select-label">Privilegio</InputLabel>
+									<InputLabel id="categoria-select-label">Categoria</InputLabel>
 									<Select
-										labelId="estado-select-label"
-										id="estado-select"
-										value={fk_privilegio}
-										label="Privilegio"
-										onChange={funcionCambiarPrivilegio}
+										labelId="categoria-select-label"
+										id="categoria-select"
+										value={fkCategoria}
+										label="Categoria"
+										onChange={(event: SelectChangeEvent) =>
+											funcionObtenerMarcaPorCategoria({
+												valor: event.target.value,
+												valorAnidado: "0",
+											})
+										}
 									>
-										<MenuItem value={"0"}>Selec. Privilegio</MenuItem>
-										<MenuItem value={"1"}>ADMINISTRADOR</MenuItem>
-										<MenuItem value={"2"}>INVITADO</MenuItem>
-										<MenuItem value={"3"}>USUARIO</MenuItem>
+										<MenuItem value={"0"}>Selec. Categoria</MenuItem>
+										{arrayCategorias.map((categoria: SelectProps) => {
+											return (
+												<MenuItem key={categoria.valor} value={String(categoria.valor)}>
+													{categoria.descripcion}
+												</MenuItem>
+											);
+										})}
 									</Select>
 								</FormControl>
 							</Grid>
 							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Nombre"
-									variant="outlined"
-									value={nombre}
-									name="name"
-									onChange={(event) => setNombre(event.target.value)}
-								/>
+								<FormControl fullWidth>
+									<InputLabel id="marca-select-label">Marca</InputLabel>
+									<Select
+										labelId="marca-select-label"
+										id="marca-select"
+										value={fkMarca}
+										label="Marca"
+										defaultValue={"0"}
+										onChange={(event: SelectChangeEvent) =>
+											funcionObtenerModeloPorMarca({
+												valor: event.target.value,
+												valorAnidado: "0",
+											})
+										}
+									>
+										<MenuItem value={"0"}>Selec. Marca</MenuItem>
+										{arrayAnidadoMarca.map((marca: SelectAnidadoProps) => {
+											return (
+												<MenuItem
+													key={marca.valorAnidado}
+													value={String(marca.valorAnidado)}
+												>
+													{marca.descripcion}
+												</MenuItem>
+											);
+										})}
+									</Select>
+								</FormControl>
 							</Grid>
+
+							<Grid item xs={1}>
+								<FormControl fullWidth>
+									<InputLabel id="modelo-select-label">Modelo</InputLabel>
+									<Select
+										labelId="modelo-select-label"
+										id="modelo-select"
+										value={fkModelo}
+										label="Modelo"
+										defaultValue={"0"}
+										onChange={(event: SelectChangeEvent) =>
+											setFkModelo(event.target.value as string)
+										}
+									>
+										<MenuItem value={"0"}>Selec. Modelo</MenuItem>
+										{arrayAnidadoModelo.map((modelo: SelectAnidadoProps) => {
+											return (
+												<MenuItem
+													key={modelo.valorAnidado}
+													value={String(modelo.valorAnidado)}
+												>
+													{modelo.descripcion}
+												</MenuItem>
+											);
+										})}
+									</Select>
+								</FormControl>
+							</Grid>
+
 							<Grid item xs={1}>
 								<TextField
 									required
 									fullWidth
-									label="Apellido"
+									label="Numeros de Serie"
 									variant="outlined"
-									value={apellido}
-									name="lastname"
-									onChange={(event) => setApellido(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Correo"
-									variant="outlined"
-									value={correo}
-									name="email"
-									onChange={(event) => setCorreo(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Usuario"
-									variant="outlined"
-									value={usuario}
-									name="user"
-									onChange={(event) => setUsuario(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Contraseña"
-									variant="outlined"
-									type="password"
-									value={contrasenia}
-									name="password"
-									onChange={(event) => setContrasenia(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Confirmación"
-									variant="outlined"
-									value={contrasenia}
-									name="password"
-									type="password"
-									onChange={(event) => setContrasenia(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Dinero"
-									variant="outlined"
-									value={dinero}
-									name="diner"
-									onChange={(event) => setDinero(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Foto"
-									variant="outlined"
-									value={foto}
-									name="photo"
-									onChange={(event) => setFoto(event.target.value)}
+									value={numeroSerie}
+									name="serial numbers"
+									onChange={(event) => setNumeroSerie(event.target.value)}
 								/>
 							</Grid>
 
@@ -300,7 +349,9 @@ export const ProductoRegistro = ({
 										id="estado-select"
 										value={activo}
 										label="Estado"
-										onChange={funcionCambiarEstado}
+										onChange={(event: SelectChangeEvent) =>
+											setActivo(event.target.value as string)
+										}
 									>
 										<MenuItem value={"1"}>ACTIVO</MenuItem>
 										<MenuItem value={"0"}>INACTIVO</MenuItem>
@@ -312,14 +363,13 @@ export const ProductoRegistro = ({
 								<Button
 									fullWidth
 									variant="contained"
-									style={
+									sx={
 										esEdicion
 											? { backgroundColor: "#448aff" }
 											: { backgroundColor: "#00c853" }
 									}
 									type="submit"
 								>
-									{" "}
 									{esEdicion ? "Editar" : "Registrarse"}
 								</Button>
 							</Grid>

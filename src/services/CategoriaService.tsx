@@ -86,4 +86,18 @@ export class CategoryService {
 			return Promise.reject(err);
 		}
 	}
+
+	static async EliminarUno(ID: number): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					categoria_id: ID,
+				},
+			};
+			return await axios.delete(`${this.url}/eliminar`, config);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
 }

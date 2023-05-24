@@ -27,7 +27,7 @@ interface Props {
 	itemSeleccionado: CategoryService;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
-	funcionEjecutarAlerta: (
+	funcionAsignarAlerta: (
 		type: "error" | "warning" | "info" | "success",
 		text: string
 	) => void;
@@ -41,7 +41,7 @@ export const CategoryRegister = ({
 	itemSeleccionado,
 	funcionCerrarModal,
 	funcionActualizarTabla,
-	funcionEjecutarAlerta,
+	funcionAsignarAlerta,
 	funcionAbrirAlerta,
 }: Props) => {
 	const [categoriaId, setCategoriaId] = useState(0);
@@ -77,7 +77,7 @@ export const CategoryRegister = ({
 			await CategoryService.Actualizar(categoriaId, dataCategoria)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se actualizó correctamente`
 						);
@@ -89,7 +89,7 @@ export const CategoryRegister = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
 					return;
@@ -98,7 +98,7 @@ export const CategoryRegister = ({
 			await CategoryService.Registrar(dataCategoria)
 				.then((response) => {
 					if (response.data.code === 200) {
-						funcionEjecutarAlerta(
+						funcionAsignarAlerta(
 							"success",
 							`${nombreFormulario} se registró correctamente`
 						);
@@ -110,7 +110,7 @@ export const CategoryRegister = ({
 					}
 				})
 				.catch((error) => {
-					funcionEjecutarAlerta("error", "Hubo un error");
+					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
 				});
