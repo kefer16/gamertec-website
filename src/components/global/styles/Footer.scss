@@ -1,6 +1,9 @@
+@import "./config/reset";
 @import "./config/colors";
-@import "./config/breackpoints";
+@import "./config/fuentes";
 @import "./config/mixins";
+@import "./config/breackpoints";
+@import "./config/containers";
 
 .footer {
 	width: 100%;

@@ -1,3 +1,4 @@
+import Compressor from "compressorjs";
 import {
 	Box,
 	Button,
@@ -12,7 +13,7 @@ import {
 	Typography,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
@@ -55,7 +56,7 @@ export const ModeloRegistro = ({
 	const [modeloId, setModeloId] = useState(0);
 	const [nombre, setNombre] = useState("");
 	const [descripcion, setDescripcion] = useState("");
-	const [foto, setFoto] = useState("");
+	const [foto, setFoto] = useState<string | null>(null);
 	const [caracteristicas, setCaracteristicas] = useState("");
 	const [color, setColor] = useState("");
 	const [precio, setPrecio] = useState("0");
@@ -69,11 +70,15 @@ export const ModeloRegistro = ({
 		SelectAnidadoProps[]
 	>([]);
 
+	const [seleccionaImagen, setSeleccionaImagen] = useState<string | null>(null);
+
 	useEffect(() => {
 		setModeloId(itemSeleccionado.modelo_id);
 		setNombre(itemSeleccionado.nombre);
 		setDescripcion(itemSeleccionado.descripcion);
 		setFoto(itemSeleccionado.foto);
+
+		setSeleccionaImagen(itemSeleccionado.foto);
 		setCaracteristicas(itemSeleccionado.caracteristicas);
 		setColor(itemSeleccionado.color);
 		setPrecio(String(itemSeleccionado.precio));
@@ -109,7 +114,7 @@ export const ModeloRegistro = ({
 			modeloId,
 			nombre,
 			descripcion,
-			foto,
+			foto ? foto : "",
 			caracteristicas,
 			color,
 			parseInt(precio),
@@ -165,6 +170,41 @@ export const ModeloRegistro = ({
 				});
 		}
 	};
+
+	const funcionCargarImagen = (event: ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+
+		if (file) {
+			if (file.size > 2000000) {
+				funcionAsignarAlerta("warning", "Archivo demasiado grande");
+				funcionAbrirAlerta();
+				return;
+			}
+			setSeleccionaImagen(URL.createObjectURL(file));
+			new Compressor(file, {
+				quality: 0.6, // Ajustar la calidad de compresión (0.1 - 1)
+				maxWidth: 300, // Ajustar el ancho máximo de la imagen
+				maxHeight: 300, // Ajustar la altura máxima de la imagen
+				success(result) {
+					// `result` es el archivo comprimido
+					const reader = new FileReader();
+					reader.readAsDataURL(result);
+
+					reader.onload = () => {
+						const compressedImage = reader.result as string;
+						console.log(compressedImage.length);
+						setFoto(compressedImage);
+					};
+				},
+				error(err) {
+					funcionAsignarAlerta("error", "Error al comprimir la imagen");
+					funcionAbrirAlerta();
+					return;
+				},
+			});
+		}
+	};
+
 	return (
 		<>
 			<Modal open={abrir} onClose={funcionCerrarModal}>
@@ -314,15 +354,51 @@ export const ModeloRegistro = ({
 								/>
 							</Grid>
 							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Foto"
-									variant="outlined"
-									value={foto}
-									name="photo"
-									onChange={(event) => setFoto(event.target.value)}
-								/>
+								<p style={{ color: "#666", fontSize: "1em" }}>Imagen</p>
+
+								<div
+									style={{
+										display: "flex",
+										padding: "10px",
+										flexDirection: "column",
+										border: "1px solid #ccc",
+										borderRadius: "7px",
+									}}
+								>
+									<p style={{ color: "#666", fontSize: "0.8em" }}>Previsualización</p>
+									{seleccionaImagen ? (
+										<img
+											src={seleccionaImagen}
+											style={{
+												width: "100%",
+												height: "200px",
+												objectFit: "scale-down",
+												border: "1px solid #ccc",
+												borderRadius: "7px",
+											}}
+											alt="Selected"
+										/>
+									) : (
+										<img
+											src="https://placehold.co/300"
+											style={{
+												width: "100%",
+												height: "200px",
+												objectFit: "scale-down",
+												border: "1px solid #ccc",
+												borderRadius: "7px",
+											}}
+											alt="Selected"
+										/>
+									)}
+									<input
+										style={{ marginTop: "10px" }}
+										type="file"
+										accept="image/*"
+										// value={foto ? foto : ""}
+										onChange={funcionCargarImagen}
+									/>
+								</div>
 							</Grid>
 							<Grid item xs={1}>
 								<TextField

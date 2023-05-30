@@ -53,6 +53,7 @@ export class ModeloService {
 				},
 			};
 			const body = JSON.stringify(data);
+			console.log(data);
 
 			return await axios.put(`${this.url}/actualizar`, body, config);
 		} catch (err: any) {
@@ -117,6 +118,24 @@ export class ModeloService {
 				},
 			};
 			return await axios.delete(`${this.url}/eliminar`, config);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
+
+	static async ListarModelosPorFiltro(
+		categoria_id: number,
+		nombre_modelo: string
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					categoria_id,
+					nombre_modelo,
+				},
+			};
+			return await axios.get(`${this.url}/listar_filtro`, config);
 		} catch (err: any) {
 			console.log(err);
 			return Promise.reject(err);

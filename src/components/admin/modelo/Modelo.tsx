@@ -172,8 +172,6 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 		let array: {}[] = [];
 		await ModeloService.ListarTodos()
 			.then((response) => {
-				console.log(response.data.data);
-
 				response.data.data.forEach((element: ModeloService, index: number) => {
 					const newRow = {
 						id: element.modelo_id,
