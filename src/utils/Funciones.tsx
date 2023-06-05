@@ -36,3 +36,13 @@ export function crearFechaISO(): string {
 	const fecha_ISO: string = fecha.toISOString(); //le añade 5 horas
 	return fecha_ISO;
 }
+
+export function convertirFormatoMoneda(moneda: number): string {
+	const formatter = new Intl.NumberFormat("es-PE", {
+		style: "currency",
+		currency: "PEN",
+		minimumFractionDigits: 2,
+	});
+
+	return formatter.format(moneda);
+}

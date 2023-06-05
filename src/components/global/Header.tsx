@@ -29,6 +29,7 @@ import {
 	CategoryTwoTone as ProductIcon,
 	ConnectWithoutContactTwoTone as ContactIcon,
 	LoginTwoTone as AccessIcon,
+	ShoppingCartTwoTone as ShoppingCartIcon,
 } from "@mui/icons-material";
 
 const settings = ["Cuenta", "Administrador", "Dashboard", "Cerrar Sessión"];
@@ -158,11 +159,22 @@ export const Header = () => {
 									</Badge>
 								</IconButton>
 
+								<IconButton
+									size="large"
+									aria-label="show 2 new notifications"
+									color="inherit"
+								>
+									<Badge badgeContent={2} color="error">
+										<ShoppingCartIcon />
+									</Badge>
+								</IconButton>
+
 								<Tooltip title="Open settings">
 									<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} size="large">
 										<Avatar alt="Remy Sharp" />
 									</IconButton>
 								</Tooltip>
+
 								<Menu
 									sx={{ mt: "45px" }}
 									id="menu-appbar"

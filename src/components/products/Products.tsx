@@ -34,8 +34,6 @@ export const Products = () => {
 			});
 
 			await funcionListarModelosPorFiltro(0, "").then((response) => {
-				console.log(response);
-
 				setArrayModelo(response);
 			});
 		};
@@ -47,7 +45,6 @@ export const Products = () => {
 		event: React.FormEvent<HTMLFormElement>
 	) => {
 		event.preventDefault();
-		console.log("pasa");
 
 		await funcionListarModelosPorFiltro(parseInt(categoria), nombreModelo).then(
 			(response) => {
@@ -151,7 +148,8 @@ export const Products = () => {
 								return (
 									<CardProduct
 										key={item.modelo.modelo_id}
-										to={`/description/${item.modelo.modelo_id}`}
+										to={`/product/description/${item.modelo.modelo_id}`}
+										state={item.modelo.modelo_id}
 									>
 										<CardImageProduct src={item.modelo.foto} alt="img_card" />
 										<CardTextProduct>

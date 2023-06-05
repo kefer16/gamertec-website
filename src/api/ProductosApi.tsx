@@ -14,8 +14,6 @@ export const funcionListarModelosPorFiltro = async (
 
 	await ModeloService.ListarModelosPorFiltro(categoria_id, nombre_modelo)
 		.then((response) => {
-			console.log(response.data);
-
 			modelosFiltro = response.data.data;
 		})
 		.catch((error: Error) => {

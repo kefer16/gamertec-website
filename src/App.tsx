@@ -12,6 +12,7 @@ import { TabUsuario } from "./components/admin/usuario/TabUsuario";
 import { TabMarca } from "./components/admin/marca/TabMarca";
 import { TabModelo } from "./components/admin/modelo/TabModelo";
 import { TabProducto } from "./components/admin/producto/TabProducto";
+import { TabDescripcion } from "./components/descripcion/TabDescripcion";
 
 function App() {
 	return (
@@ -30,9 +31,18 @@ function App() {
 				<Route path="/admin/brand/" element={<TabMarca />} />
 				<Route path="/admin/model/" element={<TabModelo />} />
 				<Route path="/admin/product/" element={<TabProducto />} />
+				<Route
+					path="/product/description/:modelo_id"
+					element={<TabDescripcion />}
+				/>
+				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</Router>
 	);
 }
+
+const NotFound = () => {
+	return <>Ha llegado a una página que no existe</>;
+};
 
 export default App;
