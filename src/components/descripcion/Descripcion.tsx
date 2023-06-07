@@ -1,13 +1,17 @@
-import { Button, Container, TextField } from "@mui/material";
+import { Alert, Button, Container, Snackbar, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { ApiModelo } from "../../api/ModeloApi";
-import { ModeloService } from "../../services/ModeloService";
-import { convertirFormatoMoneda } from "../../utils/Funciones";
+import { ApiModelo, ModeloDescripcion } from "../../api/ModeloApi";
+import {
+	convertirFormatoMoneda,
+	formatoCalificacion,
+} from "../../utils/Funciones";
 import { CircleRounded } from "@mui/icons-material";
 import { CloseRounded } from "@mui/icons-material";
 import { Comentarios } from "./Comentarios";
+import { ComentarioService } from "../../services/ComentariosService";
+import { InterfaceAlertControl } from "../controls/AlertControl";
 
 interface Props {
 	modelo_id: number;
@@ -391,8 +395,13 @@ const CerrarLogin = styled(CloseRounded)`
 	/* box-shadow: 0px 0px -2px -2px gray; */
 	background-color: #80808057;
 `;
+
 export const Descripcion = ({ modelo_id }: Props) => {
 	// const [nombre, setNombre] = useState<string>("");
+
+	const [categoriaNombre, setCategoriaNombre] = useState<string>("");
+	const [marcaNombre, setMarcaNombre] = useState<string>("");
+	const [modeloNombre, setModeloNombre] = useState<string>("");
 	const [descripcion, setDescripcion] = useState<string>("");
 	const [foto, setFoto] = useState<string>("");
 	const [precio, setPrecio] = useState<number>(0);
@@ -403,18 +412,71 @@ export const Descripcion = ({ modelo_id }: Props) => {
 	const [modalLogin, setModalLogin] = useState<boolean>(false);
 	const [modalCarrito, setModalCarrito] = useState<boolean>(false);
 	const [modalComentario, setModalComentario] = useState<boolean>(false);
+	const [calificacionGeneral, setCalificacionGeneral] = useState<number>(0);
+	const [arrayComentarios, setArrayComentarios] = useState<ComentarioService[]>(
+		[]
+	);
+	const [abrirAlerta, setAbrirAlerta] = useState(false);
+
+	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
+		active: false,
+		type: "info",
+		text: "",
+	});
+
+	const funcionAsignarAlerta = (
+		type: "error" | "warning" | "info" | "success",
+		text: string
+	) => {
+		setAlerta({
+			active: true,
+			type: type,
+			text: text,
+		});
+	};
+
+	const funcionAbrirAlerta = () => {
+		setAbrirAlerta(true);
+	};
+
+	const funcionCerrarAlerta = () => {
+		setAbrirAlerta(false);
+	};
+
+	const funcionObtenerComentarios = async (modelo_id: number) => {
+		let arrayComentarios: ComentarioService[] = [];
+		await ComentarioService.BuscarPorModelo(modelo_id).then((respuesta) => {
+			arrayComentarios = respuesta.data.data;
+			setArrayComentarios(arrayComentarios);
+		});
+
+		let calificacionGeneral: number =
+			arrayComentarios.length === 0
+				? 0
+				: arrayComentarios.reduce((suma, item) => suma + item.valoracion, 0) /
+				  arrayComentarios.length;
+
+		calificacionGeneral = Number(formatoCalificacion(calificacionGeneral));
+		setCalificacionGeneral(calificacionGeneral);
+	};
 
 	useEffect(() => {
 		const ObtenerData = async () => {
-			await ApiModelo.BuscarPorID(modelo_id).then((modelo: ModeloService) => {
-				// setNombre(modelo.nombre);
-				setDescripcion(modelo.descripcion);
-				setFoto(modelo.foto);
-				setPrecio(modelo.precio);
-				setCaracteristicas(modelo.caracteristicas);
-				setColor(modelo.color);
-				setStock(modelo.stock);
-			});
+			await ApiModelo.ListarModeloDescripcion(modelo_id).then(
+				(data: ModeloDescripcion) => {
+					setCategoriaNombre(data.categoria.nombre);
+					setMarcaNombre(data.marca.nombre);
+					setModeloNombre(data.modelo.nombre);
+					setDescripcion(data.modelo.descripcion);
+					setFoto(data.modelo.foto);
+					setPrecio(data.modelo.precio);
+					setCaracteristicas(data.modelo.caracteristicas);
+					setColor(data.modelo.color);
+					setStock(data.modelo.stock);
+				}
+			);
+
+			await funcionObtenerComentarios(modelo_id);
 		};
 
 		ObtenerData();
@@ -447,7 +509,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 	return (
 		<>
 			<Container maxWidth={"lg"}>
-				<RutaProductos>PRODUCTOS / CATEGORIA / MARCA</RutaProductos>
+				<RutaProductos>{`${categoriaNombre} / ${marcaNombre} / ${modeloNombre}`}</RutaProductos>
 
 				<ContenidoArriba>
 					<ContenidoArribaIzquierda>
@@ -457,7 +519,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					<ContenidoArribaDerecha>
 						<Detalles>
 							<DetallesMarca>
-								<h3 onClick={funcionActivarModalLogin}> Marca </h3>
+								<h3 onClick={funcionActivarModalLogin}> {marcaNombre} </h3>
 							</DetallesMarca>
 
 							<DetallesPro>
@@ -504,9 +566,15 @@ export const Descripcion = ({ modelo_id }: Props) => {
 				</ContenidoAbajo>
 			</Container>
 			<Comentarios
+				modeloId={modelo_id}
+				calificacionGeneral={calificacionGeneral}
+				comentarios={arrayComentarios}
 				modalComentario={modalComentario}
+				funcionObtenerComentarios={funcionObtenerComentarios}
 				funcionAbrirModal={funcionActivarModalComentario}
 				funcionCerrarModal={funcionDesactivarModalComentario}
+				funcionAsignarAlerta={funcionAsignarAlerta}
+				funcionAbrirAlerta={funcionAbrirAlerta}
 			/>
 
 			<FondoOpaco activo={modalLogin}>
@@ -545,7 +613,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 							<img src={foto} alt="" />
 						</div>
 						<div className="mini-textos">
-							<p>Marca producto</p>
+							<p>{marcaNombre}</p>
 							<span>{descripcion}</span>
 						</div>
 						<div className="mini-precio">
@@ -553,7 +621,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 						</div>
 						<div id="cantidad" className="mini-cantidad">
 							<button id="disminuir">-</button>
-							<input type="number" value="1" />
+							<input type="number" value={1} />
 							<button id="aumentar">+</button>
 						</div>
 					</div>
@@ -567,6 +635,16 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					</div>
 				</ModalAggregarCarrito>
 			</FondoOpaco>
+			<Snackbar
+				open={abrirAlerta}
+				anchorOrigin={{ vertical: "top", horizontal: "center" }}
+				autoHideDuration={3000}
+				onClose={funcionCerrarAlerta}
+			>
+				<Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
+					{alerta.text}
+				</Alert>
+			</Snackbar>
 		</>
 	);
 };

@@ -46,3 +46,8 @@ export function convertirFormatoMoneda(moneda: number): string {
 
 	return formatter.format(moneda);
 }
+
+export function formatoCalificacion(decimal: number): string {
+	const roundedNumber = Math.round(decimal * 10) / 10;
+	return roundedNumber.toFixed(1);
+}

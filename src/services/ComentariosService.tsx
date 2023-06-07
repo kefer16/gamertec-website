@@ -2,26 +2,22 @@ import axios, { AxiosResponse } from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export class ModeloService {
+export class ComentarioService {
 	constructor(
-		public modelo_id: number = 0,
-		public nombre: string = "",
-		public descripcion: string = "",
-		public foto: string = "",
-		public caracteristicas: string = "",
-		public color: string = "",
-		public precio: number = 0,
+		public comentario_id: number = 0,
+		public valoracion: number = 0,
+		public usuario: string = "",
+		public titulo: string = "",
+		public mensaje: string = "",
 		public fecha_registro: string = "",
-		public stock: number = 0,
-		public numero_series: string = "",
 		public activo: boolean = false,
-		public fk_marca: number = 0,
-		public fk_categoria: number = 0
+		public fk_usuario: number = 0,
+		public fk_modelo: number = 0
 	) {}
 
-	private static url: string = `${API_URL}/modelo`;
+	private static url: string = `${API_URL}/comentario`;
 
-	static async Registrar(data: ModeloService): Promise<AxiosResponse> {
+	static async Registrar(data: ComentarioService): Promise<AxiosResponse> {
 		try {
 			const config = {
 				headers: {
@@ -41,19 +37,18 @@ export class ModeloService {
 
 	static async Actualizar(
 		ID: number,
-		data: ModeloService
+		data: ComentarioService
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
-					modelo_id: ID,
+					marca_id: ID,
 				},
 				headers: {
 					"Content-Type": "application/json",
 				},
 			};
 			const body = JSON.stringify(data);
-			console.log(data);
 
 			return await axios.put(`${this.url}/actualizar`, body, config);
 		} catch (err: any) {
@@ -82,7 +77,7 @@ export class ModeloService {
 		try {
 			const config = {
 				params: {
-					modelo_id: ID,
+					marca_id: ID,
 				},
 				headers: {
 					"Content-Type": "application/json",
@@ -100,7 +95,7 @@ export class ModeloService {
 		try {
 			const config = {
 				params: {
-					modelo_id: ID,
+					marca_id: ID,
 				},
 			};
 			return await axios.get(`${this.url}/uno`, config);
@@ -114,7 +109,7 @@ export class ModeloService {
 		try {
 			const config = {
 				params: {
-					modelo_id: ID,
+					marca_id: ID,
 				},
 			};
 			return await axios.delete(`${this.url}/eliminar`, config);
@@ -124,34 +119,14 @@ export class ModeloService {
 		}
 	}
 
-	static async ListarModelosPorFiltro(
-		categoria_id: number,
-		nombre_modelo: string
-	): Promise<AxiosResponse> {
-		try {
-			const config = {
-				params: {
-					categoria_id,
-					nombre_modelo,
-				},
-			};
-			return await axios.get(`${this.url}/listar_filtro`, config);
-		} catch (err: any) {
-			console.log(err);
-			return Promise.reject(err);
-		}
-	}
-
-	static async ListarModeloDescripcion(
-		modelo_id: number
-	): Promise<AxiosResponse> {
+	static async BuscarPorModelo(modelo_id: number): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
 					modelo_id,
 				},
 			};
-			return await axios.get(`${this.url}/descripcion`, config);
+			return await axios.get(`${this.url}/buscar_por_modelo`, config);
 		} catch (err: any) {
 			console.log(err);
 			return Promise.reject(err);

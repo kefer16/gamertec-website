@@ -1,9 +1,6 @@
 import styled from "styled-components";
 
 export const ComentariosStyled = styled.div`
-	position: relative;
-	top: 60px;
-	margin-top: 30px;
 	width: 100%;
 	max-width: 1300px;
 	display: flex;
@@ -87,65 +84,54 @@ export const ComentariosStyled = styled.div`
 			}
 		}
 	}
+`;
 
-	.cont-comentarios {
-		width: 95%;
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1em;
-		margin: 20px auto;
-		.comentario {
-			border-top: 1px solid rgba(gray, 0.5);
-			padding: 20px 0;
-			width: 100%;
-			display: flex;
+export const ListaComentariosStyled = styled.div`
+	width: 95%;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1em;
+	margin: 20px auto;
+	.comentario {
+		border-top: 1px solid rgba(gray, 0.5);
+		padding: 20px 0;
+		width: 100%;
+		display: flex;
 
-			.com-izq {
-				width: 80%;
-				.asunto {
-					color: $colorOscuro;
-					font-weight: 700;
-				}
-				.usuario {
+		.com-izq {
+			width: 80%;
+			.asunto {
+				color: $colorOscuro;
+				font-weight: 700;
+			}
+			.usuario {
+				font-size: 0.9em;
+				font-weight: 400;
+			}
+			.clasificacion {
+				display: flex;
+				justify-content: end;
+
+				direction: rtl;
+				unicode-bidi: bidi-override;
+				margin-bottom: 10px;
+			}
+			.msj {
+				p {
+					font-weight: 300;
 					font-size: 0.9em;
-					font-weight: 400;
-				}
-				.clasificacion {
-					display: flex;
-					justify-content: end;
-
-					direction: rtl;
-					unicode-bidi: bidi-override;
-					margin-bottom: 10px;
-					label {
-						color: gray;
-					}
-
-					input[type="radio"] {
-						display: none;
-
-						&:checked ~ label {
-							color: orange;
-						}
-					}
-				}
-				.msj {
-					p {
-						font-weight: 300;
-						font-size: 0.9em;
-					}
 				}
 			}
-			.fecha-comentario {
-				width: 20%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				p {
-					font-size: 0.9em;
-					font-weight: 300;
-					color: gray;
-				}
+		}
+		.fecha-comentario {
+			width: 20%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			p {
+				font-size: 0.9em;
+				font-weight: 300;
+				color: gray;
 			}
 		}
 	}

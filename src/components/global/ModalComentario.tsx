@@ -3,20 +3,70 @@ import { FondoModalStyled } from "./styles/FondoModalStyled";
 import { ModalStyled } from "./styles/ModalStyled";
 import { ButtonCerrarModal } from "./ButtonCerrarModal";
 import { useState } from "react";
+import { ComentarioService } from "../../services/ComentariosService";
+import { convertirFechaSQL, crearFechaISO } from "../../utils/Funciones";
 
 interface Props {
+	modeloId: number;
 	modalComentario: boolean;
+	funcionObtenerComentarios: (modelo_id: number) => void;
 	funcionCerrarModal: () => void;
+	funcionAsignarAlerta: (
+		type: "error" | "warning" | "info" | "success",
+		text: string
+	) => void;
+	funcionAbrirAlerta: () => void;
 }
 
 export const ModalComentario = ({
+	modeloId,
 	modalComentario,
+	funcionObtenerComentarios,
 	funcionCerrarModal,
+	funcionAsignarAlerta,
+	funcionAbrirAlerta,
 }: Props) => {
 	const [titulo, setTitulo] = useState<string>("");
-	const [comentario, setComentario] = useState<string>("");
-	const [numeroCalificacion, setNumeroCalificacion] = useState<number | null>(0);
+	const [mensaje, setMensaje] = useState<string>("");
+	const [valoracion, setValoracion] = useState<number | null>(0);
 
+	const funcionLimpiarControles = () => {
+		setValoracion(0);
+		setTitulo("");
+		setMensaje("");
+	};
+	const funcionRegistarComentario = async () => {
+		const data: ComentarioService = new ComentarioService(
+			0,
+			valoracion ?? 0,
+			"usuario",
+			titulo,
+			mensaje,
+			convertirFechaSQL(crearFechaISO()),
+			true,
+			1,
+			modeloId
+		);
+
+		await ComentarioService.Registrar(data)
+			.then((response) => {
+				if (response.data.code === 200) {
+					funcionAsignarAlerta("success", `Comentario se registró correctamente`);
+
+					funcionAbrirAlerta();
+					funcionLimpiarControles();
+					funcionObtenerComentarios(modeloId);
+					funcionCerrarModal();
+					return;
+				}
+			})
+			.catch((error) => {
+				funcionAsignarAlerta("error", "Hubo un error");
+
+				funcionAbrirAlerta();
+				return;
+			});
+	};
 	return (
 		<FondoModalStyled activo={modalComentario}>
 			<ModalStyled activo={modalComentario}>
@@ -33,9 +83,9 @@ export const ModalComentario = ({
 						<p>Calificacion General:</p>
 						<Rating
 							name="simple-controlled"
-							value={numeroCalificacion}
+							value={valoracion}
 							onChange={(event, newValue) => {
-								setNumeroCalificacion(newValue);
+								setValoracion(newValue);
 							}}
 						/>
 					</Grid>
@@ -58,9 +108,9 @@ export const ModalComentario = ({
 							fullWidth
 							type="text"
 							name="comentario"
-							value={comentario}
+							value={mensaje}
 							onChange={(event) => {
-								setComentario(event.target.value);
+								setMensaje(event.target.value);
 							}}
 							placeholder="Comentario"
 							label="Comentario"
@@ -69,7 +119,12 @@ export const ModalComentario = ({
 					</Grid>
 
 					<Grid item xs={1}>
-						<Button fullWidth variant="contained" type="submit">
+						<Button
+							fullWidth
+							variant="contained"
+							type="submit"
+							onClick={funcionRegistarComentario}
+						>
 							Publicar comentario
 						</Button>
 					</Grid>
