@@ -17,8 +17,8 @@ import { useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
-} from "../../../utils/Funciones";
-import { PrivilegioService } from "../../../services/PrivilegioService";
+} from "../../../utils/funciones.utils";
+import { PrivilegioService } from "../../../entities/privilegio.entities";
 
 interface Props {
 	nombreFormulario: string;

@@ -1,11 +1,11 @@
-import { ComentarioService } from "../../services/ComentariosService";
-import { formatoCalificacion } from "../../utils/Funciones";
+import { ComentarioService } from "../../entities/comentario.entities";
+import { formatoCalificacion } from "../../utils/funciones.utils";
 
 import { ModalComentario } from "../global/ModalComentario";
 import {
 	ComentariosStyled,
 	ListaComentariosStyled,
-} from "./styles/ComentariosStyled";
+} from "./styles/ComentariosStyles";
 import { Button, Container, Rating } from "@mui/material";
 
 interface Props {

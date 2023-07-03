@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { TableControl } from "../../controls/TableControl";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { CategoryService } from "../../../services/CategoriaService";
+import { CategoryService } from "../../../entities/categoria.entities";
 import { useEffect, useState } from "react";
 import {
 	GridRowsProp,
@@ -22,8 +22,11 @@ import {
 } from "@mui/x-data-grid";
 import { CategoryRegister } from "./CategoriaRegistro";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
-import { SelectProps } from "../../../utils/Interfaces";
+import {
+	convertirFechaVisual,
+	crearFechaISO,
+} from "../../../utils/funciones.utils";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
 const columnsCategorias: GridColDef<GridValidRowModel>[] = [
 	{ field: "id", headerName: "ID", width: 0 },
@@ -43,8 +46,8 @@ interface Props {
 	nombreFormulario: string;
 }
 
-export const funcionObtenerCategorias = async (): Promise<SelectProps[]> => {
-	const array: SelectProps[] = [];
+export const funcionObtenerCategorias = async (): Promise<ComboboxProps[]> => {
+	const array: ComboboxProps[] = [];
 	await CategoryService.ListarTodos()
 		.then((respuesta) => {
 			respuesta.data.data.forEach((element: CategoryService) => {

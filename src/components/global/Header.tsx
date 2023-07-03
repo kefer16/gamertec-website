@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext, useEffect } from "react";
 
 import { Link } from "react-router-dom";
 import {
@@ -23,14 +23,13 @@ import {
 } from "@mui/material";
 import {
 	MenuTwoTone as MenuIcon,
-	MailTwoTone as MailIcon,
-	NotificationsTwoTone as NotificationsIcon,
 	HomeTwoTone as HomeIcon,
 	CategoryTwoTone as ProductIcon,
 	ConnectWithoutContactTwoTone as ContactIcon,
 	LoginTwoTone as AccessIcon,
 	ShoppingCartTwoTone as ShoppingCartIcon,
 } from "@mui/icons-material";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 const settings = ["Cuenta", "Administrador", "Dashboard", "Cerrar Sessión"];
 interface menuProps {
@@ -47,6 +46,8 @@ const opcionesMenu: menuProps[] = [
 ];
 type Anchor = "top" | "left" | "bottom" | "right";
 export const Header = () => {
+	const { sesionGamertec } = useContext(GamertecSesionContext);
+
 	const [state, setState] = React.useState({
 		top: false,
 		left: false,
@@ -90,16 +91,21 @@ export const Header = () => {
 			<List>
 				{opcionesMenu.map((item: menuProps) => (
 					<ListItem key={item.index} disablePadding>
-						<ListItemButton href={item.url}>
-							<ListItemIcon>{item.iconSvg}</ListItemIcon>
-							<ListItemText primary={item.nombre} />
-						</ListItemButton>
+						<Link to={item.url}>
+							<ListItemButton>
+								<ListItemIcon>{item.iconSvg}</ListItemIcon>
+								<ListItemText primary={item.nombre} />
+							</ListItemButton>
+						</Link>
 					</ListItem>
 				))}
 			</List>
 		</Box>
 	);
 
+	useEffect(() => {
+		// // obtenerSesion();
+	}, []);
 	return (
 		<>
 			<Box sx={{ flexGrow: 1 }}>
@@ -124,54 +130,24 @@ export const Header = () => {
 							>
 								Gamertec
 							</Typography>
-							{/* <Box
-								sx={{
-									display: "flex",
-									justifyContent: "space-around",
-									width: "70%",
-								}}
-							>
-								{opcioneMenu.map((item: menuProps) => (
-									<LinkMui
-										href={item.url}
-										underline="none"
-										key={item.index}
-										sx={{ color: "#fff", padding: "10px" }}
-									>
-										{item.nombre}
-									</LinkMui>
-								))}
-							</Box> */}
+
 							<Box sx={{ flexGrow: 1 }} />
 							<Box sx={{ display: { md: "flex" } }}>
-								<IconButton size="large" aria-label="show 4 new mails" color="inherit">
-									<Badge badgeContent={4} color="error">
-										<MailIcon />
-									</Badge>
-								</IconButton>
-								<IconButton
-									size="large"
-									aria-label="show 17 new notifications"
-									color="inherit"
-								>
-									<Badge badgeContent={17} color="error">
-										<NotificationsIcon />
-									</Badge>
-								</IconButton>
-
 								<IconButton
 									size="large"
 									aria-label="show 2 new notifications"
 									color="inherit"
 								>
-									<Badge badgeContent={2} color="error">
-										<ShoppingCartIcon />
-									</Badge>
+									<Link to={`/shoping_cart/`}>
+										<Badge badgeContent={2} color="error">
+											<ShoppingCartIcon />
+										</Badge>
+									</Link>
 								</IconButton>
 
 								<Tooltip title="Open settings">
 									<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }} size="large">
-										<Avatar alt="Remy Sharp" />
+										<Avatar src={sesionGamertec.usuario.foto} alt="hola" />
 									</IconButton>
 								</Tooltip>
 

@@ -3,8 +3,8 @@ import { FondoModalStyled } from "./styles/FondoModalStyled";
 import { ModalStyled } from "./styles/ModalStyled";
 import { ButtonCerrarModal } from "./ButtonCerrarModal";
 import { useState } from "react";
-import { ComentarioService } from "../../services/ComentariosService";
-import { convertirFechaSQL, crearFechaISO } from "../../utils/Funciones";
+import { ComentarioService } from "../../entities/comentario.entities";
+import { convertirFechaSQL, crearFechaISO } from "../../utils/funciones.utils";
 
 interface Props {
 	modeloId: number;

@@ -6,7 +6,10 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
+import {
+	convertirFechaVisual,
+	crearFechaISO,
+} from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
@@ -22,9 +25,12 @@ import {
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
 import { MarcaRegistro } from "./MarcaRegistro";
-import { MarcaService } from "../../../services/MarcaService";
+import { MarcaService } from "../../../entities/marca.entities";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
-import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
+import {
+	ComboboxProps,
+	ComboboxAnidadoProps,
+} from "../../../interfaces/combobox.interface";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
 	{
@@ -60,10 +66,12 @@ interface Props {
 	nombreFormulario: string;
 }
 
-let arrayCategoria: SelectProps[] = [];
+let arrayCategoria: ComboboxProps[] = [];
 
-export const funcionObtenerMarcas = async (): Promise<SelectAnidadoProps[]> => {
-	const array: SelectAnidadoProps[] = [];
+export const funcionObtenerMarcas = async (): Promise<
+	ComboboxAnidadoProps[]
+> => {
+	const array: ComboboxAnidadoProps[] = [];
 	await MarcaService.ListarTodos()
 		.then((respuesta) => {
 			respuesta.data.data.forEach((element: MarcaService) => {
@@ -161,7 +169,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
 						fk_categoria: element.fk_categoria,
 						nombre_categoria: arrayCategoria.find(
-							(categoria: SelectProps) => categoria.valor === element.fk_categoria
+							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
 						)?.descripcion,
 						activo: element.activo,
 						activo_nombre: element.activo ? "Activo" : "Inactivo",

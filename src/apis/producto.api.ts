@@ -1,5 +1,5 @@
-import { MarcaService } from "../services/MarcaService";
-import { ModeloService } from "../services/ModeloService";
+import { MarcaService } from "../entities/marca.entities";
+import { ModeloService } from "../entities/modelo.entities";
 
 export interface ModelosFiltroProps {
 	modelo: ModeloService;

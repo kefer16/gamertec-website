@@ -15,9 +15,9 @@ import { useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
-} from "../../../utils/Funciones";
-import { UsuarioService } from "../../../services/UsuarioService";
-import { SelectProps } from "../../../utils/Interfaces";
+} from "../../../utils/funciones.utils";
+import { UsuarioService } from "../../../entities/usuario.entities";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
 interface Props {
 	nombreFormulario: string;
@@ -31,7 +31,7 @@ interface Props {
 		text: string
 	) => void;
 	funcionAbrirAlerta: () => void;
-	arrayPrivilegios: SelectProps[];
+	arrayPrivilegios: ComboboxProps[];
 }
 
 export const UsuarioRegistro = ({
@@ -221,7 +221,7 @@ export const UsuarioRegistro = ({
 										onChange={funcionCambiarPrivilegio}
 									>
 										<MenuItem value={"0"}>Selec. Privilegio</MenuItem>
-										{arrayPrivilegios.map((item: SelectProps) => {
+										{arrayPrivilegios.map((item: ComboboxProps) => {
 											return (
 												<MenuItem value={String(item.valor)}>{item.descripcion}</MenuItem>
 											);

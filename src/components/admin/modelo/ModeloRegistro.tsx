@@ -17,9 +17,12 @@ import { ChangeEvent, useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
-} from "../../../utils/Funciones";
-import { ModeloService } from "../../../services/ModeloService";
-import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
+} from "../../../utils/funciones.utils";
+import { ModeloService } from "../../../entities/modelo.entities";
+import {
+	ComboboxProps,
+	ComboboxAnidadoProps,
+} from "../../../interfaces/combobox.interface";
 
 interface Props {
 	nombreFormulario: string;
@@ -33,8 +36,8 @@ interface Props {
 		text: string
 	) => void;
 	funcionAbrirAlerta: () => void;
-	arrayCategorias: SelectProps[];
-	arrayMarcas: SelectAnidadoProps[];
+	arrayCategorias: ComboboxProps[];
+	arrayMarcas: ComboboxAnidadoProps[];
 }
 
 interface ChangeValueSelect {
@@ -67,7 +70,7 @@ export const ModeloRegistro = ({
 	const [fkMarca, setFkMarca] = useState("0");
 	const [fkCategoria, setFkCategoria] = useState("0");
 	const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
-		SelectAnidadoProps[]
+		ComboboxAnidadoProps[]
 	>([]);
 
 	const [seleccionaImagen, setSeleccionaImagen] = useState<string | null>(null);
@@ -87,7 +90,7 @@ export const ModeloRegistro = ({
 		setNumeroSeries(itemSeleccionado.numero_series);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
 		setFkCategoria(String(itemSeleccionado.fk_categoria));
-		const nuevoArray: SelectAnidadoProps[] = arrayMarcas.filter(
+		const nuevoArray: ComboboxAnidadoProps[] = arrayMarcas.filter(
 			(item) => item.valor === itemSeleccionado.fk_categoria
 		);
 		setArrayAnidadoMarca(nuevoArray);
@@ -99,7 +102,7 @@ export const ModeloRegistro = ({
 		valorMarca,
 	}: ChangeValueSelect) => {
 		setFkCategoria(valorCategoria);
-		const arrayNuevo: SelectAnidadoProps[] = arrayMarcas.filter(
+		const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
 			(item) => item.valor === parseInt(valorCategoria)
 		);
 
@@ -292,7 +295,7 @@ export const ModeloRegistro = ({
 										}
 									>
 										<MenuItem value={"0"}>Selec. Categoria</MenuItem>
-										{arrayCategorias.map((categoria: SelectProps) => {
+										{arrayCategorias.map((categoria: ComboboxProps) => {
 											return (
 												<MenuItem key={categoria.valor} value={String(categoria.valor)}>
 													{categoria.descripcion}
@@ -316,7 +319,7 @@ export const ModeloRegistro = ({
 										}
 									>
 										<MenuItem value={"0"}>Selec. Marca</MenuItem>
-										{arrayAnidadoMarca.map((marca: SelectAnidadoProps) => {
+										{arrayAnidadoMarca.map((marca: ComboboxAnidadoProps) => {
 											return (
 												<MenuItem
 													key={marca.valorAnidado}

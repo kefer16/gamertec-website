@@ -4,7 +4,6 @@ import { TabHome } from "./components/home/TabHome";
 import { TabLogin } from "./components/login/TabLogin";
 import { TabProducts } from "./components/products/TabProducs";
 import { TabRegister } from "./components/register/TabRegister";
-import { TabShoppingCart } from "./components/shopping_cart/TabShoppingCart";
 import { TabAdmin } from "./components/admin/TabAdmin";
 import { TabCategory } from "./components/admin/categoria/TabCategoria";
 import { TabPrivilege } from "./components/admin/privilegio/TabPrivilegio";
@@ -13,30 +12,45 @@ import { TabMarca } from "./components/admin/marca/TabMarca";
 import { TabModelo } from "./components/admin/modelo/TabModelo";
 import { TabProducto } from "./components/admin/producto/TabProducto";
 import { TabDescripcion } from "./components/descripcion/TabDescripcion";
+import { TabCarrito } from "./components/carrito/TabCarrito";
+import { Header } from "./components/global/Header";
+import { Footer } from "./components/global/Footer";
+import { TabPreCompra } from "./components/pre_compra/TabPreCompra";
+import { TabCompra } from "./components/compra/TabCompra";
+import { IndexComprobante } from "./components/comprobante/IndexComprobante.component";
+import { SesionProvider } from "./components/sesion/Sesion.component";
 
 function App() {
 	return (
 		<Router>
-			<Routes>
-				<Route path="/" element={<TabHome />} />
-				<Route path="/products/" element={<TabProducts />} />
-				<Route path="/contact/" element={<TabContact />} />
-				<Route path="/shopping/" element={<TabShoppingCart />} />
-				<Route path="/login/" element={<TabLogin />} />
-				<Route path="/register/" element={<TabRegister />} />
-				<Route path="/admin/" element={<TabAdmin />} />
-				<Route path="/admin/category/" element={<TabCategory />} />
-				<Route path="/admin/privilege/" element={<TabPrivilege />} />
-				<Route path="/admin/user/" element={<TabUsuario />} />
-				<Route path="/admin/brand/" element={<TabMarca />} />
-				<Route path="/admin/model/" element={<TabModelo />} />
-				<Route path="/admin/product/" element={<TabProducto />} />
-				<Route
-					path="/product/description/:modelo_id"
-					element={<TabDescripcion />}
-				/>
-				<Route path="*" element={<NotFound />} />
-			</Routes>
+			<SesionProvider>
+				<Header />
+				<Routes>
+					<Route path="/" element={<TabHome />} />
+					<Route path="/products/" element={<TabProducts />} />
+					<Route path="/contact/" element={<TabContact />} />
+
+					<Route path="/login/" element={<TabLogin />} />
+					<Route path="/register/" element={<TabRegister />} />
+					<Route path="/admin/" element={<TabAdmin />} />
+					<Route path="/admin/category/" element={<TabCategory />} />
+					<Route path="/admin/privilege/" element={<TabPrivilege />} />
+					<Route path="/admin/user/" element={<TabUsuario />} />
+					<Route path="/admin/brand/" element={<TabMarca />} />
+					<Route path="/admin/model/" element={<TabModelo />} />
+					<Route path="/admin/product/" element={<TabProducto />} />
+					<Route
+						path="/product/description/:modelo_id"
+						element={<TabDescripcion />}
+					/>
+					<Route path="/shoping_cart/" element={<TabCarrito />} />
+					<Route path="/before_purchase/" element={<TabPreCompra />} />
+					<Route path="/voucher/" element={<IndexComprobante />} />
+					<Route path="/buy/" element={<TabCompra />} />
+					<Route path="*" element={<NotFound />} />
+				</Routes>
+				<Footer />
+			</SesionProvider>
 		</Router>
 	);
 }

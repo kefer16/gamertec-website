@@ -14,8 +14,8 @@ import {
 	TableFooter,
 	TablePagination,
 } from "@mui/material";
-import { UsuarioService } from "../../services/UsuarioService";
-import { convertirFecha } from "../../utils/Funciones";
+import { UsuarioService } from "../../entities/usuario.entities";
+import { convertirFecha } from "../../utils/funciones.utils";
 
 interface Props {
 	itemSeleccionado: UsuarioService;

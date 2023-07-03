@@ -6,7 +6,10 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
+import {
+	convertirFechaVisual,
+	crearFechaISO,
+} from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
@@ -23,9 +26,12 @@ import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ModeloRegistro } from "./ModeloRegistro";
-import { ModeloService } from "../../../services/ModeloService";
+import { ModeloService } from "../../../entities/modelo.entities";
 import { funcionObtenerMarcas } from "../marca/Marca";
-import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
+import {
+	ComboboxProps,
+	ComboboxAnidadoProps,
+} from "../../../interfaces/combobox.interface";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
 	{
@@ -81,11 +87,13 @@ interface Props {
 	nombreFormulario: string;
 }
 
-let arrayCategoria: SelectProps[] = [];
-let arrayMarca: SelectAnidadoProps[] = [];
+let arrayCategoria: ComboboxProps[] = [];
+let arrayMarca: ComboboxAnidadoProps[] = [];
 
-export const funcionObteneModelo = async (): Promise<SelectAnidadoProps[]> => {
-	const array: SelectAnidadoProps[] = [];
+export const funcionObteneModelo = async (): Promise<
+	ComboboxAnidadoProps[]
+> => {
+	const array: ComboboxAnidadoProps[] = [];
 	await ModeloService.ListarTodos()
 		.then((respuesta) => {
 			respuesta.data.data.forEach((element: ModeloService) => {
@@ -180,11 +188,11 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
 						fk_categoria: element.fk_categoria,
 						nombre_categoria: arrayCategoria.find(
-							(categoria: SelectProps) => categoria.valor === element.fk_categoria
+							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
 						)?.descripcion,
 						fk_marca: element.fk_marca,
 						nombre_marca: arrayMarca.find(
-							(marca: SelectAnidadoProps) => marca.valorAnidado === element.fk_marca
+							(marca: ComboboxAnidadoProps) => marca.valorAnidado === element.fk_marca
 						)?.descripcion,
 						nombre: element.nombre,
 						descripcion: element.descripcion,

@@ -16,9 +16,9 @@ import { useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
-} from "../../../utils/Funciones";
-import { MarcaService } from "../../../services/MarcaService";
-import { SelectProps } from "../../../utils/Interfaces";
+} from "../../../utils/funciones.utils";
+import { MarcaService } from "../../../entities/marca.entities";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
 interface Props {
 	nombreFormulario: string;
@@ -32,7 +32,7 @@ interface Props {
 		text: string
 	) => void;
 	funcionAbrirAlerta: () => void;
-	arrayCategorias: SelectProps[];
+	arrayCategorias: ComboboxProps[];
 }
 
 export const MarcaRegistro = ({
@@ -199,7 +199,7 @@ export const MarcaRegistro = ({
 										}
 									>
 										<MenuItem value={"0"}>Selec. Categoria</MenuItem>
-										{arrayCategorias.map((categoria: SelectProps) => {
+										{arrayCategorias.map((categoria: ComboboxProps) => {
 											return (
 												<MenuItem key={categoria.valor} value={String(categoria.valor)}>
 													{categoria.descripcion}

@@ -1,6 +1,4 @@
 import { Params, useParams } from "react-router-dom";
-import { Footer } from "../global/Footer";
-import { Header } from "../global/Header";
 import { Descripcion } from "./Descripcion";
 
 export const TabDescripcion = () => {
@@ -9,9 +7,7 @@ export const TabDescripcion = () => {
 
 	return (
 		<>
-			<Header />
 			<Descripcion modelo_id={modelo_id === undefined ? 0 : parseInt(modelo_id)} />
-			<Footer />
 		</>
 	);
 };

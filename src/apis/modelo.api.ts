@@ -1,6 +1,6 @@
-import { CategoryService } from "../services/CategoriaService";
-import { MarcaService } from "../services/MarcaService";
-import { ModeloService } from "../services/ModeloService";
+import { CategoryService } from "../entities/categoria.entities";
+import { MarcaService } from "../entities/marca.entities";
+import { ModeloService } from "../entities/modelo.entities";
 
 export interface ModeloDescripcion {
 	categoria: CategoryService;

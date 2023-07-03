@@ -6,7 +6,10 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
+import {
+	convertirFechaVisual,
+	crearFechaISO,
+} from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
@@ -21,9 +24,9 @@ import {
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
-import { PrivilegioService } from "../../../services/PrivilegioService";
+import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
-import { SelectProps } from "../../../utils/Interfaces";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
 const columnsCategorias: GridColDef<GridValidRowModel>[] = [
 	{
@@ -57,8 +60,8 @@ interface Props {
 	nombreFormulario: string;
 }
 
-export const funcionObtenerPrivilegios = async (): Promise<SelectProps[]> => {
-	let array: SelectProps[] = [];
+export const funcionObtenerPrivilegios = async (): Promise<ComboboxProps[]> => {
+	let array: ComboboxProps[] = [];
 	await PrivilegioService.ListarTodos()
 		.then((response) => {
 			response.data.data.forEach((element: PrivilegioService) => {

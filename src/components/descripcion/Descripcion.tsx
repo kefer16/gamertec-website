@@ -2,16 +2,20 @@ import { Alert, Button, Container, Snackbar, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { ApiModelo, ModeloDescripcion } from "../../api/ModeloApi";
+import { ApiModelo, ModeloDescripcion } from "../../apis/modelo.api";
 import {
+	convertirFechaSQL,
 	convertirFormatoMoneda,
+	crearFechaISO,
 	formatoCalificacion,
-} from "../../utils/Funciones";
+} from "../../utils/funciones.utils";
 import { CircleRounded } from "@mui/icons-material";
 import { CloseRounded } from "@mui/icons-material";
 import { Comentarios } from "./Comentarios";
-import { ComentarioService } from "../../services/ComentariosService";
+import { ComentarioService } from "../../entities/comentario.entities";
 import { InterfaceAlertControl } from "../controls/AlertControl";
+import { CarritoEntity } from "../../entities/carrito.entities";
+import { CarritoApi } from "../../apis/carrito.api";
 
 interface Props {
 	modelo_id: number;
@@ -506,6 +510,42 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		setModalComentario(false);
 	};
 
+	const [productosCarrito, setProductosCarrito] = useState<number>(1);
+
+	const funcionAmentarProductosCarrito = () => {
+		const totalProductosCarrrito = productosCarrito + 1;
+		console.log(totalProductosCarrrito);
+		const validar =
+			totalProductosCarrrito > stock ? stock : totalProductosCarrrito;
+
+		setProductosCarrito(validar);
+	};
+
+	const funcionDisminuirProductosCarrito = () => {
+		const totalProductosCarrrito = productosCarrito - 1;
+		const validar = totalProductosCarrrito <= 1 ? 1 : totalProductosCarrrito;
+		setProductosCarrito(validar);
+	};
+
+	const funcionAgregarProductoCarrito = async () => {
+		const data: CarritoEntity = new CarritoEntity(
+			0,
+			productosCarrito,
+			precio,
+			0,
+			0,
+			convertirFechaSQL(crearFechaISO()),
+			true,
+			1,
+			modelo_id
+		);
+
+		await CarritoApi.Registrar(data)
+			.then(() => {})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 	return (
 		<>
 			<Container maxWidth={"lg"}>
@@ -620,16 +660,20 @@ export const Descripcion = ({ modelo_id }: Props) => {
 							<h2>{convertirFormatoMoneda(precio)}</h2>
 						</div>
 						<div id="cantidad" className="mini-cantidad">
-							<button id="disminuir">-</button>
-							<input type="number" value={1} />
-							<button id="aumentar">+</button>
+							<button id="disminuir" onClick={funcionDisminuirProductosCarrito}>
+								-
+							</button>
+							<input disabled type="number" value={productosCarrito} />
+							<button id="aumentar" onClick={funcionAmentarProductosCarrito}>
+								+
+							</button>
 						</div>
 					</div>
 					<div className="mini-botones">
-						<Link className="seguir" to="#">
+						<Link className="seguir" to={`/products/`}>
 							Seguir comprando
 						</Link>
-						<Button variant="contained" type="submit">
+						<Button type="submit" onClick={funcionAgregarProductoCarrito}>
 							Ir a carrito
 						</Button>
 					</div>

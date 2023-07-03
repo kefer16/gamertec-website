@@ -11,20 +11,21 @@ import {
 	Typography,
 } from "@mui/material";
 import { SearchTwoTone as SearchIcon } from "@mui/icons-material";
-import { SelectProps } from "../../utils/Interfaces";
+
 import { useEffect, useState } from "react";
 import { funcionObtenerCategorias } from "../admin/categoria/Categoria";
 import styled from "styled-components";
 import {
 	ModelosFiltroProps,
 	funcionListarModelosPorFiltro,
-} from "../../api/ProductosApi";
+} from "../../apis/producto.api";
 import { Link } from "react-router-dom";
+import { ComboboxProps } from "../../interfaces/combobox.interface";
 
 export const Products = () => {
 	const [categoria, setCategoria] = useState<string>("0");
 	const [nombreModelo, setNombreModelo] = useState<string>("");
-	const [arrayCategoria, setArrayCategoria] = useState<SelectProps[]>([]);
+	const [arrayCategoria, setArrayCategoria] = useState<ComboboxProps[]>([]);
 	const [arrayModelo, setArrayModelo] = useState<ModelosFiltroProps[]>([]);
 
 	useEffect(() => {
@@ -81,7 +82,7 @@ export const Products = () => {
 							}
 						>
 							<MenuItem value={"0"}>Selec. Categoria</MenuItem>
-							{arrayCategoria.map((categoria: SelectProps) => {
+							{arrayCategoria.map((categoria: ComboboxProps) => {
 								return (
 									<MenuItem key={categoria.valor} value={String(categoria.valor)}>
 										{categoria.descripcion}

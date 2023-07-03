@@ -13,12 +13,12 @@ import {
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
-import { CategoryService } from "../../../services/CategoriaService";
+import { CategoryService } from "../../../entities/categoria.entities";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
 	crearFechaISO,
-} from "../../../utils/Funciones";
+} from "../../../utils/funciones.utils";
 
 interface Props {
 	nombreFormulario: string;

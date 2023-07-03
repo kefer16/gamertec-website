@@ -16,9 +16,13 @@ import { useEffect, useState } from "react";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
-} from "../../../utils/Funciones";
-import { SelectAnidadoProps, SelectProps } from "../../../utils/Interfaces";
-import { ProductoService } from "../../../services/ProductService";
+} from "../../../utils/funciones.utils";
+
+import { ProductoService } from "../../../entities/producto.entities";
+import {
+	ComboboxProps,
+	ComboboxAnidadoProps,
+} from "../../../interfaces/combobox.interface";
 
 interface Props {
 	nombreFormulario: string;
@@ -32,9 +36,9 @@ interface Props {
 		text: string
 	) => void;
 	funcionAbrirAlerta: () => void;
-	arrayCategorias: SelectProps[];
-	arrayMarcas: SelectAnidadoProps[];
-	arrayModelos: SelectAnidadoProps[];
+	arrayCategorias: ComboboxProps[];
+	arrayMarcas: ComboboxAnidadoProps[];
+	arrayModelos: ComboboxAnidadoProps[];
 }
 
 interface ChangeValueSelect {
@@ -63,10 +67,10 @@ export const ProductoRegistro = ({
 	const [activo, setActivo] = useState("0");
 
 	const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
-		SelectAnidadoProps[]
+		ComboboxAnidadoProps[]
 	>([]);
 	const [arrayAnidadoModelo, setArrayAnidadoModelo] = useState<
-		SelectAnidadoProps[]
+		ComboboxAnidadoProps[]
 	>([]);
 
 	useEffect(() => {
@@ -77,13 +81,13 @@ export const ProductoRegistro = ({
 
 		setFkCategoria(String(itemSeleccionado.fk_categoria));
 
-		const nuevoArrayMarca: SelectAnidadoProps[] = arrayMarcas.filter(
+		const nuevoArrayMarca: ComboboxAnidadoProps[] = arrayMarcas.filter(
 			(item) => item.valor === itemSeleccionado.fk_categoria
 		);
 		setArrayAnidadoMarca(nuevoArrayMarca);
 		setFkMarca(String(itemSeleccionado.fk_marca));
 
-		const nuevoArrayModelo: SelectAnidadoProps[] = arrayModelos.filter(
+		const nuevoArrayModelo: ComboboxAnidadoProps[] = arrayModelos.filter(
 			(item) => item.valor === itemSeleccionado.fk_marca
 		);
 		setArrayAnidadoModelo(nuevoArrayModelo);
@@ -95,7 +99,7 @@ export const ProductoRegistro = ({
 		valorAnidado,
 	}: ChangeValueSelect) => {
 		setFkCategoria(valor);
-		const arrayNuevo: SelectAnidadoProps[] = arrayMarcas.filter(
+		const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
 			(item) => item.valor === parseInt(valor)
 		);
 
@@ -108,7 +112,7 @@ export const ProductoRegistro = ({
 		valorAnidado,
 	}: ChangeValueSelect) => {
 		setFkMarca(valor);
-		const arrayNuevo: SelectAnidadoProps[] = arrayModelos.filter(
+		const arrayNuevo: ComboboxAnidadoProps[] = arrayModelos.filter(
 			(item) => item.valor === parseInt(valor)
 		);
 
@@ -260,7 +264,7 @@ export const ProductoRegistro = ({
 										}
 									>
 										<MenuItem value={"0"}>Selec. Categoria</MenuItem>
-										{arrayCategorias.map((categoria: SelectProps) => {
+										{arrayCategorias.map((categoria: ComboboxProps) => {
 											return (
 												<MenuItem key={categoria.valor} value={String(categoria.valor)}>
 													{categoria.descripcion}
@@ -287,7 +291,7 @@ export const ProductoRegistro = ({
 										}
 									>
 										<MenuItem value={"0"}>Selec. Marca</MenuItem>
-										{arrayAnidadoMarca.map((marca: SelectAnidadoProps) => {
+										{arrayAnidadoMarca.map((marca: ComboboxAnidadoProps) => {
 											return (
 												<MenuItem
 													key={marca.valorAnidado}
@@ -315,7 +319,7 @@ export const ProductoRegistro = ({
 										}
 									>
 										<MenuItem value={"0"}>Selec. Modelo</MenuItem>
-										{arrayAnidadoModelo.map((modelo: SelectAnidadoProps) => {
+										{arrayAnidadoModelo.map((modelo: ComboboxAnidadoProps) => {
 											return (
 												<MenuItem
 													key={modelo.valorAnidado}

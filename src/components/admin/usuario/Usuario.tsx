@@ -6,7 +6,10 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import { convertirFechaVisual, crearFechaISO } from "../../../utils/Funciones";
+import {
+	convertirFechaVisual,
+	crearFechaISO,
+} from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
@@ -22,10 +25,10 @@ import {
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
 
-import { UsuarioService } from "../../../services/UsuarioService";
+import { UsuarioService } from "../../../entities/usuario.entities";
 import { UsuarioRegistro } from "./UsuarioRegistro";
 import { funcionObtenerPrivilegios } from "../privilegio/Privilegio";
-import { SelectProps } from "../../../utils/Interfaces";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
 	{
@@ -89,7 +92,7 @@ const columasVisibles: GridColumnVisibilityModel = {
 interface Props {
 	nombreFormulario: string;
 }
-let arrayPrivilegio: SelectProps[] = [];
+let arrayPrivilegio: ComboboxProps[] = [];
 
 export const Usuario = ({ nombreFormulario }: Props) => {
 	const [filas, setFilas] = useState<GridRowsProp>([]);
@@ -176,7 +179,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 						fecha_registro: element.fecha_registro,
 						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
 						nombre_privilegio: arrayPrivilegio.find(
-							(privilegio: SelectProps) => privilegio.valor === element.fk_privilegio
+							(privilegio: ComboboxProps) => privilegio.valor === element.fk_privilegio
 						)?.descripcion,
 						activo: element.activo,
 						activo_nombre: element.activo ? "Activo" : "Inactivo",
