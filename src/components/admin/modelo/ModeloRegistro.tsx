@@ -18,17 +18,17 @@ import {
 	convertirFechaSQL,
 	convertirFechaVisual,
 } from "../../../utils/funciones.utils";
-import { ModeloService } from "../../../entities/modelo.entities";
 import {
 	ComboboxProps,
 	ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
+import { ModeloEntity } from "../../../entities/modelo.entity";
 
 interface Props {
 	nombreFormulario: string;
 	abrir: boolean;
 	esEdicion: boolean;
-	itemSeleccionado: ModeloService;
+	itemSeleccionado: ModeloEntity;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
 	funcionAsignarAlerta: (
@@ -113,7 +113,7 @@ export const ModeloRegistro = ({
 	const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		const data: ModeloService = new ModeloService(
+		const data: ModeloEntity = new ModeloEntity(
 			modeloId,
 			nombre,
 			descripcion,
@@ -131,7 +131,7 @@ export const ModeloRegistro = ({
 		console.log(data, esEdicion);
 
 		if (esEdicion) {
-			await ModeloService.Actualizar(modeloId, data)
+			await ModeloEntity.Actualizar(modeloId, data)
 				.then((response) => {
 					if (response.data.code === 200) {
 						funcionAsignarAlerta(
@@ -153,7 +153,7 @@ export const ModeloRegistro = ({
 					return;
 				});
 		} else {
-			await ModeloService.Registrar(data)
+			await ModeloEntity.Registrar(data)
 				.then((response) => {
 					if (response.data.code === 200) {
 						funcionAsignarAlerta(

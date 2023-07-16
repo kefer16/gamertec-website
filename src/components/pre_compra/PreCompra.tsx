@@ -9,7 +9,7 @@ import {
 	TextField,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DepartamentoService } from "../../services/departamento.service";
 import { ProvinciaService } from "../../services/provincia.service";
 import { DistritoService } from "../../services/distrito.service";
@@ -21,8 +21,10 @@ import {
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoCaracteristicasProps } from "../../interfaces/carrito.interface";
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 export const PreCompra = () => {
+	const { sesionGamertec } = useContext(GamertecSesionContext);
 	const [arrayDepartamento, setArrayDepartamento] = useState<ComboboxProps[]>(
 		[]
 	);
@@ -65,7 +67,9 @@ export const PreCompra = () => {
 				setArrayDistrito(array);
 			});
 
-			await CarritoService.listarCaracteristicas(1).then((respuesta) => {
+			await CarritoService.listarCaracteristicas(
+				sesionGamertec.usuario.usuario_id
+			).then((respuesta) => {
 				setArrayCarrito(respuesta);
 				const precioSubTotal: number = respuesta.reduce(
 					(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
@@ -80,6 +84,8 @@ export const PreCompra = () => {
 		};
 
 		obtenerData();
+		setDireccion(sesionGamertec.usuario.direccion);
+		setTelefono(sesionGamertec.usuario.telefono);
 	}, []);
 
 	const funcionListarComboboxAnidadoProvincia = ({
@@ -244,7 +250,7 @@ export const PreCompra = () => {
 						<div id="orden-productos" className="orden-productos">
 							{arrayCarrito.map((carrito: CarritoCaracteristicasProps) => {
 								return (
-									<div className="content-producto">
+									<div key={carrito.modelo.modelo_id} className="content-producto">
 										<div className="producto-foto">
 											<img src={carrito.modelo.foto} alt={carrito.modelo.nombre} />
 										</div>

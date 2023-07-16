@@ -1,14 +1,29 @@
-import { Button, Container } from "@mui/material";
+import { Button, Container, TextField } from "@mui/material";
 import {
 	ComprobanteStyled,
 	ModalConfirmacion,
 } from "./styles/Comprobante.styled";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoCaracteristicasProps } from "../../interfaces/carrito.interface";
-import { convertirFormatoMoneda } from "../../utils/funciones.utils";
+import {
+	convertirFechaSQL,
+	convertirFechaVisual,
+	convertirFormatoMoneda,
+	crearFechaISO,
+} from "../../utils/funciones.utils";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { PedidoService } from "../../services/pedido.service";
+
+import { useNavigate } from "react-router-dom";
+import { RespuestaEntity } from "../../entities/respuesta.entity";
+import { PedidoCabeceraEntity } from "../../entities/pedido_cabecera.entities";
+import { PedidoDetalleEntity } from "../../entities/pedido_detalle.entity";
 
 export const Comprobante = () => {
+	const navegacion = useNavigate();
+	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
+
 	const [arrayCarrito, setArrayCarrito] = useState<
 		CarritoCaracteristicasProps[]
 	>([]);
@@ -18,10 +33,16 @@ export const Comprobante = () => {
 	const [precioEnvio, setPrecioEnvio] = useState<number>(0);
 
 	const [modalConfirmacion, setModalConfirmacion] = useState<boolean>(false);
-
+	const [direccion, setDireccion] = useState<string>("");
+	const [telefono, setTelefono] = useState<string>("");
+	const [usuarioId, setUsuarioId] = useState<number>(0);
 	useEffect(() => {
 		const obtenerDatos = async () => {
-			await CarritoService.listarCaracteristicas(1).then((array) => {
+			obtenerSesion();
+			setUsuarioId(sesionGamertec.usuario.usuario_id);
+			await CarritoService.listarCaracteristicas(
+				sesionGamertec.usuario.usuario_id
+			).then((array) => {
 				setArrayCarrito(array);
 				const precioSubTotal: number = array.reduce(
 					(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
@@ -33,9 +54,11 @@ export const Comprobante = () => {
 				const precioTotal: number = precioSubTotal + precioEnvio;
 				setPrecioTotal(precioTotal);
 			});
+			setDireccion(sesionGamertec.usuario.direccion);
+			setTelefono(sesionGamertec.usuario.telefono);
 		};
 		obtenerDatos();
-	});
+	}, [obtenerSesion, sesionGamertec]);
 
 	const funcionAbrirModal = () => {
 		setModalConfirmacion(true);
@@ -43,6 +66,75 @@ export const Comprobante = () => {
 
 	const funcionCerrarModal = () => {
 		setModalConfirmacion(false);
+	};
+
+	const funcionRegistrarPedido = async () => {
+		const fecha_actual: string = convertirFechaSQL(crearFechaISO());
+
+		const pedido: PedidoService = new PedidoService();
+
+		let correlativo: number | null | undefined = 0;
+
+		await pedido
+			.ultimo()
+			.then((resp: RespuestaEntity<PedidoCabeceraEntity>) => {
+				if (resp.correcto) {
+					if (resp.data?.pedido_cabecera_id !== undefined) {
+						correlativo = resp.data.pedido_cabecera_id;
+					}
+				}
+			})
+			.catch((error) => {
+				console.log("correlativo", error);
+				return;
+			});
+
+		const data: PedidoCabeceraEntity = {
+			pedido_cabecera_id: null,
+			codigo: `PED-${String(correlativo + 1).padStart(6, "0")}`,
+			direccion: direccion,
+			telefono: telefono,
+			sub_total: precioSubTotal,
+			costo_envio: precioEnvio,
+			total: precioTotal,
+			fecha_registro: fecha_actual,
+			activo: true,
+			fk_distrito: 0,
+			fk_usuario: usuarioId,
+			array_pedido_detalle: [],
+		};
+		const array_pedido_detalle: PedidoDetalleEntity[] = [];
+		let pedido_detalle: PedidoDetalleEntity = new PedidoDetalleEntity();
+
+		arrayCarrito.forEach(
+			(element: CarritoCaracteristicasProps, index: number) => {
+				pedido_detalle = {
+					pedido_detalle_id: null,
+					item: index + 1,
+					cantidad: element.carrito.cantidad,
+					precio: element.modelo.precio,
+					total: Number(element.carrito.cantidad * element.modelo.precio),
+					fecha_registro: fecha_actual,
+					activo: true,
+					fk_modelo: element.modelo.modelo_id,
+					fk_pedido_cabecera: 0,
+				};
+				array_pedido_detalle.push(pedido_detalle);
+			}
+		);
+
+		data.array_pedido_detalle = array_pedido_detalle;
+
+		await pedido
+			.registrar(data)
+			.then((resp: RespuestaEntity<PedidoCabeceraEntity>) => {
+				if (resp.correcto) {
+					navegacion("/order/");
+				}
+			})
+			.catch((error: any) => {
+				console.log(error);
+			});
 	};
 	return (
 		<>
@@ -58,16 +150,37 @@ export const Comprobante = () => {
 						</div>
 						<div className="formulario">
 							<div className="form-dividido">
-								<label htmlFor="">Cliente:</label>
-								<input id="cliente" type="text" value="" />
-								<label htmlFor="">Fecha:</label>
-								<input id="fecha" type="text" value="" />
+								<TextField
+									sx={{ marginBottom: "20px" }}
+									disabled
+									required
+									label="Cliente"
+									value={`${sesionGamertec.usuario.nombre} ${sesionGamertec.usuario.apellido}`}
+								/>
+
+								<TextField
+									sx={{ marginBottom: "20px" }}
+									disabled
+									required
+									label="Fecha"
+									value={convertirFechaVisual(crearFechaISO())}
+								/>
 							</div>
 							<div className="form-dividido">
-								<label htmlFor="">Dirección:</label>
-								<input id="direccion" type="text" value="" />
-								<label htmlFor="">Teléfono</label>
-								<input id="telefono" type="text" value="" />
+								<TextField
+									sx={{ marginBottom: "20px" }}
+									disabled
+									required
+									label="Direccion"
+									value={direccion}
+								/>
+								<TextField
+									sx={{ marginBottom: "20px" }}
+									disabled
+									required
+									label="Telefono"
+									value={telefono}
+								/>
 							</div>
 						</div>
 						<table>
@@ -119,7 +232,7 @@ export const Comprobante = () => {
 					</div>
 					<div className="boton-comprar">
 						<Button onClick={funcionAbrirModal} className="abrir">
-							Realizar Compra
+							Realizar Pedido
 						</Button>
 					</div>
 				</ComprobanteStyled>
@@ -134,17 +247,15 @@ export const Comprobante = () => {
 					</span>
 					<h2>¿Seguro que quiere realizar la compra?</h2>
 					<p>
-						Total a pagar: <span className="total"></span>{" "}
+						Total a pagar: <span className="total"></span>
 					</p>
 					<div className="mensaje">El monto total se le descontará de su cuenta</div>
 					<div className="botones">
-						<button id="comprar" className="si">
-							{" "}
+						<button id="comprar" className="si" onClick={funcionRegistrarPedido}>
 							Si
 						</button>
 						<button id="no" className="no">
-							{" "}
-							No{" "}
+							No
 						</button>
 					</div>
 				</div>

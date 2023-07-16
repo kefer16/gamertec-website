@@ -31,17 +31,7 @@ export const PreCompraStyled = styled.div`
 	.despacho-select {
 		margin-top: 10px;
 	}
-	.despacho-select select,
-	.despacho input {
-		padding: 10px;
-	}
-	.despacho-select select,
-	.despacho-select input {
-		margin-bottom: 10px;
-	}
-	.despacho-select label {
-		line-height: 1.7;
-	}
+
 	.despacho,
 	.orden {
 		width: 50%;

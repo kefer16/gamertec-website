@@ -21,6 +21,8 @@ export const SesionProvider = ({ children }: any) => {
 			nombre: "",
 			apellido: "",
 			foto: "",
+			direccion: "",
+			telefono: "",
 		},
 		privilegio: {
 			privilegio_id: 0,
@@ -42,7 +44,6 @@ export const SesionProvider = ({ children }: any) => {
 			: sesionGamertec;
 
 		setSesionGamertec(sesionGamertec);
-		console.log("pasa");
 	};
 
 	return (

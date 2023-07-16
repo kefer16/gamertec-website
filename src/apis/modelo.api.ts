@@ -1,11 +1,10 @@
 import { CategoryService } from "../entities/categoria.entities";
 import { MarcaService } from "../entities/marca.entities";
-import { ModeloService } from "../entities/modelo.entities";
-
+import { ModeloEntity } from "../entities/modelo.entity";
 export interface ModeloDescripcion {
 	categoria: CategoryService;
 	marca: MarcaService;
-	modelo: ModeloService;
+	modelo: ModeloEntity;
 }
 export class ApiModelo {
 	static ListarModeloDescripcion = async (
@@ -14,10 +13,10 @@ export class ApiModelo {
 		let modelo: ModeloDescripcion = {
 			categoria: new CategoryService(),
 			marca: new MarcaService(),
-			modelo: new ModeloService(),
+			modelo: new ModeloEntity(),
 		};
 
-		await ModeloService.ListarModeloDescripcion(modelo_id)
+		await ModeloEntity.ListarModeloDescripcion(modelo_id)
 			.then((respuesta) => {
 				modelo = respuesta.data.data[0];
 				console.log(modelo);

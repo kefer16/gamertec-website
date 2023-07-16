@@ -3,7 +3,7 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import img_realidad_virtual from "../../images/chico_realidad_virtual.svg";
 
 import "./styles/Login.scss";
@@ -25,6 +25,7 @@ import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 export const Login = () => {
 	const { obtenerSesion } = useContext(GamertecSesionContext);
+	const navigate = useNavigate();
 
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
 		active: false,
@@ -94,6 +95,8 @@ export const Login = () => {
 			nombre: "",
 			apellido: "",
 			foto: "",
+			direccion: "",
+			telefono: "",
 		};
 		let id_privilegio: number = 0;
 
@@ -107,8 +110,11 @@ export const Login = () => {
 						nombre: response.data.data[0].nombre,
 						apellido: response.data.data[0].apellido,
 						foto: response.data.data[0].foto,
+						direccion: response.data.data[0].direccion,
+						telefono: response.data.data[0].telefono,
 					};
 				}
+				console.log(response);
 
 				id_privilegio = response.data.data[0].fk_privilegio;
 
@@ -140,7 +146,7 @@ export const Login = () => {
 		let data_privilegio: SesionPrivilegio = {
 			privilegio_id: 0,
 			nombre: "",
-			abreviatura: "",
+			abreviatura: "USU",
 		};
 
 		await PrivilegioService.BuscarPorID(id_privilegio)
@@ -157,13 +163,14 @@ export const Login = () => {
 					};
 					GuadarSession(data_sesion);
 
+					obtenerSesion();
 					funcionAsignarAlerta(
 						"success",
 						`Hola ${data_usuario.usuario}, Bienvenido...`
 					);
 					funcionAbrirAlerta();
 
-					obtenerSesion();
+					navigate(`/products/`);
 
 					return;
 				}

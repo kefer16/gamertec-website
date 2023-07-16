@@ -10,10 +10,12 @@ export interface SesionUsuario {
 	nombre: string;
 	apellido: string;
 	foto: string;
+	direccion: string;
+	telefono: string;
 }
 
 export interface SesionPrivilegio {
 	privilegio_id: number;
 	nombre: string;
-	abreviatura: string;
+	abreviatura: "" | "ADM" | "USU" | "INV";
 }

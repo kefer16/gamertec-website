@@ -1,5 +1,5 @@
 import { Alert, Button, Container, Snackbar, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { ApiModelo, ModeloDescripcion } from "../../apis/modelo.api";
@@ -16,6 +16,7 @@ import { ComentarioService } from "../../entities/comentario.entities";
 import { InterfaceAlertControl } from "../controls/AlertControl";
 import { CarritoEntity } from "../../entities/carrito.entities";
 import { CarritoApi } from "../../apis/carrito.api";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 interface Props {
 	modelo_id: number;
@@ -402,7 +403,7 @@ const CerrarLogin = styled(CloseRounded)`
 
 export const Descripcion = ({ modelo_id }: Props) => {
 	// const [nombre, setNombre] = useState<string>("");
-
+	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 	const [categoriaNombre, setCategoriaNombre] = useState<string>("");
 	const [marcaNombre, setMarcaNombre] = useState<string>("");
 	const [modeloNombre, setModeloNombre] = useState<string>("");
@@ -412,6 +413,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 	const [caracteristicas, setCaracteristicas] = useState<string>("");
 	const [color, setColor] = useState<string>("");
 	const [stock, setStock] = useState<number>(0);
+	const [usuarioId, setUsuarioId] = useState<number>(0);
 
 	const [modalLogin, setModalLogin] = useState<boolean>(false);
 	const [modalCarrito, setModalCarrito] = useState<boolean>(false);
@@ -466,6 +468,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 
 	useEffect(() => {
 		const ObtenerData = async () => {
+			obtenerSesion();
 			await ApiModelo.ListarModeloDescripcion(modelo_id).then(
 				(data: ModeloDescripcion) => {
 					setCategoriaNombre(data.categoria.nombre);
@@ -479,12 +482,12 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					setStock(data.modelo.stock);
 				}
 			);
-
+			setUsuarioId(sesionGamertec.usuario.usuario_id);
 			await funcionObtenerComentarios(modelo_id);
 		};
 
 		ObtenerData();
-	}, [modelo_id]);
+	}, [modelo_id, obtenerSesion, sesionGamertec]);
 
 	const funcionActivarModalLogin = () => {
 		setModalLogin(true);
@@ -532,11 +535,11 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			0,
 			productosCarrito,
 			precio,
-			0,
-			0,
+			false,
+			false,
 			convertirFechaSQL(crearFechaISO()),
 			true,
-			1,
+			usuarioId,
 			modelo_id
 		);
 

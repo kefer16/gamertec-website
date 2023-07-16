@@ -26,12 +26,13 @@ import { ToolbarControl } from "../../controls/ToobarControl";
 import { TableControl } from "../../controls/TableControl";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ModeloRegistro } from "./ModeloRegistro";
-import { ModeloService } from "../../../entities/modelo.entities";
+
 import { funcionObtenerMarcas } from "../marca/Marca";
 import {
 	ComboboxProps,
 	ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
+import { ModeloEntity } from "../../../entities/modelo.entity";
 
 const columnas: GridColDef<GridValidRowModel>[] = [
 	{
@@ -94,9 +95,9 @@ export const funcionObteneModelo = async (): Promise<
 	ComboboxAnidadoProps[]
 > => {
 	const array: ComboboxAnidadoProps[] = [];
-	await ModeloService.ListarTodos()
+	await ModeloEntity.ListarTodos()
 		.then((respuesta) => {
-			respuesta.data.data.forEach((element: ModeloService) => {
+			respuesta.data.data.forEach((element: ModeloEntity) => {
 				array.push({
 					valor: element.fk_marca,
 					valorAnidado: element.modelo_id,
@@ -147,8 +148,8 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
-	const [itemSeleccionado, setItemSeleccionado] = useState<ModeloService>(
-		new ModeloService()
+	const [itemSeleccionado, setItemSeleccionado] = useState<ModeloEntity>(
+		new ModeloEntity()
 	);
 
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
@@ -178,9 +179,9 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
 	const funcionListar = async () => {
 		let array: {}[] = [];
-		await ModeloService.ListarTodos()
+		await ModeloEntity.ListarTodos()
 			.then((response) => {
-				response.data.data.forEach((element: ModeloService, index: number) => {
+				response.data.data.forEach((element: ModeloEntity, index: number) => {
 					const newRow = {
 						id: element.modelo_id,
 						index: index + 1,
@@ -218,7 +219,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
 	const funcionCrear = () => {
 		setItemSeleccionado(
-			new ModeloService(
+			new ModeloEntity(
 				0,
 				"",
 				"",
@@ -254,7 +255,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 		}
 
 		setItemSeleccionado(
-			new ModeloService(
+			new ModeloEntity(
 				itemEdicion.id,
 				itemEdicion.nombre,
 				itemEdicion.descripcion,
@@ -290,7 +291,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 			return;
 		}
 
-		await ModeloService.EliminarUno(itemEdicion.id)
+		await ModeloEntity.EliminarUno(itemEdicion.id)
 			.then((response) => {
 				if (response.data.code === 200) {
 					funcionAsignarAlerta(

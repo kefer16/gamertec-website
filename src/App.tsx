@@ -19,6 +19,7 @@ import { TabPreCompra } from "./components/pre_compra/TabPreCompra";
 import { TabCompra } from "./components/compra/TabCompra";
 import { IndexComprobante } from "./components/comprobante/IndexComprobante.component";
 import { SesionProvider } from "./components/sesion/Sesion.component";
+import { IndexPedido } from "./components/pedido/IndexPedido.component";
 
 function App() {
 	return (
@@ -46,6 +47,7 @@ function App() {
 					<Route path="/shoping_cart/" element={<TabCarrito />} />
 					<Route path="/before_purchase/" element={<TabPreCompra />} />
 					<Route path="/voucher/" element={<IndexComprobante />} />
+					<Route path="/order/" element={<IndexPedido />} />
 					<Route path="/buy/" element={<TabCompra />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>

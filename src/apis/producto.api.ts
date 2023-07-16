@@ -1,8 +1,8 @@
 import { MarcaService } from "../entities/marca.entities";
-import { ModeloService } from "../entities/modelo.entities";
+import { ModeloEntity } from "../entities/modelo.entity";
 
 export interface ModelosFiltroProps {
-	modelo: ModeloService;
+	modelo: ModeloEntity;
 	marca: MarcaService;
 }
 
@@ -12,7 +12,7 @@ export const funcionListarModelosPorFiltro = async (
 ): Promise<ModelosFiltroProps[]> => {
 	let modelosFiltro: ModelosFiltroProps[] = [];
 
-	await ModeloService.ListarModelosPorFiltro(categoria_id, nombre_modelo)
+	await ModeloEntity.ListarModelosPorFiltro(categoria_id, nombre_modelo)
 		.then((response) => {
 			modelosFiltro = response.data.data;
 		})

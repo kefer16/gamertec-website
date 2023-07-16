@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export class ModeloService {
+export class ModeloEntity {
 	constructor(
 		public modelo_id: number = 0,
 		public nombre: string = "",
@@ -21,7 +21,7 @@ export class ModeloService {
 
 	private static url: string = `${API_URL}/modelo`;
 
-	static async Registrar(data: ModeloService): Promise<AxiosResponse> {
+	static async Registrar(data: ModeloEntity): Promise<AxiosResponse> {
 		try {
 			const config = {
 				headers: {
@@ -41,7 +41,7 @@ export class ModeloService {
 
 	static async Actualizar(
 		ID: number,
-		data: ModeloService
+		data: ModeloEntity
 	): Promise<AxiosResponse> {
 		try {
 			const config = {

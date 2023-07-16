@@ -8,10 +8,12 @@ export const sesionGamertec: SesionGamertec = {
 		nombre: "",
 		apellido: "",
 		foto: "",
+		direccion: "",
+		telefono: "",
 	},
 	privilegio: {
 		privilegio_id: 0,
 		nombre: "",
-		abreviatura: "",
+		abreviatura: "USU",
 	},
 };

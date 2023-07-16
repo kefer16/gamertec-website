@@ -3,7 +3,7 @@ export const convertirFecha = (fechaString: string): string => {
 	return fecha.toLocaleString("es-ES", { timeZone: "UTC" });
 };
 
-export function convertirFechaVisual(fecha: string): string {
+export function convertirFechaVisual(fecha: string | undefined): string {
 	// 2023-04-12T00:25:06.657Z
 	if (fecha) {
 		const dia = fecha.substring(8, 10);
@@ -37,14 +37,17 @@ export function crearFechaISO(): string {
 	return fecha_ISO;
 }
 
-export function convertirFormatoMoneda(moneda: number): string {
+export function convertirFormatoMoneda(moneda: number | undefined): string {
 	const formatter = new Intl.NumberFormat("es-PE", {
 		style: "currency",
 		currency: "PEN",
 		minimumFractionDigits: 2,
 	});
-
-	return formatter.format(moneda);
+	if (moneda) {
+		return formatter.format(moneda);
+	} else {
+		return "";
+	}
 }
 
 export function formatoCalificacion(decimal: number): string {

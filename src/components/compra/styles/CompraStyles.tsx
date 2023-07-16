@@ -25,14 +25,14 @@ export const CompraStyled = styled.div`
 		.compra {
 			width: 100%;
 			border-radius: 7px;
-			background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-			// background-color: red;
+
 			display: flex;
 			padding: 30px;
 			flex-direction: column;
 			text-decoration: none;
+			color: #000;
+			box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
 			.codigo {
-				color: #fff;
 				font-weight: 800;
 				margin-bottom: 10px;
 			}
@@ -46,7 +46,7 @@ export const CompraStyled = styled.div`
 
 					p {
 						margin-right: 20px;
-						color: #fff;
+
 						font-weight: 700;
 						span {
 							font-weight: 300;
@@ -67,10 +67,10 @@ export const CompraStyled = styled.div`
 					img {
 						width: 70px;
 						height: 70px;
-						box-shadow: 0 0 12px rgba(#fff, 0.5);
 						padding: 2px;
 						border-radius: 50%;
 						object-fit: cover;
+						box-shadow: 0 0 5px 4px rgba(0, 0, 0, 0.1);
 					}
 				}
 			}

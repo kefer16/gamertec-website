@@ -4,14 +4,16 @@ import {
 	DeleteForeverTwoTone as DeleteIcon,
 	ArchiveTwoTone as ArchiveIcon,
 } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
 import { Button, Container } from "@mui/material";
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoCaracteristicasProps } from "../../interfaces/carrito.interface";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 export const Carrito = () => {
+	const { sesionGamertec } = useContext(GamertecSesionContext);
 	const [arrayCarrito, setArrayCarrito] = useState<
 		CarritoCaracteristicasProps[]
 	>([]);
@@ -33,7 +35,9 @@ export const Carrito = () => {
 
 	useEffect(() => {
 		const ObtenerData = async () => {
-			await CarritoService.listarCaracteristicas(1).then((respuesta) => {
+			await CarritoService.listarCaracteristicas(
+				sesionGamertec.usuario.usuario_id
+			).then((respuesta) => {
 				setArrayCarrito(respuesta);
 				const precioSubTotal: number = respuesta.reduce(
 					(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
