@@ -19,7 +19,9 @@ import { TabPreCompra } from "./components/pre_compra/TabPreCompra";
 import { TabCompra } from "./components/compra/TabCompra";
 import { IndexComprobante } from "./components/comprobante/IndexComprobante.component";
 import { SesionProvider } from "./components/sesion/Sesion.component";
-import { IndexPedido } from "./components/pedido/IndexPedido.component";
+import { IndexPedidoExitoso } from "./components/pedido_exitoso/IndexPedidoExitoso.component";
+import { IndexPedido } from "./components/admin/pedido/IndexPedido.component";
+import { IndexPedidoDetalle } from "./components/admin/pedido/IndexPedidoDetalle.component";
 
 function App() {
 	return (
@@ -40,6 +42,11 @@ function App() {
 					<Route path="/admin/brand/" element={<TabMarca />} />
 					<Route path="/admin/model/" element={<TabModelo />} />
 					<Route path="/admin/product/" element={<TabProducto />} />
+					<Route path="/admin/order/" element={<IndexPedido />} />
+					<Route
+						path="/admin/order/detail/:pedido_id"
+						element={<IndexPedidoDetalle />}
+					/>
 					<Route
 						path="/product/description/:modelo_id"
 						element={<TabDescripcion />}
@@ -47,7 +54,8 @@ function App() {
 					<Route path="/shoping_cart/" element={<TabCarrito />} />
 					<Route path="/before_purchase/" element={<TabPreCompra />} />
 					<Route path="/voucher/" element={<IndexComprobante />} />
-					<Route path="/order/" element={<IndexPedido />} />
+					<Route path="/order_successful/" element={<IndexPedidoExitoso />} />
+
 					<Route path="/buy/" element={<TabCompra />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>

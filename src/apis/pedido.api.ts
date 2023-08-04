@@ -1,8 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
+import { PedidoCabeceraSendInterface } from "../interfaces/pedido.interface";
 
 export class PedidoApi {
-	static async Registrar(data: PedidoCabeceraEntity): Promise<AxiosResponse> {
+	static async Registrar(
+		data: PedidoCabeceraSendInterface
+	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				headers: {
@@ -55,6 +58,23 @@ export class PedidoApi {
 			};
 
 			return await axios.get(`${PedidoCabeceraEntity.url}/todos`, config);
+		} catch (err: any) {
+			return Promise.reject(err);
+		}
+	}
+
+	static async listarUno(pedido_id: number): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					pedido_id,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+
+			return await axios.get(`${PedidoCabeceraEntity.url}/uno`, config);
 		} catch (err: any) {
 			return Promise.reject(err);
 		}

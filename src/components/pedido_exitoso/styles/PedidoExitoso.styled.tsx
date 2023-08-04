@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const PedidoStyled = styled.div`
+export const PedidoExitosoStyled = styled.div`
 	max-width: 1260px;
 
 	flex-direction: column;

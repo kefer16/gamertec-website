@@ -2,6 +2,7 @@ import { PedidoApi } from "../apis/pedido.api";
 
 import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
 import { RespuestaEntity } from "../entities/respuesta.entity";
+import { PedidoCabeceraSendInterface } from "../interfaces/pedido.interface";
 
 export class PedidoService {
 	private respuestaPedidoCabecera = new RespuestaEntity<PedidoCabeceraEntity>();
@@ -10,7 +11,7 @@ export class PedidoService {
 	>();
 
 	public async registrar(
-		data: PedidoCabeceraEntity
+		data: PedidoCabeceraSendInterface
 	): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
 		await PedidoApi.Registrar(data)
 			.then((resp) => {
@@ -64,5 +65,24 @@ export class PedidoService {
 				return this.respuestaArrayPedidoCabecera;
 			});
 		return this.respuestaArrayPedidoCabecera;
+	}
+
+	public async listarUno(
+		pedido_id: number
+	): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
+		await PedidoApi.listarUno(pedido_id)
+			.then((resp) => {
+				this.respuestaPedidoCabecera = {
+					correcto: true,
+					tipo: "success",
+					mensaje: "correcto",
+					data: resp.data.data,
+				};
+				return this.respuestaPedidoCabecera;
+			})
+			.catch((error: any) => {
+				return this.respuestaPedidoCabecera;
+			});
+		return this.respuestaPedidoCabecera;
 	}
 }

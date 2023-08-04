@@ -14,6 +14,7 @@ export const Admin = () => {
 				<Link to={`/admin/product/`}>Ir a Productos</Link>
 				<Link to={`/admin/privilege/`}>Ir a Privilegio</Link>
 				<Link to={`/admin/user/`}>Ir a Usuario</Link>
+				<Link to={`/admin/order/`}>Ir a Pedidos</Link>
 			</Box>
 		</>
 	);

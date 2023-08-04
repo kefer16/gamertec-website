@@ -104,19 +104,19 @@ export const Login = () => {
 			.then((response) => {
 				if (response.data.code === 200) {
 					data_usuario = {
-						usuario_id: response.data.data[0].usuario_id,
-						usuario: response.data.data[0].usuario,
-						correo: response.data.data[0].correo,
-						nombre: response.data.data[0].nombre,
-						apellido: response.data.data[0].apellido,
-						foto: response.data.data[0].foto,
-						direccion: response.data.data[0].direccion,
-						telefono: response.data.data[0].telefono,
+						usuario_id: response.data.data.usuario_id,
+						usuario: response.data.data.usuario,
+						correo: response.data.data.correo,
+						nombre: response.data.data.nombre,
+						apellido: response.data.data.apellido,
+						foto: response.data.datafoto,
+						direccion: response.data.data.direccion,
+						telefono: response.data.data.telefono,
 					};
 				}
 				console.log(response);
 
-				id_privilegio = response.data.data[0].fk_privilegio;
+				id_privilegio = response.data.data.fk_privilegio;
 
 				handleReset();
 
@@ -153,9 +153,9 @@ export const Login = () => {
 			.then((response) => {
 				if (response.data.code === 200) {
 					data_privilegio = {
-						privilegio_id: response.data.data[0].privilegio_id,
-						abreviatura: response.data.data[0].abreviatura,
-						nombre: response.data.data[0].tipo,
+						privilegio_id: response.data.data.privilegio_id,
+						abreviatura: response.data.data.abreviatura,
+						nombre: response.data.data.tipo,
 					};
 					const data_sesion: SesionGamertec = {
 						usuario: data_usuario,

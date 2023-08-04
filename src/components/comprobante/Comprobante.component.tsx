@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
 import { PedidoCabeceraEntity } from "../../entities/pedido_cabecera.entities";
 import { PedidoDetalleEntity } from "../../entities/pedido_detalle.entity";
+import { PedidoDetalleProductoEntity } from "../../entities/pedido_detalle_producto.entity";
+import { PedidoCabeceraSendInterface } from "../../interfaces/pedido.interface";
 
 export const Comprobante = () => {
 	const navegacion = useNavigate();
@@ -89,7 +91,9 @@ export const Comprobante = () => {
 				return;
 			});
 
-		const data: PedidoCabeceraEntity = {
+		const data: PedidoCabeceraSendInterface = {} as PedidoCabeceraSendInterface;
+
+		const pedido_cabecera: PedidoCabeceraEntity = {
 			pedido_cabecera_id: null,
 			codigo: `PED-${String(correlativo + 1).padStart(6, "0")}`,
 			direccion: direccion,
@@ -101,13 +105,31 @@ export const Comprobante = () => {
 			activo: true,
 			fk_distrito: 0,
 			fk_usuario: usuarioId,
-			array_pedido_detalle: [],
 		};
+
+		data.pedido_cabecera = pedido_cabecera;
+
 		const array_pedido_detalle: PedidoDetalleEntity[] = [];
+
 		let pedido_detalle: PedidoDetalleEntity = new PedidoDetalleEntity();
+
+		const array_pedido_detalle_producto: PedidoDetalleProductoEntity[] = [];
+		let pedido_detalle_producto: PedidoDetalleProductoEntity =
+			new PedidoDetalleProductoEntity();
 
 		arrayCarrito.forEach(
 			(element: CarritoCaracteristicasProps, index: number) => {
+				for (let index = 0; index < element.carrito.cantidad; index++) {
+					pedido_detalle_producto = {
+						pedido_detalle_producto_id: null,
+						item: index + 1,
+						numero_serie: "",
+						fecha_registro: fecha_actual,
+						fk_pedido_detalle: 0,
+					};
+					array_pedido_detalle_producto.push(pedido_detalle_producto);
+				}
+
 				pedido_detalle = {
 					pedido_detalle_id: null,
 					item: index + 1,
@@ -116,20 +138,23 @@ export const Comprobante = () => {
 					total: Number(element.carrito.cantidad * element.modelo.precio),
 					fecha_registro: fecha_actual,
 					activo: true,
+					comprado: false,
 					fk_modelo: element.modelo.modelo_id,
 					fk_pedido_cabecera: 0,
 				};
+
 				array_pedido_detalle.push(pedido_detalle);
 			}
 		);
 
 		data.array_pedido_detalle = array_pedido_detalle;
+		data.array_pedido_detalle_producto = array_pedido_detalle_producto;
 
 		await pedido
 			.registrar(data)
 			.then((resp: RespuestaEntity<PedidoCabeceraEntity>) => {
 				if (resp.correcto) {
-					navegacion("/order/");
+					navegacion("/order_successful/");
 				}
 			})
 			.catch((error: any) => {

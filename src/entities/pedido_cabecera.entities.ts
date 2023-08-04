@@ -14,7 +14,7 @@ export class PedidoCabeceraEntity {
 		public activo: boolean = false,
 		public fk_distrito: number = 0,
 		public fk_usuario: number = 0,
-		public pedido_detalle?: PedidoDetalleEntity,
+		// public pedido_detalle?: PedidoDetalleEntity,
 		public array_pedido_detalle?: PedidoDetalleEntity[]
 	) {}
 	public static url: string = `${API_URL}/pedido`;

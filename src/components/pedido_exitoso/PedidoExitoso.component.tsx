@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { PedidoStyled } from "./styles/Pedido.styled";
+import { PedidoExitosoStyled } from "./styles/PedidoExitoso.styled";
 
-export const Pedido = () => {
+export const PedidoExitoso = () => {
 	return (
 		<>
-			<PedidoStyled>
+			<PedidoExitosoStyled>
 				<div className="check">
 					<div className="success-checkmark">
 						<div className="check-icon">
@@ -26,7 +26,7 @@ export const Pedido = () => {
 						Ver compra realizada
 					</Link>
 				</div>
-			</PedidoStyled>
+			</PedidoExitosoStyled>
 		</>
 	);
 };

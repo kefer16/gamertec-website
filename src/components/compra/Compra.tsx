@@ -3,10 +3,6 @@ import { CompraStyled } from "./styles/CompraStyles";
 import { useContext, useEffect, useState } from "react";
 import { PedidoService } from "../../services/pedido.service";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
-import {
-	convertirFechaVisual,
-	convertirFormatoMoneda,
-} from "../../utils/funciones.utils";
 import { PedidoCabeceraEntity } from "../../entities/pedido_cabecera.entities";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
 
@@ -49,7 +45,7 @@ export const Compra = () => {
 					<div id="contenedor_compras" className="contenedor_compras">
 						<h3>Pedidos</h3>
 
-						{arrayPedidoCabecera.map((pedido_cabecera: PedidoCabeceraEntity) => {
+						{/* {arrayPedidoCabecera.map((pedido_cabecera: PedidoCabeceraEntity) => {
 							return (
 								<Link
 									to="#"
@@ -85,7 +81,7 @@ export const Compra = () => {
 									</div>
 								</Link>
 							);
-						})}
+						})} */}
 					</div>
 				) : (
 					<></>

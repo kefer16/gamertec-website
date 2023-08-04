@@ -1,4 +1,5 @@
 import { ModeloEntity } from "./modelo.entity";
+import { PedidoDetalleProductoEntity } from "./pedido_detalle_producto.entity";
 
 export class PedidoDetalleEntity {
 	constructor(
@@ -9,8 +10,10 @@ export class PedidoDetalleEntity {
 		public total: number = 0,
 		public fecha_registro: string = "",
 		public activo: boolean = false,
+		public comprado: boolean = false,
 		public fk_modelo: number = 0,
 		public fk_pedido_cabecera: number = 0,
-		public modelo?: ModeloEntity
+		public modelo?: ModeloEntity,
+		public array_pedido_detalle_producto?: PedidoDetalleProductoEntity[]
 	) {}
 }
