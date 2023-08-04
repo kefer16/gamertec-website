@@ -8,14 +8,14 @@ previsualización de `despliegue utilizando React`
 
 - Pantalla Principal
 
-![Imagen despliegue Principal](./src\images\readme\gamertec-frontend-home.jpeg)
+![Imagen despliegue Principal](./src/images/readme/gamertec-frontend-home.jpeg)
 
 - Pantalla de Productos
 
-![Imagen despliegue Productos](./src\images\readme\gamertec-frontend-products.jpeg)
+![Imagen despliegue Productos](./src/images/readme/gamertec-frontend-products.jpeg)
 
 - Pantalla de Descripción de Producto
-  ![Imagen despliegue Descripción de Producto](./src\images\readme\gamertec-frontend-product-description.jpeg)
+  ![Imagen despliegue Descripción de Producto](./src/images/readme/gamertec-frontend-product-description.jpeg)
 
 ## Instalar Dependencias
 
