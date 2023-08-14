@@ -1,16 +1,16 @@
 import { useContext, useEffect, useState } from "react";
 import { CardPedido } from "../../controls/CardPedido";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
-import { PedidoCabeceraEntity } from "../../../entities/pedido_cabecera.entities";
 import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { PedidoService } from "../../../services/pedido.service";
 import { Container } from "@mui/material";
+import { PedidoCabeceraUsuarioProsp } from "../../../interfaces/pedido.interface";
 
 export const Pedido = () => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 
 	const [arrayPedidoCabecera, setArrayPedidoCabecera] = useState<
-		PedidoCabeceraEntity[]
+		PedidoCabeceraUsuarioProsp[]
 	>([]);
 
 	useEffect(() => {
@@ -20,7 +20,7 @@ export const Pedido = () => {
 
 			await pedido
 				.listarPedidoUsuario(sesionGamertec.usuario.usuario_id)
-				.then((resp: RespuestaEntity<PedidoCabeceraEntity[]>) => {
+				.then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
 					console.log(resp);
 
 					if (resp.data) {
@@ -40,11 +40,11 @@ export const Pedido = () => {
 			maxWidth="xl"
 			sx={{ display: "grid", gap: "2rem", padding: "2rem 0rem" }}
 		>
-			{arrayPedidoCabecera.map((pedido_cabecera: PedidoCabeceraEntity) => {
+			{arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
 				return (
 					<CardPedido
-						key={pedido_cabecera.pedido_cabecera_id}
-						pedido_cabecera={pedido_cabecera}
+						key={item.pedido_cabecera_id}
+						pedido_cabecera={item}
 						link="/admin/order/detail"
 					/>
 				);

@@ -6,8 +6,8 @@ export class CategoryService {
 		public categoria_id: number = 0,
 		public nombre: string = "",
 		public activo: boolean = false,
-		public fecha_registro: string = "",
-		public fecha_actualizacion: string = ""
+		public fecha_registro: Date = new Date(),
+		public fecha_actualizacion: Date = new Date()
 	) {}
 	private static url: string = `${API_URL}/categoria`;
 

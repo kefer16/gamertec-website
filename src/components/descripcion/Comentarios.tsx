@@ -85,7 +85,7 @@ export const Comentarios = ({
 									</div>
 								</div>
 								<div className="fecha-comentario">
-									<p>{comentario.fecha_registro}</p>
+									<p>{comentario.fecha_registro.toString()}</p>
 								</div>
 							</div>
 						);

@@ -15,18 +15,16 @@ import { SearchTwoTone as SearchIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { funcionObtenerCategorias } from "../admin/categoria/Categoria";
 import styled from "styled-components";
-import {
-	ModelosFiltroProps,
-	funcionListarModelosPorFiltro,
-} from "../../apis/producto.api";
+import { funcionListarModelosPorFiltro } from "../../apis/producto.api";
 import { Link } from "react-router-dom";
 import { ComboboxProps } from "../../interfaces/combobox.interface";
+import { ModeloPorFiltroProps } from "../../interfaces/modelo.interface";
 
 export const Products = () => {
 	const [categoria, setCategoria] = useState<string>("0");
 	const [nombreModelo, setNombreModelo] = useState<string>("");
 	const [arrayCategoria, setArrayCategoria] = useState<ComboboxProps[]>([]);
-	const [arrayModelo, setArrayModelo] = useState<ModelosFiltroProps[]>([]);
+	const [arrayModelo, setArrayModelo] = useState<ModeloPorFiltroProps[]>([]);
 
 	useEffect(() => {
 		const obtenerData = async () => {
@@ -145,22 +143,22 @@ export const Products = () => {
 								// padding: "1.5em",
 							}}
 						>
-							{arrayModelo.map((item: ModelosFiltroProps) => {
+							{arrayModelo.map((item: ModeloPorFiltroProps) => {
 								return (
 									<CardProduct
-										key={item.modelo.modelo_id}
-										to={`/product/description/${item.modelo.modelo_id}`}
-										state={item.modelo.modelo_id}
+										key={item.modelo_id}
+										to={`/product/description/${item.modelo_id}`}
+										state={item.modelo_id}
 									>
-										<CardImageProduct src={item.modelo.foto} alt="img_card" />
+										<CardImageProduct src={item.foto} alt="img_card" />
 										<CardTextProduct>
-											<CardTextProductBrand>{item.marca.nombre}</CardTextProductBrand>
+											<CardTextProductBrand>{item.cls_marca.nombre}</CardTextProductBrand>
 											<CardTextProductTitle>
-												{item.modelo.descripcion.length > 45
-													? `${item.modelo.descripcion.substring(0, 45)}...`
-													: item.modelo.descripcion}
+												{item.descripcion.length > 45
+													? `${item.descripcion.substring(0, 45)}...`
+													: item.descripcion}
 											</CardTextProductTitle>
-											<CardTextProductPrice>{`S./ ${item.modelo.precio}`}</CardTextProductPrice>
+											<CardTextProductPrice>{`S./ ${item.precio}`}</CardTextProductPrice>
 										</CardTextProduct>
 									</CardProduct>
 								);

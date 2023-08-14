@@ -3,14 +3,14 @@ import { CompraStyled } from "./styles/CompraStyles";
 import { useContext, useEffect, useState } from "react";
 import { PedidoService } from "../../services/pedido.service";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
-import { PedidoCabeceraEntity } from "../../entities/pedido_cabecera.entities";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
+import { PedidoCabeceraUsuarioProsp } from "../../interfaces/pedido.interface";
 
 export const Compra = () => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 
 	const [arrayPedidoCabecera, setArrayPedidoCabecera] = useState<
-		PedidoCabeceraEntity[]
+		PedidoCabeceraUsuarioProsp[]
 	>([]);
 
 	useEffect(() => {
@@ -20,9 +20,7 @@ export const Compra = () => {
 
 			pedido
 				.listarPedidoUsuario(sesionGamertec.usuario.usuario_id)
-				.then((resp: RespuestaEntity<PedidoCabeceraEntity[]>) => {
-					console.log(resp);
-
+				.then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
 					if (resp.data) {
 						setArrayPedidoCabecera(resp.data);
 					}

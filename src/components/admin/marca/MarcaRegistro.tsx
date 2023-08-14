@@ -14,8 +14,8 @@ import {
 
 import { useEffect, useState } from "react";
 import {
-	convertirFechaSQL,
 	convertirFechaVisual,
+	fechaActualISO,
 } from "../../../utils/funciones.utils";
 import { MarcaService } from "../../../entities/marca.entities";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
@@ -55,7 +55,7 @@ export const MarcaRegistro = ({
 	useEffect(() => {
 		setMarcaId(itemSeleccionado.marca_id);
 		setNombre(itemSeleccionado.nombre);
-		setFecha_registro(itemSeleccionado.fecha_registro);
+		setFecha_registro(itemSeleccionado.fecha_registro.toISOString());
 		setFkCategoria(String(itemSeleccionado.fk_categoria));
 		setActivo(itemSeleccionado.activo ? "1" : "0");
 	}, [itemSeleccionado]);
@@ -68,7 +68,7 @@ export const MarcaRegistro = ({
 			nombre,
 			activo === "1",
 			parseInt(fkCategoria),
-			convertirFechaSQL(fecha_registro)
+			fechaActualISO()
 		);
 		console.log(data, esEdicion);
 

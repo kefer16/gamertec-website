@@ -1,11 +1,11 @@
 import { CarritoApi } from "../apis/carrito.api";
-import { CarritoCaracteristicasProps } from "../interfaces/carrito.interface";
+import { CarritoUsuarioProps } from "../interfaces/carrito.interface";
 
 export class CarritoService {
 	static listarCaracteristicas = async (
 		usuario_id: number
-	): Promise<CarritoCaracteristicasProps[]> => {
-		let arrayCarrito: CarritoCaracteristicasProps[] = [];
+	): Promise<CarritoUsuarioProps[]> => {
+		let arrayCarrito: CarritoUsuarioProps[] = [];
 
 		await CarritoApi.ObtenerCarritoPorUsuario(usuario_id)
 			.then((respuesta) => {

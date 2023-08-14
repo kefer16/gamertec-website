@@ -4,7 +4,7 @@ import { ModalStyled } from "./styles/ModalStyled";
 import { ButtonCerrarModal } from "./ButtonCerrarModal";
 import { useState } from "react";
 import { ComentarioService } from "../../entities/comentario.entities";
-import { convertirFechaSQL, crearFechaISO } from "../../utils/funciones.utils";
+import { fechaActualISO } from "../../utils/funciones.utils";
 
 interface Props {
 	modeloId: number;
@@ -42,7 +42,7 @@ export const ModalComentario = ({
 			"usuario",
 			titulo,
 			mensaje,
-			convertirFechaSQL(crearFechaISO()),
+			fechaActualISO(),
 			true,
 			1,
 			modeloId

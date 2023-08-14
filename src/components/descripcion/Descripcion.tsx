@@ -2,11 +2,10 @@ import { Alert, Button, Container, Snackbar, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
-import { ApiModelo, ModeloDescripcion } from "../../apis/modelo.api";
+import { ApiModelo } from "../../apis/modelo.api";
 import {
-	convertirFechaSQL,
 	convertirFormatoMoneda,
-	crearFechaISO,
+	fechaActualISO,
 	formatoCalificacion,
 } from "../../utils/funciones.utils";
 import { CircleRounded } from "@mui/icons-material";
@@ -17,6 +16,7 @@ import { InterfaceAlertControl } from "../controls/AlertControl";
 import { CarritoEntity } from "../../entities/carrito.entities";
 import { CarritoApi } from "../../apis/carrito.api";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { ModeloDescripcionProps } from "../../interfaces/modelo.interface";
 
 interface Props {
 	modelo_id: number;
@@ -470,16 +470,16 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		const ObtenerData = async () => {
 			obtenerSesion();
 			await ApiModelo.ListarModeloDescripcion(modelo_id).then(
-				(data: ModeloDescripcion) => {
-					setCategoriaNombre(data.categoria.nombre);
-					setMarcaNombre(data.marca.nombre);
-					setModeloNombre(data.modelo.nombre);
-					setDescripcion(data.modelo.descripcion);
-					setFoto(data.modelo.foto);
-					setPrecio(data.modelo.precio);
-					setCaracteristicas(data.modelo.caracteristicas);
-					setColor(data.modelo.color);
-					setStock(data.modelo.stock);
+				(data: ModeloDescripcionProps) => {
+					setCategoriaNombre(data.cls_marca.cls_categoria.nombre);
+					setMarcaNombre(data.cls_marca.nombre);
+					setModeloNombre(data.nombre);
+					setDescripcion(data.descripcion);
+					setFoto(data.foto);
+					setPrecio(data.precio);
+					setCaracteristicas(data.caracteristicas);
+					setColor(data.color);
+					setStock(data.stock);
 				}
 			);
 			setUsuarioId(sesionGamertec.usuario.usuario_id);
@@ -537,7 +537,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			precio,
 			false,
 			false,
-			convertirFechaSQL(crearFechaISO()),
+			fechaActualISO(),
 			true,
 			usuarioId,
 			modelo_id

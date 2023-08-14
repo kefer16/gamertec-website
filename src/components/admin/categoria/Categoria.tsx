@@ -24,7 +24,7 @@ import { CategoryRegister } from "./CategoriaRegistro";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import {
 	convertirFechaVisual,
-	crearFechaISO,
+	fechaActualISO,
 } from "../../../utils/funciones.utils";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
@@ -136,8 +136,12 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 						index: index + 1,
 						nombre: element.nombre,
 						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
-						fecha_actualizacion: element.fecha_actualizacion,
+						fecha_registro_visual: convertirFechaVisual(
+							element.fecha_registro.toString()
+						),
+						fecha_actualizacion: convertirFechaVisual(
+							element.fecha_actualizacion.toString()
+						),
 						activo: element.activo,
 						activo_nombre: element.activo ? "Activo" : "Inactivo",
 					};
@@ -153,7 +157,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 
 	const funcionCrearCategoria = () => {
 		setCategoriaSeleccionada(
-			new CategoryService(0, "", false, crearFechaISO(), crearFechaISO())
+			new CategoryService(0, "", false, fechaActualISO(), fechaActualISO())
 		);
 		setEsEdicion(false);
 		setAbrirModal(true);

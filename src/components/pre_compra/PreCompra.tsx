@@ -19,7 +19,7 @@ import {
 	ComboboxProps,
 } from "../../interfaces/combobox.interface";
 import { CarritoService } from "../../services/carrito.service";
-import { CarritoCaracteristicasProps } from "../../interfaces/carrito.interface";
+import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 
@@ -41,9 +41,7 @@ export const PreCompra = () => {
 		ComboboxAnidadoProps[]
 	>([]);
 
-	const [arrayCarrito, setArrayCarrito] = useState<
-		CarritoCaracteristicasProps[]
-	>([]);
+	const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
 
 	const [departamentoId, setDepartamentoId] = useState<string>("0");
 	const [provinciaId, setProvinciaId] = useState<string>("0");
@@ -72,7 +70,7 @@ export const PreCompra = () => {
 			).then((respuesta) => {
 				setArrayCarrito(respuesta);
 				const precioSubTotal: number = respuesta.reduce(
-					(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
+					(suma, item) => suma + item.cls_modelo.precio * item.cantidad,
 					0
 				);
 				setPrecioSubTotal(precioSubTotal);
@@ -86,7 +84,7 @@ export const PreCompra = () => {
 		obtenerData();
 		setDireccion(sesionGamertec.usuario.direccion);
 		setTelefono(sesionGamertec.usuario.telefono);
-	}, []);
+	}, [sesionGamertec]);
 
 	const funcionListarComboboxAnidadoProvincia = ({
 		valor,
@@ -248,20 +246,20 @@ export const PreCompra = () => {
 						<div className="orden-cantidad"></div>
 
 						<div id="orden-productos" className="orden-productos">
-							{arrayCarrito.map((carrito: CarritoCaracteristicasProps) => {
+							{arrayCarrito.map((carrito: CarritoUsuarioProps) => {
 								return (
-									<div key={carrito.modelo.modelo_id} className="content-producto">
+									<div key={carrito.cls_modelo.modelo_id} className="content-producto">
 										<div className="producto-foto">
-											<img src={carrito.modelo.foto} alt={carrito.modelo.nombre} />
+											<img src={carrito.cls_modelo.foto} alt={carrito.cls_modelo.nombre} />
 										</div>
 										<div className="producto-detalles">
-											<h4>{carrito.marca.nombre}</h4>
-											<h5>{carrito.modelo.nombre}</h5>
-											<span>{convertirFormatoMoneda(carrito.modelo.precio)}</span>
+											<h4>{carrito.cls_modelo.cls_marca.nombre}</h4>
+											<h5>{carrito.cls_modelo.nombre}</h5>
+											<span>{convertirFormatoMoneda(carrito.cls_modelo.precio)}</span>
 										</div>
 
 										<div className="producto-cantidad">
-											<p>{`${carrito.carrito.cantidad} Und.`} </p>
+											<p>{`${carrito.cantidad} Und.`} </p>
 										</div>
 									</div>
 								);

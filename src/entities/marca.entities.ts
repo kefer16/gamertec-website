@@ -8,7 +8,7 @@ export class MarcaService {
 		public nombre: string = "",
 		public activo: boolean = false,
 		public fk_categoria: number = 0,
-		public fecha_registro: string = ""
+		public fecha_registro: Date = new Date()
 	) {}
 
 	private static url: string = `${API_URL}/marca`;

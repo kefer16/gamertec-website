@@ -5,7 +5,7 @@ import {
 } from "./styles/Comprobante.styled";
 import { useContext, useEffect, useState } from "react";
 import { CarritoService } from "../../services/carrito.service";
-import { CarritoCaracteristicasProps } from "../../interfaces/carrito.interface";
+import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import {
 	convertirFechaSQL,
 	convertirFechaVisual,
@@ -26,9 +26,7 @@ export const Comprobante = () => {
 	const navegacion = useNavigate();
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 
-	const [arrayCarrito, setArrayCarrito] = useState<
-		CarritoCaracteristicasProps[]
-	>([]);
+	const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
 
 	const [precioSubTotal, setPrecioSubTotal] = useState<number>(0);
 	const [precioTotal, setPrecioTotal] = useState<number>(0);
@@ -47,7 +45,7 @@ export const Comprobante = () => {
 			).then((array) => {
 				setArrayCarrito(array);
 				const precioSubTotal: number = array.reduce(
-					(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
+					(suma, item) => suma + item.cls_modelo.precio * item.cantidad,
 					0
 				);
 				setPrecioSubTotal(precioSubTotal);
@@ -117,35 +115,33 @@ export const Comprobante = () => {
 		let pedido_detalle_producto: PedidoDetalleProductoEntity =
 			new PedidoDetalleProductoEntity();
 
-		arrayCarrito.forEach(
-			(element: CarritoCaracteristicasProps, index: number) => {
-				for (let index = 0; index < element.carrito.cantidad; index++) {
-					pedido_detalle_producto = {
-						pedido_detalle_producto_id: null,
-						item: index + 1,
-						numero_serie: "",
-						fecha_registro: fecha_actual,
-						fk_pedido_detalle: 0,
-					};
-					array_pedido_detalle_producto.push(pedido_detalle_producto);
-				}
-
-				pedido_detalle = {
-					pedido_detalle_id: null,
+		arrayCarrito.forEach((element: CarritoUsuarioProps, index: number) => {
+			for (let index = 0; index < element.cantidad; index++) {
+				pedido_detalle_producto = {
+					pedido_detalle_producto_id: null,
 					item: index + 1,
-					cantidad: element.carrito.cantidad,
-					precio: element.modelo.precio,
-					total: Number(element.carrito.cantidad * element.modelo.precio),
+					numero_serie: "",
 					fecha_registro: fecha_actual,
-					activo: true,
-					comprado: false,
-					fk_modelo: element.modelo.modelo_id,
-					fk_pedido_cabecera: 0,
+					fk_pedido_detalle: 0,
 				};
-
-				array_pedido_detalle.push(pedido_detalle);
+				array_pedido_detalle_producto.push(pedido_detalle_producto);
 			}
-		);
+
+			pedido_detalle = {
+				pedido_detalle_id: null,
+				item: index + 1,
+				cantidad: element.cantidad,
+				precio: element.cls_modelo.precio,
+				total: Number(element.cantidad * element.cls_modelo.precio),
+				fecha_registro: fecha_actual,
+				activo: true,
+				comprado: false,
+				fk_modelo: element.cls_modelo.modelo_id,
+				fk_pedido_cabecera: 0,
+			};
+
+			array_pedido_detalle.push(pedido_detalle);
+		});
 
 		data.array_pedido_detalle = array_pedido_detalle;
 		data.array_pedido_detalle_producto = array_pedido_detalle_producto;
@@ -218,19 +214,22 @@ export const Comprobante = () => {
 								<th>VALOR DE VENTA</th>
 							</thead>
 							<tbody id="productos-comprar">
-								{arrayCarrito.map((carrito: CarritoCaracteristicasProps) => {
+								{arrayCarrito.map((carrito: CarritoUsuarioProps) => {
 									return (
 										<tr>
-											<td>{carrito.carrito.cantidad}</td>
+											<td>{carrito.cantidad}</td>
 											<td>
-												<img src={carrito.modelo.foto} alt={carrito.modelo.nombre} />
+												<img
+													src={carrito.cls_modelo.foto}
+													alt={carrito.cls_modelo.nombre}
+												/>
 											</td>
 
-											<td>{`${carrito.marca.nombre}, ${carrito.modelo.descripcion}, (SN: )`}</td>
-											<td>{convertirFormatoMoneda(carrito.modelo.precio)}</td>
+											<td>{`${carrito.cls_modelo.cls_marca.nombre}, ${carrito.cls_modelo.descripcion}, (SN: )`}</td>
+											<td>{convertirFormatoMoneda(carrito.cls_modelo.precio)}</td>
 											<td>
 												{convertirFormatoMoneda(
-													carrito.modelo.precio * carrito.carrito.cantidad
+													carrito.cls_modelo.precio * carrito.cantidad
 												)}
 											</td>
 										</tr>

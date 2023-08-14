@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { CardPedidoInterface } from "../../interfaces/card_pedido.interface";
+import {
+	CardPedidoDetalleProps,
+	CardPedidoInterface,
+} from "../../interfaces/card_pedido.interface";
 import {
 	convertirFechaVisual,
 	convertirFormatoMoneda,
 } from "../../utils/funciones.utils";
 import { CardPedidoStyle } from "./styles/CardPedido.style";
-import { PedidoDetalleEntity } from "../../entities/pedido_detalle.entity";
 
 export const CardPedido = ({ pedido_cabecera, link }: CardPedidoInterface) => {
 	const [cantidadTotal, setCantidadTotal] = useState<number>(0);
@@ -17,12 +19,12 @@ export const CardPedido = ({ pedido_cabecera, link }: CardPedidoInterface) => {
 		let sumaCantidad: number = 0;
 		let sumaPrecio: number = 0;
 		const arrayImagenes: string[][] = [];
-		pedido_cabecera.array_pedido_detalle?.forEach(
-			(element: PedidoDetalleEntity) => {
+		pedido_cabecera.lst_pedido_detalle.forEach(
+			(element: CardPedidoDetalleProps) => {
 				sumaCantidad = sumaCantidad + element.cantidad;
 				sumaPrecio = sumaPrecio + element.precio;
-				if (element.modelo !== undefined) {
-					arrayImagenes.push([element.modelo.foto, element.modelo.nombre]);
+				if (element.cls_modelo !== undefined) {
+					arrayImagenes.push([element.cls_modelo.foto, element.cls_modelo.nombre]);
 				}
 			}
 		);

@@ -2,12 +2,15 @@ import { PedidoApi } from "../apis/pedido.api";
 
 import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
 import { RespuestaEntity } from "../entities/respuesta.entity";
-import { PedidoCabeceraSendInterface } from "../interfaces/pedido.interface";
+import {
+	PedidoCabeceraSendInterface,
+	PedidoCabeceraUsuarioProsp,
+} from "../interfaces/pedido.interface";
 
 export class PedidoService {
 	private respuestaPedidoCabecera = new RespuestaEntity<PedidoCabeceraEntity>();
 	private respuestaArrayPedidoCabecera = new RespuestaEntity<
-		PedidoCabeceraEntity[]
+		PedidoCabeceraUsuarioProsp[]
 	>();
 
 	public async registrar(
@@ -50,7 +53,7 @@ export class PedidoService {
 
 	public async listarPedidoUsuario(
 		usuario_id: number
-	): Promise<RespuestaEntity<PedidoCabeceraEntity[]>> {
+	): Promise<RespuestaEntity<PedidoCabeceraUsuarioProsp[]>> {
 		await PedidoApi.listarPedidoUsuario(usuario_id)
 			.then((resp) => {
 				this.respuestaArrayPedidoCabecera = {

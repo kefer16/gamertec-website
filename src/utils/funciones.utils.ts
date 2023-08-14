@@ -37,6 +37,10 @@ export function crearFechaISO(): string {
 	return fecha_ISO;
 }
 
+export function fechaActualISO(): Date {
+	return new Date(new Date().setHours(new Date().getHours() - 5)); //restamos 5 horas a fecha actual
+}
+
 export function convertirFormatoMoneda(moneda: number | undefined): string {
 	const formatter = new Intl.NumberFormat("es-PE", {
 		style: "currency",

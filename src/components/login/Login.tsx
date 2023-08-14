@@ -102,21 +102,23 @@ export const Login = () => {
 
 		await UsuarioService.Logearse(user, password)
 			.then((response) => {
+				const resp = response.data.data;
+				console.log(resp);
+
 				if (response.data.code === 200) {
 					data_usuario = {
-						usuario_id: response.data.data.usuario_id,
-						usuario: response.data.data.usuario,
-						correo: response.data.data.correo,
-						nombre: response.data.data.nombre,
-						apellido: response.data.data.apellido,
-						foto: response.data.datafoto,
-						direccion: response.data.data.direccion,
-						telefono: response.data.data.telefono,
+						usuario_id: resp.usuario_id,
+						usuario: resp.usuario,
+						correo: resp.correo,
+						nombre: resp.nombre,
+						apellido: resp.apellido,
+						foto: resp.foto,
+						direccion: resp.direccion,
+						telefono: resp.telefono,
 					};
 				}
-				console.log(response);
 
-				id_privilegio = response.data.data.fk_privilegio;
+				id_privilegio = resp.fk_privilegio;
 
 				handleReset();
 
@@ -151,11 +153,13 @@ export const Login = () => {
 
 		await PrivilegioService.BuscarPorID(id_privilegio)
 			.then((response) => {
+				const resp = response.data.data;
+
 				if (response.data.code === 200) {
 					data_privilegio = {
-						privilegio_id: response.data.data.privilegio_id,
-						abreviatura: response.data.data.abreviatura,
-						nombre: response.data.data.tipo,
+						privilegio_id: resp.privilegio_id,
+						abreviatura: resp.abreviatura,
+						nombre: resp.tipo,
 					};
 					const data_sesion: SesionGamertec = {
 						usuario: data_usuario,

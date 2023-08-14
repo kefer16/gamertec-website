@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import {
 	convertirFechaVisual,
-	crearFechaISO,
+	fechaActualISO,
 } from "../../../utils/funciones.utils";
 import {
 	Alert,
@@ -166,7 +166,9 @@ export const Marca = ({ nombreFormulario }: Props) => {
 						index: index + 1,
 						nombre: element.nombre,
 						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
+						fecha_registro_visual: convertirFechaVisual(
+							element.fecha_registro.toString()
+						),
 						fk_categoria: element.fk_categoria,
 						nombre_categoria: arrayCategoria.find(
 							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
@@ -186,7 +188,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionCrear = () => {
-		setItemSeleccionado(new MarcaService(0, "", false, 0, crearFechaISO()));
+		setItemSeleccionado(new MarcaService(0, "", false, 0, fechaActualISO()));
 		setEsEdicion(false);
 		setAbrirModal(true);
 	};

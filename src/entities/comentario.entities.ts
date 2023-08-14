@@ -9,7 +9,7 @@ export class ComentarioService {
 		public usuario: string = "",
 		public titulo: string = "",
 		public mensaje: string = "",
-		public fecha_registro: string = "",
+		public fecha_registro: Date = new Date(),
 		public activo: boolean = false,
 		public fk_usuario: number = 0,
 		public fk_modelo: number = 0

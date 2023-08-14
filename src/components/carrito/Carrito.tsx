@@ -9,21 +9,19 @@ import { useContext, useEffect, useState } from "react";
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
 import { Button, Container } from "@mui/material";
 import { CarritoService } from "../../services/carrito.service";
-import { CarritoCaracteristicasProps } from "../../interfaces/carrito.interface";
+import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 export const Carrito = () => {
 	const { sesionGamertec } = useContext(GamertecSesionContext);
-	const [arrayCarrito, setArrayCarrito] = useState<
-		CarritoCaracteristicasProps[]
-	>([]);
+	const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
 	const [precioEnvio, setPrecioEnvio] = useState<number>(0);
 	const [precioSubTotal, setPrecioSubTotal] = useState<number>(0);
 	const [precioTotal, setPrecioTotal] = useState<number>(0);
 
 	const calcularTotalOrden = () => {
 		const precioSubTotal: number = arrayCarrito.reduce(
-			(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
+			(suma, item) => suma + item.cls_modelo.precio * item.cantidad,
 			0
 		);
 		setPrecioSubTotal(precioSubTotal);
@@ -40,7 +38,7 @@ export const Carrito = () => {
 			).then((respuesta) => {
 				setArrayCarrito(respuesta);
 				const precioSubTotal: number = respuesta.reduce(
-					(suma, item) => suma + item.modelo.precio * item.carrito.cantidad,
+					(suma, item) => suma + item.cls_modelo.precio * item.cantidad,
 					0
 				);
 				setPrecioSubTotal(precioSubTotal);
@@ -51,7 +49,7 @@ export const Carrito = () => {
 			});
 		};
 		ObtenerData();
-	}, []);
+	}, [sesionGamertec]);
 
 	return (
 		<Container maxWidth={"lg"}>
@@ -62,29 +60,32 @@ export const Carrito = () => {
 
 				<div className="contenido">
 					<div className="productos">
-						{arrayCarrito.map((item: CarritoCaracteristicasProps) => {
+						{arrayCarrito.map((item: CarritoUsuarioProps) => {
 							return (
-								<div key={item.carrito.carrito_id} className="pro-detalle">
+								<div key={item.carrito_id} className="pro-detalle">
 									<div className="deta-arriba">
 										<div className="foto">
-											<img src={item.modelo.foto} alt="foto" />
+											<img src={item.cls_modelo.foto} alt="foto" />
 										</div>
 										<div className="detalles">
-											<h2>{item.marca.nombre}</h2>
-											<Link to={`/product/description/${item.modelo.modelo_id}`}>
-												{item.modelo.descripcion}
+											<h2>{item.cls_modelo.cls_marca.nombre}</h2>
+											<Link to={`/product/description/${item.cls_modelo.modelo_id}`}>
+												{item.cls_modelo.descripcion}
 											</Link>
-											<p>{item.modelo.nombre}</p>
+											<p>{item.cls_modelo.nombre}</p>
 										</div>
 										<div className="precio">
-											<h2>{convertirFormatoMoneda(item.modelo.precio)}</h2>
+											<h2>{convertirFormatoMoneda(item.cls_modelo.precio)}</h2>
 											<span>Envio a Domicilio</span>
-											<p className="stock"> {`${item.modelo.stock} Un. disponibles `}</p>
+											<p className="stock">
+												{" "}
+												{`${item.cls_modelo.stock} Un. disponibles `}
+											</p>
 										</div>
 										<div className="opciones">
 											<div className="cantidad">
 												<button className="disminuir">-</button>
-												<input type="number" value={item.carrito.cantidad} disabled />
+												<input type="number" value={item.cantidad} disabled />
 												<button className="aumentar">+</button>
 											</div>
 										</div>

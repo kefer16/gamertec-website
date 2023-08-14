@@ -1,16 +1,11 @@
-import { MarcaService } from "../entities/marca.entities";
 import { ModeloEntity } from "../entities/modelo.entity";
-
-export interface ModelosFiltroProps {
-	modelo: ModeloEntity;
-	marca: MarcaService;
-}
+import { ModeloPorFiltroProps } from "../interfaces/modelo.interface";
 
 export const funcionListarModelosPorFiltro = async (
 	categoria_id: number,
 	nombre_modelo: string
-): Promise<ModelosFiltroProps[]> => {
-	let modelosFiltro: ModelosFiltroProps[] = [];
+): Promise<ModeloPorFiltroProps[]> => {
+	let modelosFiltro: ModeloPorFiltroProps[] = [];
 
 	await ModeloEntity.ListarModelosPorFiltro(categoria_id, nombre_modelo)
 		.then((response) => {

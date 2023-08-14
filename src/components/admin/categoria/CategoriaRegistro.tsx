@@ -15,9 +15,8 @@ import {
 import { useEffect, useState } from "react";
 import { CategoryService } from "../../../entities/categoria.entities";
 import {
-	convertirFechaSQL,
 	convertirFechaVisual,
-	crearFechaISO,
+	fechaActualISO,
 } from "../../../utils/funciones.utils";
 
 interface Props {
@@ -53,7 +52,7 @@ export const CategoryRegister = ({
 		setCategoriaId(itemSeleccionado.categoria_id);
 		setNombre(itemSeleccionado.nombre);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
-		setFecha_registro(itemSeleccionado.fecha_registro);
+		setFecha_registro(itemSeleccionado.fecha_registro.toString());
 	}, [itemSeleccionado]);
 
 	const funcionCambiarEstado = (event: SelectChangeEvent) => {
@@ -69,8 +68,8 @@ export const CategoryRegister = ({
 			categoriaId,
 			nombre,
 			activo === "1",
-			convertirFechaSQL(fecha_registro),
-			convertirFechaSQL(crearFechaISO())
+			fechaActualISO(),
+			fechaActualISO()
 		);
 
 		if (esEdicion) {
