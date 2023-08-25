@@ -1,133 +1,114 @@
-import { Box, Button, Grid, Modal, TextField, Typography } from "@mui/material";
+import { Calendar, CalendarChangeEvent } from "primereact/calendar";
+import { Dialog } from "primereact/dialog";
 import { useEffect, useState } from "react";
-import { PedidoDetalleEntity } from "../../../entities/pedido_detalle.entity";
-
+import {
+	IMultiSelectProps,
+	MultiSelectPrimeUI,
+} from "../../controls/primeUI/MultiSelectPrimeUI";
+import { Button } from "primereact/button";
+import { Divider } from "primereact/divider";
+import { IActualizaSerie } from "../../../interfaces/pedido.interface";
+import { PedidoService } from "../../../services/pedido.service";
+// import { PedidoService } from "../../../services/pedido.service";
 interface Props {
-	abrir: boolean;
-	esEdicion: boolean;
-	arrayDetalleProducto: PedidoDetalleEntity[];
+	pedidoDetalleId: number;
+	opciones: IMultiSelectProps[];
+	estadoModal: boolean;
 	funcionCerrarModal: () => void;
+	disableButton: boolean;
 }
 
 export const SeriesRegistro = ({
-	abrir,
-	esEdicion,
-	arrayDetalleProducto,
+	pedidoDetalleId,
+	opciones,
+	estadoModal,
 	funcionCerrarModal,
+	disableButton,
 }: Props) => {
-	const [arrayPedidoDetalleProducto, setArrayPedidoDetalleProducto] = useState<
-		PedidoDetalleEntity[]
+	const [date, setDate] = useState<string | Date | Date[] | null>(new Date());
+
+	const [options, setOptions] = useState<IMultiSelectProps[]>([]);
+
+	const [seriesSeleccionadas, setSeriesSeleccionadas] = useState<
+		IMultiSelectProps[]
 	>([]);
 
-	useEffect(() => {
-		setArrayPedidoDetalleProducto(arrayDetalleProducto);
-	}, [arrayDetalleProducto]);
-
-	const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
-		console.log(arrayPedidoDetalleProducto);
+	const obtenerData = async (
+		opciones: IMultiSelectProps[],
+		estadoModal: boolean
+	) => {
+		setOptions([]);
+		if (!estadoModal) {
+			return;
+		}
+		setOptions(opciones);
 	};
+
+	const agregarSeries = async () => {
+		console.log(seriesSeleccionadas);
+
+		const series: IActualizaSerie[] = [];
+
+		seriesSeleccionadas.forEach((element: IMultiSelectProps) => {
+			const serie: IActualizaSerie = {
+				fk_producto: Number(element.code),
+				numero_serie: element.name,
+			};
+			series.push(serie);
+		});
+
+		const pedidoServ = new PedidoService();
+		await pedidoServ.agregarSeries(pedidoDetalleId, series).then((resp) => {
+			console.log(resp);
+		});
+	};
+
+	useEffect(() => {
+		obtenerData(opciones, estadoModal);
+	}, [opciones, estadoModal]);
+
 	return (
-		<>
-			<Modal open={abrir} onClose={funcionCerrarModal}>
-				<Box
-					sx={{
-						flexGrow: 1,
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						width: "90%",
-						maxWidth: "500px",
-						overflow: "hidden",
-						border: "1px solid #ccc",
-						borderRadius: "10px",
-						background: "#fff",
-					}}
-				>
-					<Typography
-						sx={[
-							{
-								position: "fixed",
-								zIndex: "99",
-								width: "100%",
-								height: "60px",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								color: "#ffffff",
-								// border: "1px solid red",
-							},
-							esEdicion
-								? { backgroundColor: "#448aff" }
-								: { backgroundColor: "#00c853" },
-						]}
-						variant="h5"
-						component={"h2"}
-					>
-						{`${esEdicion ? "Edición" : "Registro"} de Series`}
-					</Typography>
-					<Box
-						sx={{
-							position: "relative",
-							flexGrow: 1,
-							background: "#fff",
-							overflow: "hidden",
-							overflowY: "scroll",
-							height: "auto",
-							maxHeight: "500px",
-							padding: "20px",
-						}}
-						component={"form"}
-						onSubmit={funcionGuardar}
-					>
-						<Grid
-							sx={{ marginTop: "50px" }}
-							container
-							direction={"column"}
-							rowSpacing={2}
-							columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-						>
-							<Grid item xs={1}>
-								<TextField
-									fullWidth
-									label="Fecha Registro"
-									variant="outlined"
-									// value={convertirFechaVisual(fecha_registro)}
-									name="date"
-									disabled
-								/>
-							</Grid>
+		<Dialog
+			header="Añadir Series"
+			visible={estadoModal}
+			maximizable
+			style={{ width: "50vw" }}
+			onHide={() => funcionCerrarModal()}
+		>
+			<label htmlFor="locale-user" className="font-bold mb-2">
+				Fecha de Registro
+			</label>
+			<Calendar
+				style={{ width: "100%" }}
+				value={date}
+				dateFormat="dd/mm/yy"
+				onChange={(e: CalendarChangeEvent) => {
+					setDate(e.value ? e.value : null);
+				}}
+				disabled
+				showIcon
+			/>
 
-							<Grid item xs={1}>
-								<TextField
-									fullWidth
-									multiline
-									label="Series"
-									variant="outlined"
-									// value={convertirFechaVisual(fecha_registro)}
-									name="series"
-								/>
-							</Grid>
-
-							<Grid item xs={1}>
-								<Button
-									fullWidth
-									variant="contained"
-									style={
-										esEdicion
-											? { backgroundColor: "#448aff" }
-											: { backgroundColor: "#00c853" }
-									}
-									type="submit"
-								>
-									{" "}
-									{esEdicion ? "Editar" : "Registrarse"}
-								</Button>
-							</Grid>
-						</Grid>
-					</Box>
-				</Box>
-			</Modal>
-		</>
+			<MultiSelectPrimeUI
+				title="Series"
+				placeholder="Escoger Series"
+				options={options}
+				disabled={false}
+				selectedOptions={seriesSeleccionadas}
+				fuctionSelectedOptions={setSeriesSeleccionadas}
+			/>
+			{disableButton ? (
+				<></>
+			) : (
+				<Divider align="center">
+					<Button
+						label="Añadir"
+						icon="pi pi-plus"
+						raised
+						onClick={agregarSeries}
+					></Button>
+				</Divider>
+			)}
+		</Dialog>
 	);
 };

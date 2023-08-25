@@ -3,7 +3,9 @@ import { PedidoApi } from "../apis/pedido.api";
 import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
 import { RespuestaEntity } from "../entities/respuesta.entity";
 import {
-	PedidoCabeceraSendInterface,
+	IActualizaSerie,
+	IPedidoCabeceraInterface,
+	IPedidoCabeceraListarUno,
 	PedidoCabeceraUsuarioProsp,
 } from "../interfaces/pedido.interface";
 
@@ -12,9 +14,13 @@ export class PedidoService {
 	private respuestaArrayPedidoCabecera = new RespuestaEntity<
 		PedidoCabeceraUsuarioProsp[]
 	>();
+	private respuestaPedidoListarUno =
+		new RespuestaEntity<IPedidoCabeceraListarUno>();
+
+	private respuestaAgregarSeries = new RespuestaEntity<boolean>();
 
 	public async registrar(
-		data: PedidoCabeceraSendInterface
+		data: IPedidoCabeceraInterface
 	): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
 		await PedidoApi.Registrar(data)
 			.then((resp) => {
@@ -72,20 +78,36 @@ export class PedidoService {
 
 	public async listarUno(
 		pedido_id: number
-	): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
+	): Promise<RespuestaEntity<IPedidoCabeceraListarUno>> {
 		await PedidoApi.listarUno(pedido_id)
 			.then((resp) => {
-				this.respuestaPedidoCabecera = {
+				this.respuestaPedidoListarUno = {
 					correcto: true,
 					tipo: "success",
 					mensaje: "correcto",
 					data: resp.data.data,
 				};
-				return this.respuestaPedidoCabecera;
+				return this.respuestaPedidoListarUno;
 			})
 			.catch((error: any) => {
-				return this.respuestaPedidoCabecera;
+				return this.respuestaPedidoListarUno;
 			});
-		return this.respuestaPedidoCabecera;
+		return this.respuestaPedidoListarUno;
+	}
+
+	public async agregarSeries(
+		pedidoDetalleId: number,
+		data: IActualizaSerie[]
+	): Promise<RespuestaEntity<boolean>> {
+		await PedidoApi.agregarSeries(pedidoDetalleId, data).then((resp) => {
+			this.respuestaPedidoListarUno = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+
+		return this.respuestaAgregarSeries;
 	}
 }

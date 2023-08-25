@@ -5,6 +5,7 @@ import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { PedidoService } from "../../../services/pedido.service";
 import { Container } from "@mui/material";
 import { PedidoCabeceraUsuarioProsp } from "../../../interfaces/pedido.interface";
+import { CardPedidoDetalleProps } from "../../../interfaces/card_pedido.interface";
 
 export const Pedido = () => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
@@ -41,11 +42,28 @@ export const Pedido = () => {
 			sx={{ display: "grid", gap: "2rem", padding: "2rem 0rem" }}
 		>
 			{arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
+				let sumaCantidad: number = 0;
+				let sumaPrecio: number = 0;
+
+				const arrayImagenes: string[][] = [];
+				item.lst_pedido_detalle.forEach((element: CardPedidoDetalleProps) => {
+					sumaCantidad = sumaCantidad + element.cantidad;
+					sumaPrecio = sumaPrecio + element.precio;
+					if (element.cls_modelo !== undefined) {
+						arrayImagenes.push([element.cls_modelo.foto, element.cls_modelo.nombre]);
+					}
+				});
+
 				return (
 					<CardPedido
 						key={item.pedido_cabecera_id}
-						pedido_cabecera={item}
+						id={item.pedido_cabecera_id}
 						link="/admin/order/detail"
+						codigo={item.codigo}
+						fechaRegistro={item.fecha_registro}
+						cantidadTotal={sumaCantidad}
+						precioTotal={sumaPrecio}
+						arrayImagenes={arrayImagenes}
 					/>
 				);
 			})}

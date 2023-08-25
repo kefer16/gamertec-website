@@ -1,28 +1,31 @@
-import { Link } from "react-router-dom";
 import { CompraStyled } from "./styles/CompraStyles";
 import { useContext, useEffect, useState } from "react";
-import { PedidoService } from "../../services/pedido.service";
+
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
-import { PedidoCabeceraUsuarioProsp } from "../../interfaces/pedido.interface";
+
+import {
+	ICompraCard,
+	ICompraDetalleCard,
+} from "../../interfaces/compra.interface";
+import { CompraService } from "../../services/compra.service";
+import { CardPedido } from "../controls/CardPedido";
 
 export const Compra = () => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 
-	const [arrayPedidoCabecera, setArrayPedidoCabecera] = useState<
-		PedidoCabeceraUsuarioProsp[]
-	>([]);
+	const [arrayCompra, setArrayCompra] = useState<ICompraCard[]>([]);
 
 	useEffect(() => {
 		const obtenerData = async () => {
 			obtenerSesion();
-			const pedido: PedidoService = new PedidoService();
+			const compraServ = new CompraService();
 
-			pedido
-				.listarPedidoUsuario(sesionGamertec.usuario.usuario_id)
-				.then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
+			compraServ
+				.listarTodos(sesionGamertec.usuario.usuario_id)
+				.then((resp: RespuestaEntity<ICompraCard[]>) => {
 					if (resp.data) {
-						setArrayPedidoCabecera(resp.data);
+						setArrayCompra(resp.data);
 					}
 				})
 				.catch((error) => {
@@ -39,73 +42,68 @@ export const Compra = () => {
 					<h2>Tus compras</h2>
 				</div>
 
-				{arrayPedidoCabecera ? (
-					<div id="contenedor_compras" className="contenedor_compras">
-						<h3>Pedidos</h3>
+				<div id="contenedor_compras" className="contenedor_compras">
+					<h3>Pedidos</h3>
+					{/* 
+						{arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
+				let sumaCantidad: number = 0;
+				let sumaPrecio: number = 0;
 
-						{/* {arrayPedidoCabecera.map((pedido_cabecera: PedidoCabeceraEntity) => {
-							return (
-								<Link
-									to="#"
-									key={pedido_cabecera.pedido_detalle?.pedido_detalle_id}
-									className="compra"
-								>
-									<div className="codigo">{pedido_cabecera.codigo}</div>
-									<div className="detalles_generales">
-										<div className="detalles">
-											<p>
-												<span className="cantidad">
-													{`${pedido_cabecera.pedido_detalle?.cantidad} Produc.`}{" "}
-												</span>
-											</p>
-											<p>
-												Total:{" "}
-												<span>
-													{convertirFormatoMoneda(pedido_cabecera.pedido_detalle?.precio)}
-												</span>
-											</p>
-											<p>
-												Fecha:
-												<span>
-													{convertirFechaVisual(
-														pedido_cabecera.pedido_detalle?.fecha_registro
-													)}
-												</span>
-											</p>
-										</div>
-										<div className="previ-productos">
-											<img src={pedido_cabecera.pedido_detalle?.modelo?.foto} alt="" />
-										</div>
-									</div>
-								</Link>
-							);
-						})} */}
-					</div>
-				) : (
-					<></>
-				)}
+				const arrayImagenes: string[][] = [];
+				item.lst_pedido_detalle.forEach((element: CardPedidoDetalleProps) => {
+					sumaCantidad = sumaCantidad + element.cantidad;
+					sumaPrecio = sumaPrecio + element.precio;
+					if (element.cls_modelo !== undefined) {
+						arrayImagenes.push([element.cls_modelo.foto, element.cls_modelo.nombre]);
+					}
+				});
+
+				return (
+					<CardPedido
+						key={item.pedido_cabecera_id}
+						id={item.pedido_cabecera_id}
+						link="/admin/order/detail"
+						codigo={item.codigo}
+						fechaRegistro={item.fecha_registro}
+						cantidadTotal={sumaCantidad}
+						precioTotal={sumaPrecio}
+						arrayImagenes={arrayImagenes}
+					/>
+				);
+			})} */}
+				</div>
 
 				<div id="contenedor_compras" className="contenedor_compras">
 					<h3>Compras</h3>
-					<Link to="#" className="compra">
-						<div className="codigo">001</div>
-						<div className="detalles_generales">
-							<div className="detalles">
-								<p>
-									<span className="cantidad">9 Produc.</span>{" "}
-								</p>
-								<p>
-									Total: <span>$900</span>{" "}
-								</p>
-								<p>
-									Fecha: <span> 12/05/2023</span>
-								</p>
-							</div>
-							<div className="previ-productos">
-								<img src="#" alt="" />
-							</div>
-						</div>
-					</Link>
+					{arrayCompra.map((item: ICompraCard) => {
+						let sumaCantidad: number = 0;
+						let sumaPrecio: number = 0;
+
+						const arrayImagenes: string[][] = [];
+						item.lst_compra_detalle.forEach((element: ICompraDetalleCard) => {
+							sumaCantidad = sumaCantidad + element.cantidad;
+							sumaPrecio = sumaPrecio + element.precio;
+							if (element.cls_modelo !== undefined) {
+								arrayImagenes.push([
+									element.cls_modelo.foto,
+									element.cls_modelo.nombre,
+								]);
+							}
+						});
+
+						return (
+							<CardPedido
+								key={item.compra_cabecera_id}
+								id={item.compra_cabecera_id}
+								link="/buy/detail"
+								codigo={item.codigo}
+								fechaRegistro={item.fecha_registro.toString()}
+								cantidadTotal={sumaCantidad}
+								precioTotal={sumaPrecio}
+								arrayImagenes={arrayImagenes}
+							/>
+						);
+					})}
 				</div>
 			</CompraStyled>
 		</>

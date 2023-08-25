@@ -7,6 +7,11 @@ export interface ComboboxProps {
 	valor: number;
 	descripcion: string;
 }
+
+export interface IComboboxProps {
+	valor: number;
+	descripcion: string;
+}
 export interface ComboboxAnidadoProps {
 	valor: number;
 	valorAnidado: number;

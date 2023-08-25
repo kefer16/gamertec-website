@@ -14,8 +14,8 @@ import {
 
 import { useEffect, useState } from "react";
 import {
-	convertirFechaSQL,
 	convertirFechaVisual,
+	fechaActualISO,
 } from "../../../utils/funciones.utils";
 
 import { ProductoService } from "../../../entities/producto.entities";
@@ -63,7 +63,7 @@ export const ProductoRegistro = ({
 	const [fkModelo, setFkModelo] = useState("0");
 	const [fkMarca, setFkMarca] = useState("0");
 	const [fkCategoria, setFkCategoria] = useState("0");
-	const [fechaRegistro, setFechaRegistro] = useState("");
+	const [fechaRegistro, setFechaRegistro] = useState(new Date());
 	const [activo, setActivo] = useState("0");
 
 	const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
@@ -129,7 +129,7 @@ export const ProductoRegistro = ({
 			parseInt(fkModelo),
 			parseInt(fkMarca),
 			parseInt(fkCategoria),
-			convertirFechaSQL(fechaRegistro),
+			fechaActualISO(),
 			activo === "1"
 		);
 		console.log(data, esEdicion);
@@ -243,7 +243,7 @@ export const ProductoRegistro = ({
 									fullWidth
 									label="Fecha Registro"
 									variant="outlined"
-									value={convertirFechaVisual(fechaRegistro)}
+									value={convertirFechaVisual(fechaRegistro.toString())}
 									name="date"
 									disabled
 								/>
@@ -341,6 +341,7 @@ export const ProductoRegistro = ({
 									variant="outlined"
 									value={numeroSerie}
 									name="serial numbers"
+									inputProps={{ maxLength: 11 }}
 									onChange={(event) => setNumeroSerie(event.target.value)}
 								/>
 							</Grid>

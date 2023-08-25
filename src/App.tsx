@@ -22,46 +22,60 @@ import { SesionProvider } from "./components/sesion/Sesion.component";
 import { IndexPedidoExitoso } from "./components/pedido_exitoso/IndexPedidoExitoso.component";
 import { IndexPedido } from "./components/admin/pedido/IndexPedido.component";
 import { IndexPedidoDetalle } from "./components/admin/pedido/IndexPedidoDetalle.component";
+import { PrimeReactProvider } from "primereact/api";
+//theme
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+
+//core
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
+import { IndexCompraDetalleDetalle } from "./components/compra/IndexCompraDetalle.component";
 
 function App() {
 	return (
-		<Router>
-			<SesionProvider>
-				<Header />
-				<Routes>
-					<Route path="/" element={<TabHome />} />
-					<Route path="/products/" element={<TabProducts />} />
-					<Route path="/contact/" element={<TabContact />} />
+		<PrimeReactProvider>
+			<Router>
+				<SesionProvider>
+					<Header />
+					<Routes>
+						<Route path="/" element={<TabHome />} />
+						<Route path="/products/" element={<TabProducts />} />
+						<Route path="/contact/" element={<TabContact />} />
 
-					<Route path="/login/" element={<TabLogin />} />
-					<Route path="/register/" element={<TabRegister />} />
-					<Route path="/admin/" element={<TabAdmin />} />
-					<Route path="/admin/category/" element={<TabCategory />} />
-					<Route path="/admin/privilege/" element={<TabPrivilege />} />
-					<Route path="/admin/user/" element={<TabUsuario />} />
-					<Route path="/admin/brand/" element={<TabMarca />} />
-					<Route path="/admin/model/" element={<TabModelo />} />
-					<Route path="/admin/product/" element={<TabProducto />} />
-					<Route path="/admin/order/" element={<IndexPedido />} />
-					<Route
-						path="/admin/order/detail/:pedido_id"
-						element={<IndexPedidoDetalle />}
-					/>
-					<Route
-						path="/product/description/:modelo_id"
-						element={<TabDescripcion />}
-					/>
-					<Route path="/shoping_cart/" element={<TabCarrito />} />
-					<Route path="/before_purchase/" element={<TabPreCompra />} />
-					<Route path="/voucher/" element={<IndexComprobante />} />
-					<Route path="/order_successful/" element={<IndexPedidoExitoso />} />
+						<Route path="/login/" element={<TabLogin />} />
+						<Route path="/register/" element={<TabRegister />} />
+						<Route path="/admin/" element={<TabAdmin />} />
+						<Route path="/admin/category/" element={<TabCategory />} />
+						<Route path="/admin/privilege/" element={<TabPrivilege />} />
+						<Route path="/admin/user/" element={<TabUsuario />} />
+						<Route path="/admin/brand/" element={<TabMarca />} />
+						<Route path="/admin/model/" element={<TabModelo />} />
+						<Route path="/admin/product/" element={<TabProducto />} />
+						<Route path="/admin/order/" element={<IndexPedido />} />
+						<Route
+							path="/admin/order/detail/:pedido_id"
+							element={<IndexPedidoDetalle />}
+						/>
+						<Route
+							path="/product/description/:modelo_id"
+							element={<TabDescripcion />}
+						/>
+						<Route path="/shoping_cart/" element={<TabCarrito />} />
+						<Route path="/before_purchase/" element={<TabPreCompra />} />
+						<Route path="/voucher/" element={<IndexComprobante />} />
+						<Route path="/order_successful/" element={<IndexPedidoExitoso />} />
 
-					<Route path="/buy/" element={<TabCompra />} />
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-				<Footer />
-			</SesionProvider>
-		</Router>
+						<Route path="/buy/" element={<TabCompra />} />
+						<Route
+							path="/buy/detail/:compra_cabecera_id"
+							element={<IndexCompraDetalleDetalle />}
+						/>
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+					<Footer />
+				</SesionProvider>
+			</Router>
+		</PrimeReactProvider>
 	);
 }
 

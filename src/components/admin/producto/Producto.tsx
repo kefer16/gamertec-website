@@ -6,10 +6,7 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import {
-	convertirFechaVisual,
-	crearFechaISO,
-} from "../../../utils/funciones.utils";
+import { fechaActualISO } from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
@@ -158,7 +155,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 						id: element.producto_id,
 						index: index + 1,
 						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
+						fecha_registro_visual: element.fecha_registro,
 						fk_categoria: element.fk_categoria,
 						nombre_categoria: arrayCategoria.find(
 							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
@@ -189,7 +186,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 
 	const funcionCrear = () => {
 		setItemSeleccionado(
-			new ProductoService(0, "", 0, 0, 0, crearFechaISO(), false)
+			new ProductoService(0, "", 0, 0, 0, fechaActualISO(), false)
 		);
 		setEsEdicion(false);
 		setAbrirModal(true);

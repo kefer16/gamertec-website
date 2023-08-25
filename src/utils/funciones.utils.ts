@@ -50,7 +50,7 @@ export function convertirFormatoMoneda(moneda: number | undefined): string {
 	if (moneda) {
 		return formatter.format(moneda);
 	} else {
-		return "";
+		return "S/. 0.00";
 	}
 }
 

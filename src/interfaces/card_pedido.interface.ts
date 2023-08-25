@@ -4,6 +4,10 @@ export interface CardPedidoInterface {
 	pedido_cabecera: PedidoCabeceraUsuarioProsp;
 	link: string;
 }
+export interface ICardProducto {
+	data: PedidoCabeceraUsuarioProsp;
+	link: string;
+}
 
 export interface CardPedidoDetalleProps {
 	pedido_detalle_id: number;

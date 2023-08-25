@@ -1,10 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
-import { PedidoCabeceraSendInterface } from "../interfaces/pedido.interface";
+import {
+	IActualizaSerie,
+	IPedidoCabeceraInterface,
+} from "../interfaces/pedido.interface";
 
 export class PedidoApi {
 	static async Registrar(
-		data: PedidoCabeceraSendInterface
+		data: IPedidoCabeceraInterface
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
@@ -143,6 +146,33 @@ export class PedidoApi {
 				config
 			);
 		} catch (err: any) {
+			return Promise.reject(err);
+		}
+	}
+
+	static async agregarSeries(
+		pedido_detalle_id: number,
+		data: IActualizaSerie[]
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					pedido_detalle_id,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+
+			const body = JSON.stringify(data);
+
+			return await axios.put(
+				`${PedidoCabeceraEntity.url}/agregar_series`,
+				body,
+				config
+			);
+		} catch (err: any) {
+			console.log(err);
 			return Promise.reject(err);
 		}
 	}

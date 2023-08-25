@@ -1,55 +1,54 @@
-import { Container, TextField } from "@mui/material";
-import { ComprobanteStyled } from "../../comprobante/styles/Comprobante.styled";
+import { Container } from "@mui/material";
+
 import { useContext, useEffect, useState } from "react";
-import { GamertecSesionContext } from "../../sesion/Sesion.component";
-import { PedidoService } from "../../../services/pedido.service";
-import { RespuestaEntity } from "../../../entities/respuesta.entity";
+
 import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { CompraService } from "../../services/compra.service";
+import { RespuestaEntity } from "../../entities/respuesta.entity";
 import {
-	IPedidoCabeceraListarUno,
-	IPedidoDetalleListarUno,
-} from "../../../interfaces/pedido.interface";
-import { convertirFormatoMoneda } from "../../../utils/funciones.utils";
-import { SeriesRegistro } from "./PedidoDetalleRegistro.component";
-import { CompraService } from "../../../services/compra.service";
-import { IMultiSelectProps } from "../../controls/primeUI/MultiSelectPrimeUI";
-import { ProductoService } from "../../../services/producto.service";
-import { IProductoSerie } from "../../../interfaces/producto.interface";
-import { opcionSerie } from "../../../apis/producto.api";
+	ICompraDetalleTable,
+	ICompraTable,
+} from "../../interfaces/compra.interface";
+import { ComprobanteStyled } from "../comprobante/styles/Comprobante.styled";
+import { convertirFormatoMoneda } from "../../utils/funciones.utils";
+import { SeriesRegistro } from "../admin/pedido/PedidoDetalleRegistro.component";
+import { IMultiSelectProps } from "../controls/primeUI/MultiSelectPrimeUI";
+import { ProductoService } from "../../services/producto.service";
+import { opcionSerie } from "../../apis/producto.api";
+import { IProductoSerie } from "../../interfaces/producto.interface";
 
 interface Props {
-	pedido_id: number;
+	compraCabeceraId: number;
 }
 
-export const PedidoDetalle = ({ pedido_id }: Props) => {
+export const CompraDetalle = ({ compraCabeceraId }: Props) => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 	// const [pedido, setPedido] = useState<IPedidoCabeceraListarUno>(
 	// 	{} as IPedidoCabeceraListarUno
 	// );
 	const [direccion, setDireccion] = useState<string>("");
 	const [telefono, setTelefono] = useState<string>("");
-	const [pedidoDetalleId, setPedidoDetalleId] = useState<number>(0);
-	const [opciones, setOpciones] = useState<IMultiSelectProps[]>([]);
+	const [compraDetalleId, setCompraDetalleId] = useState<number>(0);
+	const [compraDetalle, setCompraDetalle] = useState<ICompraDetalleTable[]>([]);
 
 	const [subTotal, setSubTotal] = useState<number>(0);
 	const [costoEnvio, setCostoEnvio] = useState<number>(0);
 	const [total, setTotal] = useState<number>(0);
 
-	const [lstPedidoDetalle, setPedidoDetalle] = useState<
-		IPedidoDetalleListarUno[]
-	>([]);
-
 	const [modal, setModal] = useState<boolean>(false);
 
+	const [opciones, setOpciones] = useState<IMultiSelectProps[]>([]);
 	const funcionCerrarModal = () => {
 		setModal(false);
 	};
 
-	const funcionAbrirModal = async (pedidoDetalleId: number) => {
+	const funcionAbrirModal = async (compraDetalleId: number) => {
 		const productoServ = new ProductoService();
 		let array: IMultiSelectProps[] = [];
 		await productoServ
-			.obtenerSeries(pedidoDetalleId, opcionSerie.PEDIDO)
+			.obtenerSeries(compraDetalleId, opcionSerie.COMPRA)
 			.then((resp: RespuestaEntity<IProductoSerie[]>) => {
 				if (resp.data) {
 					array = resp.data.map((item) => ({
@@ -60,40 +59,31 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 				}
 			});
 		setOpciones(array);
-
 		setModal(true);
-		setPedidoDetalleId(pedidoDetalleId);
+		setCompraDetalleId(compraDetalleId);
 	};
 
-	const completarPedido = async () => {
+	const obtenerDatos = async (compraCabeceraId: number) => {
 		const compraServ = new CompraService();
-		await compraServ.registrar(pedido_id).then((resp) => {
-			console.log(resp);
-		});
+
+		compraServ
+			.listarUno(compraCabeceraId)
+			.then((resp: RespuestaEntity<ICompraTable>) => {
+				if (resp.data) {
+					setDireccion(resp.data.direccion);
+					setTelefono(resp.data.telefono);
+					setSubTotal(resp.data.sub_total);
+					setCostoEnvio(resp.data.costo_envio);
+					setTotal(resp.data.total);
+					setCompraDetalle(resp.data.lst_compra_detalle);
+				}
+			});
 	};
 
 	useEffect(() => {
-		const obtenerDatos = async () => {
-			const pedido: PedidoService = new PedidoService();
-			obtenerSesion();
-			pedido
-				.listarUno(pedido_id)
-				.then((resp: RespuestaEntity<IPedidoCabeceraListarUno>) => {
-					console.log(resp);
-
-					if (resp.data) {
-						setDireccion(resp.data.direccion);
-						setTelefono(resp.data.telefono);
-						setSubTotal(resp.data.sub_total);
-						setCostoEnvio(resp.data.costo_envio);
-						setTotal(resp.data.total);
-						// setPedido(resp.data);
-						setPedidoDetalle(resp.data.lst_pedido_detalle);
-					}
-				});
-		};
-		obtenerDatos();
-	}, [obtenerSesion, pedido_id]);
+		obtenerSesion();
+		obtenerDatos(compraCabeceraId);
+	}, [obtenerSesion, compraCabeceraId]);
 	return (
 		<>
 			<Container maxWidth="lg">
@@ -108,35 +98,35 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 						</div>
 						<div className="formulario">
 							<div className="form-dividido">
-								<TextField
-									sx={{ marginBottom: "20px" }}
+								<label htmlFor="cliente">Cliente</label>
+								<InputText
+									style={{ marginBottom: "20px" }}
 									disabled
-									required
-									label="Cliente"
+									id="cliente"
 									value={`${sesionGamertec.usuario.nombre} ${sesionGamertec.usuario.apellido}`}
 								/>
 
-								<TextField
-									sx={{ marginBottom: "20px" }}
+								<label htmlFor="fecha">Fecha</label>
+								<InputText
+									style={{ marginBottom: "20px" }}
 									disabled
-									required
-									label="Fecha"
+									id="fecha"
 									value={""}
 								/>
 							</div>
 							<div className="form-dividido">
-								<TextField
-									sx={{ marginBottom: "20px" }}
+								<label htmlFor="direccion">Direccion</label>
+								<InputText
+									style={{ marginBottom: "20px" }}
 									disabled
-									required
-									label="Direccion"
+									id="direccion"
 									value={direccion}
 								/>
-								<TextField
-									sx={{ marginBottom: "20px" }}
+								<label htmlFor="telefono">Telefono</label>
+								<InputText
+									style={{ marginBottom: "20px" }}
 									disabled
-									required
-									label="Telefono"
+									id="telefono"
 									value={telefono}
 								/>
 							</div>
@@ -151,7 +141,7 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 								<th>VALOR DE VENTA</th>
 							</thead>
 							<tbody id="productos-comprar">
-								{lstPedidoDetalle.map((item: IPedidoDetalleListarUno) => {
+								{compraDetalle.map((item: ICompraDetalleTable) => {
 									return (
 										<tr key={`PED-DET-${item.item}`}>
 											<td>{item.cantidad}</td>
@@ -162,8 +152,8 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 											<td>{`${item.cls_modelo.nombre}`}</td>
 											<td>
 												<Button
-													label="Agregar"
-													onClick={() => funcionAbrirModal(item.pedido_detalle_id)}
+													label="Ver"
+													onClick={() => funcionAbrirModal(item.compra_detalle_id)}
 												/>
 											</td>
 											<td>{convertirFormatoMoneda(item.precio)}</td>
@@ -189,19 +179,14 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 								</tr>
 							</tbody>
 						</table>
-						<Button
-							style={{ marginBottom: "20px" }}
-							label="Completar Pedido"
-							onClick={completarPedido}
-						/>
 					</div>
 				</ComprobanteStyled>
 				<SeriesRegistro
-					pedidoDetalleId={pedidoDetalleId}
+					pedidoDetalleId={compraDetalleId}
 					opciones={opciones}
 					estadoModal={modal}
 					funcionCerrarModal={funcionCerrarModal}
-					disableButton={false}
+					disableButton={true}
 				/>
 			</Container>
 		</>

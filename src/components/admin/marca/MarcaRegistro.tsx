@@ -70,8 +70,6 @@ export const MarcaRegistro = ({
 			parseInt(fkCategoria),
 			fechaActualISO()
 		);
-		console.log(data, esEdicion);
-
 		if (esEdicion) {
 			await MarcaService.Actualizar(marcaId, data)
 				.then((response) => {
