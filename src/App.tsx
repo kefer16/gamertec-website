@@ -28,8 +28,10 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 
 //core
 import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
+// import "primeicons/primeicons.css";
 import { IndexCompraDetalleDetalle } from "./components/compra/IndexCompraDetalle.component";
+import { IndexCompraPedidoDetalle } from "./components/compra/IndexCompraPedidoDetalle.component";
+import "primeflex/primeflex.css";
 
 function App() {
 	return (
@@ -69,6 +71,10 @@ function App() {
 						<Route
 							path="/buy/detail/:compra_cabecera_id"
 							element={<IndexCompraDetalleDetalle />}
+						/>
+						<Route
+							path="/buy/order/detail/:pedido_cabecera_id"
+							element={<IndexCompraPedidoDetalle />}
 						/>
 						<Route path="*" element={<NotFound />} />
 					</Routes>

@@ -1,7 +1,6 @@
 import {
 	Box,
 	Button,
-	Container,
 	FormControl,
 	InputLabel,
 	MenuItem,
@@ -54,119 +53,118 @@ export const Products = () => {
 
 	return (
 		<>
-			<Container maxWidth="lg">
-				<Typography
-					variant="h5"
-					component={"h2"}
-					style={{ textAlign: "center", margin: "30px 0 20px 0" }}
-				>
-					Productos
-				</Typography>
+			<Typography
+				variant="h5"
+				component={"h2"}
+				style={{ textAlign: "center", margin: "30px 0 20px 0" }}
+			>
+				Productos
+			</Typography>
 
+			<Box
+				component={"form"}
+				style={{ display: "flex", justifyContent: "space-between" }}
+				onSubmit={funcionAsignarFiltroCategoria}
+			>
+				<FormControl sx={{ width: "30%" }}>
+					<InputLabel id="categoria-select-label">Categoria</InputLabel>
+					<Select
+						labelId="categoria-select-label"
+						id="categoria-select"
+						value={categoria}
+						label="Categoria"
+						onChange={(event: SelectChangeEvent) =>
+							setCategoria(event.target.value as string)
+						}
+					>
+						<MenuItem value={"0"}>Selec. Categoria</MenuItem>
+						{arrayCategoria.map((categoria: ComboboxProps) => {
+							return (
+								<MenuItem key={categoria.valor} value={String(categoria.valor)}>
+									{categoria.descripcion}
+								</MenuItem>
+							);
+						})}
+					</Select>
+				</FormControl>
 				<Box
-					component={"form"}
-					style={{ display: "flex", justifyContent: "space-between" }}
-					onSubmit={funcionAsignarFiltroCategoria}
+					sx={{
+						display: "flex",
+						width: "60%",
+					}}
 				>
-					<FormControl sx={{ width: "30%" }}>
-						<InputLabel id="categoria-select-label">Categoria</InputLabel>
-						<Select
-							labelId="categoria-select-label"
-							id="categoria-select"
-							value={categoria}
-							label="Categoria"
-							onChange={(event: SelectChangeEvent) =>
-								setCategoria(event.target.value as string)
-							}
-						>
-							<MenuItem value={"0"}>Selec. Categoria</MenuItem>
-							{arrayCategoria.map((categoria: ComboboxProps) => {
-								return (
-									<MenuItem key={categoria.valor} value={String(categoria.valor)}>
-										{categoria.descripcion}
-									</MenuItem>
-								);
-							})}
-						</Select>
-					</FormControl>
-					<Box
+					<TextField
+						sx={{ width: "100%", height: "100%" }}
+						placeholder="Buscar Productos…"
+						// inputProps={{ "aria-label": "search" }}
+						value={nombreModelo}
+						name="nombre_producto"
+						onChange={(event) => setNombreModelo(event.target.value as string)}
+					/>
+					<Button
+						variant="contained"
 						sx={{
-							display: "flex",
-							width: "60%",
+							width: "50px",
+							// background: "#000",
+							// color: "#fff",
+							cursor: "pointer",
+						}}
+						type="submit"
+					>
+						<SearchIcon />
+					</Button>
+				</Box>
+			</Box>
+			<Box
+				sx={{ width: "100%", height: "calc(100vh - 364px)", padding: "1.5em 0 " }}
+			>
+				{arrayModelo.length <= 0 ? (
+					<p
+						style={{
+							width: "100%",
+							lineHeight: "40px",
+							fontSize: "0.8em",
+							textAlign: "center",
+							fontWeight: "300",
 						}}
 					>
-						<TextField
-							sx={{ width: "100%", height: "100%" }}
-							placeholder="Buscar Productos…"
-							// inputProps={{ "aria-label": "search" }}
-							value={nombreModelo}
-							name="nombre_producto"
-							onChange={(event) => setNombreModelo(event.target.value as string)}
-						/>
-						<Button
-							variant="contained"
-							sx={{
-								width: "50px",
-								// background: "#000",
-								// color: "#fff",
-								cursor: "pointer",
-							}}
-							type="submit"
-						>
-							<SearchIcon />
-						</Button>
+						Tu búsqueda no coincide con ningun resultado, ingrese otro producto
+					</p>
+				) : (
+					<Box
+						sx={{
+							width: "100%",
+							display: "grid",
+							height: "auto",
+							gridTemplateColumns: "repeat(4, 1fr)",
+							gap: "1.5em",
+							// padding: "1.5em",
+						}}
+					>
+						{arrayModelo.map((item: ModeloPorFiltroProps) => {
+							return (
+								<CardProduct
+									className="shadow-2"
+									key={item.modelo_id}
+									to={`/product/description/${item.modelo_id}`}
+									state={item.modelo_id}
+								>
+									<CardImageProduct src={item.foto} alt="img_card" />
+									<CardTextProduct>
+										<CardTextProductBrand>{item.cls_marca.nombre}</CardTextProductBrand>
+										<CardTextProductTitle>
+											{item.descripcion.length > 45
+												? `${item.descripcion.substring(0, 45)}...`
+												: item.descripcion}
+										</CardTextProductTitle>
+										<CardTextProductPrice>{`S./ ${item.precio}`}</CardTextProductPrice>
+									</CardTextProduct>
+								</CardProduct>
+							);
+						})}
 					</Box>
-				</Box>
-				<Box
-					sx={{ width: "100%", height: "calc(100vh - 364px)", padding: "1.5em 0 " }}
-				>
-					{arrayModelo.length <= 0 ? (
-						<p
-							style={{
-								width: "100%",
-								lineHeight: "40px",
-								fontSize: "0.8em",
-								textAlign: "center",
-								fontWeight: "300",
-							}}
-						>
-							Tu búsqueda no coincide con ningun resultado, ingrese otro producto
-						</p>
-					) : (
-						<Box
-							sx={{
-								width: "100%",
-								display: "grid",
-								height: "auto",
-								gridTemplateColumns: "repeat(4, 1fr)",
-								gap: "1.5em",
-								// padding: "1.5em",
-							}}
-						>
-							{arrayModelo.map((item: ModeloPorFiltroProps) => {
-								return (
-									<CardProduct
-										key={item.modelo_id}
-										to={`/product/description/${item.modelo_id}`}
-										state={item.modelo_id}
-									>
-										<CardImageProduct src={item.foto} alt="img_card" />
-										<CardTextProduct>
-											<CardTextProductBrand>{item.cls_marca.nombre}</CardTextProductBrand>
-											<CardTextProductTitle>
-												{item.descripcion.length > 45
-													? `${item.descripcion.substring(0, 45)}...`
-													: item.descripcion}
-											</CardTextProductTitle>
-											<CardTextProductPrice>{`S./ ${item.precio}`}</CardTextProductPrice>
-										</CardTextProduct>
-									</CardProduct>
-								);
-							})}
-						</Box>
-					)}
-				</Box>
-			</Container>
+				)}
+			</Box>
 		</>
 	);
 };
@@ -176,7 +174,7 @@ const CardProduct = styled(Link)`
 	border-radius: 10px;
 	text-decoration: none;
 	transition: 0.2s;
-	box-shadow: 0 0 10px 1px rgba(128, 128, 128, 0.3);
+	/* box-shadow: 0 0 10px 1px rgba(128, 128, 128, 0.3); */
 	&:hover {
 		transform: translateY(-2px);
 		filter: brightness(85%);

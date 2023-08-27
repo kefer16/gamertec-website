@@ -1,20 +1,13 @@
-import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import YouTubeIcon from "@mui/icons-material/YouTube";
-import LockRoundedIcon from "@mui/icons-material/LockRounded";
-import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { Link, useNavigate } from "react-router-dom";
-import img_realidad_virtual from "../../images/chico_realidad_virtual.svg";
 
 import "./styles/Login.scss";
-import { InputControl } from "../controls/InputControl";
 
 import { useContext, useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../controls/AlertControl";
 import { UsuarioService } from "../../entities/usuario.entities";
 import { PrivilegioService } from "../../entities/privilegio.entities";
-import { Alert, Button, Container, Snackbar } from "@mui/material";
-import { LoginStyles } from "./styles/LoginStyles";
+import { Alert, Snackbar } from "@mui/material";
+
 import { GuadarSession } from "../../utils/sesion.utils";
 import {
 	SesionGamertec,
@@ -22,6 +15,11 @@ import {
 	SesionUsuario,
 } from "../../interfaces/sesion.interface";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { InputText } from "primereact/inputtext";
+import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
+import { Button } from "primereact/button";
+import NombreGamertec from "../../images/svg/name-gamertec.svg";
+import { IconLogout } from "@tabler/icons-react";
 
 export const Login = () => {
 	const { obtenerSesion } = useContext(GamertecSesionContext);
@@ -32,6 +30,8 @@ export const Login = () => {
 		type: "info",
 		text: "",
 	});
+
+	const [checked, setChecked] = useState<boolean>(false);
 
 	const [formData, setFormData] = useState({
 		user: "",
@@ -193,54 +193,83 @@ export const Login = () => {
 	useEffect(() => {}, []);
 	return (
 		<>
-			<Container maxWidth={"lg"}>
-				<LoginStyles>
-					<img className="login__img" src={img_realidad_virtual} alt="" />
-
-					<div className="login__card">
-						<form className="login__card__form" onSubmit={(e) => onSubmit(e)}>
-							<div className="login__card__form__titles">
-								<h2 className="login__card__form__titles-welcome">Hola Bienvenido!</h2>
-								<p className="login__card__form__titles-subtitle">Ingresa tus datos</p>
-							</div>
-
-							<InputControl
-								icon={<AccountCircleRoundedIcon />}
-								name="user"
-								type="text"
-								value={user}
-								placeholder="Usuario"
-								onChange={(e) => onChange(e)}
-							/>
-
-							<InputControl
-								icon={<LockRoundedIcon />}
-								name="password"
-								type="password"
-								value={password}
-								placeholder="Contraseña"
-								onChange={(e) => onChange(e)}
-							/>
-
-							<Button type="submit">Ingresar</Button>
-						</form>
-						<div className="login__card__register">
-							<span className="login__card__register-question">
-								¿No tienes cuenta?
-							</span>
-							<Link className="login__card__register-link" to={`/register`}>
-								Registrate
-							</Link>
-						</div>
-						<div className="login__card__social">
-							<p className="login__card__social-title">Contacte al administrador:</p>
-							<FacebookRoundedIcon className="login__card__social-facebook" />
-							<InstagramIcon className="login__card__social-instragram" />
-							<YouTubeIcon className="login__card__social-youtube" />
-						</div>
+			<div className="flex align-items-center justify-content-center py-5">
+				<form
+					className="surface-card p-4 shadow-2 border-round w-full lg:w-6 w-11"
+					onSubmit={(e) => onSubmit(e)}
+				>
+					<div className="text-center mb-5">
+						<img src={NombreGamertec} alt="hyper" height={50} className="mb-3" />
+						<div className="text-900 text-3xl font-medium mb-3">Hola Bienvenido!</div>
+						<span className="text-600 font-medium line-height-3">
+							¿No tienes una cuenta?
+						</span>
+						<Link
+							to="/register/"
+							className="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
+						>
+							Créala hoy!
+						</Link>
 					</div>
-				</LoginStyles>
-			</Container>
+
+					<div>
+						<label htmlFor="user" className="block text-900 font-medium mb-2">
+							Usuario
+						</label>
+
+						<InputText
+							id="user"
+							value={user}
+							type="text"
+							placeholder="Ingrese usuario"
+							className="w-full mb-3"
+							name="user"
+							onChange={(e) => onChange(e)}
+						/>
+
+						<label htmlFor="password" className="block text-900 font-medium mb-2">
+							Contraseña
+						</label>
+						<InputText
+							id="password"
+							type="password"
+							placeholder="Ingrese contraseña"
+							className="w-full mb-3"
+							name="password"
+							value={password}
+							onChange={(e) => onChange(e)}
+						/>
+
+						<div className="flex align-items-center justify-content-between mb-6">
+							<div className="flex align-items-center">
+								<Checkbox
+									id="rememberme"
+									onChange={(e: CheckboxChangeEvent) =>
+										setChecked(e.checked === undefined ? false : e.checked)
+									}
+									checked={checked}
+									className="mr-2"
+								/>
+								<label htmlFor="rememberme">Recuérdame</label>
+							</div>
+							<a
+								href="##"
+								className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer"
+							>
+								¿Olvidó su contraseña?
+							</a>
+						</div>
+
+						<Button
+							type="submit"
+							label="Iniciar Sesión"
+							icon={<IconLogout size={24} />}
+							className="w-full"
+						/>
+					</div>
+				</form>
+			</div>
+
 			<Snackbar
 				open={abrirAlerta}
 				anchorOrigin={{ vertical: "top", horizontal: "center" }}

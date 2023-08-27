@@ -1,11 +1,19 @@
+import {
+	ContainerBannerStyled,
+	ContainerSectionStyled,
+} from "../global/styles/ContainerStyled";
 import { Banner } from "./Banner";
 import { Presentation } from "./Presentation";
 
 export const TabHome = () => {
 	return (
 		<>
-			<Banner />
-			<Presentation />
+			<ContainerBannerStyled>
+				<Banner />
+			</ContainerBannerStyled>
+			<ContainerSectionStyled>
+				<Presentation />
+			</ContainerSectionStyled>
 		</>
 	);
 };

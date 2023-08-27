@@ -1,9 +1,6 @@
 import styled from "styled-components";
 
 export const ComprobanteStyled = styled.div`
-	max-width: 1260px;
-	margin: auto;
-
 	.titulo {
 		width: 100%;
 		h2 {

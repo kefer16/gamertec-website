@@ -1,16 +1,13 @@
 import "./styles/Register.scss";
-import { InputControl } from "../controls/InputControl";
-import PhotoCameraFrontRoundedIcon from "@mui/icons-material/PhotoCameraFrontRounded";
-import LockOpenRoundedIcon from "@mui/icons-material/LockOpenRounded";
-import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import HttpsRoundedIcon from "@mui/icons-material/HttpsRounded";
-import AlternateEmailRoundedIcon from "@mui/icons-material/AlternateEmailRounded";
-import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
+
 import { Link } from "react-router-dom";
-import { ButtonControl } from "../controls/ButtonControl";
 import React, { useState } from "react";
-import { AlerControl, InterfaceAlertControl } from "../controls/AlertControl";
+import { InterfaceAlertControl } from "../controls/AlertControl";
 import { UsuarioService } from "../../entities/usuario.entities";
+import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { IconUserPlus } from "@tabler/icons-react";
 
 export const Register = () => {
 	const [alert, setAlert] = useState<InterfaceAlertControl>({
@@ -69,6 +66,7 @@ export const Register = () => {
 
 	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		console.log(alert);
 
 		if (!name) {
 			setAlert({
@@ -156,85 +154,128 @@ export const Register = () => {
 	};
 
 	return (
-		<div className="container">
-			<div className="container-max">
-				<div className="register">
-					<form className="register__form" onSubmit={(e) => onSubmit(e)}>
-						<div className="register__form__titles">
-							<h2 className="register__form__titles-title">Registrate Ya!</h2>
-							<p className="register__form__titles-subtitle">
-								Sé parte de nuestra comunidad
-							</p>
+		<ContainerBodyStyled>
+			<div className="register">
+				<div className="flex align-items-center justify-content-center py-5">
+					<form
+						className="surface-card p-4 shadow-2 border-round w-full lg:w-8 w-11"
+						onSubmit={(e) => onSubmit(e)}
+					>
+						<div className="text-center mb-5">
+							<div className="text-900 text-3xl font-medium mb-3">Registrate Ya!</div>
+							<div className="text-600 font-medium line-height-3">
+								Y disfruta de la variedad de nuestros productos
+							</div>
 						</div>
+						<div>
+							<label htmlFor="name" className="block text-900 font-medium mb-2">
+								Nombre Completo
+							</label>
 
-						<AlerControl active={alert.active} type={alert.type} text={alert.text} />
+							<InputText
+								id="name"
+								value={name}
+								type="text"
+								placeholder="Juan Pedro"
+								className="w-full mb-3"
+								name="name"
+								onChange={(e) => onChange(e)}
+							/>
 
-						<InputControl
-							icon={<PhotoCameraFrontRoundedIcon />}
-							type="text"
-							name="name"
-							value={name}
-							placeholder="Nombre Completo"
-							onChange={(e) => onChange(e)}
-						/>
+							<label htmlFor="lastname" className="block text-900 font-medium mb-2">
+								Apelllido Completo
+							</label>
 
-						<InputControl
-							icon={<PhotoCameraFrontRoundedIcon />}
-							type="text"
-							name="lastname"
-							value={lastname}
-							placeholder="Apellido Completo"
-							onChange={(e) => onChange(e)}
-						/>
-						<InputControl
-							icon={<AlternateEmailRoundedIcon />}
-							type="text"
-							name="email"
-							value={email}
-							placeholder="Correo"
-							onChange={(e) => onChange(e)}
-						/>
-						<InputControl
-							icon={<AccountCircleRoundedIcon />}
-							type="text"
-							name="user"
-							value={user}
-							placeholder="Usuario"
-							onChange={(e) => onChange(e)}
-						/>
-						<InputControl
-							icon={<LockOpenRoundedIcon />}
-							type="password"
-							name="password"
-							value={password}
-							placeholder="Contraseña"
-							onChange={(e) => onChange(e)}
-						/>
-						<InputControl
-							icon={<HttpsRoundedIcon />}
-							type="password"
-							name="repeat_password"
-							value={repeat_password}
-							placeholder="Repetir Contraseña"
-							onChange={(e) => onChange(e)}
-						/>
+							<InputText
+								id="lastname"
+								value={lastname}
+								type="text"
+								placeholder="Lopez Rodriguez"
+								className="w-full mb-3"
+								name="lastname"
+								onChange={(e) => onChange(e)}
+							/>
 
-						<ButtonControl
-							icon={<PersonAddAltRoundedIcon />}
-							type="submit"
-							text="Registrar"
-						/>
+							<label htmlFor="email" className="block text-900 font-medium mb-2">
+								Dirección de Correo
+							</label>
+
+							<InputText
+								id="email"
+								value={email}
+								type="email"
+								placeholder="email@dominio.com"
+								className="w-full mb-3"
+								name="email"
+								onChange={(e) => onChange(e)}
+							/>
+
+							<label htmlFor="user" className="block text-900 font-medium mb-2">
+								Usuario
+							</label>
+
+							<InputText
+								id="user"
+								value={user}
+								type="text"
+								placeholder="juan"
+								className="w-full mb-3"
+								name="user"
+								onChange={(e) => onChange(e)}
+							/>
+
+							<label htmlFor="password" className="block text-900 font-medium mb-2">
+								Contraseña
+							</label>
+
+							<InputText
+								id="password"
+								value={password}
+								type="password"
+								placeholder="Ingrese contraseña"
+								className="w-full mb-3"
+								name="password"
+								onChange={(e) => onChange(e)}
+							/>
+
+							<label
+								htmlFor="repeat_password"
+								className="block text-900 font-medium mb-2"
+							>
+								Confirmar Contraseña
+							</label>
+							<InputText
+								id="repeat_password"
+								type="password"
+								placeholder="Confirme contraseña"
+								className="w-full mb-3"
+								name="repeat_password"
+								value={repeat_password}
+								onChange={(e) => onChange(e)}
+							/>
+
+							<Button
+								type="submit"
+								label="Registrate Ahora"
+								icon={<IconUserPlus size={24} />}
+								className="w-full"
+							/>
+
+							<div className="text-center mt-3">
+								<span className="text-600 font-medium line-height-3">
+									Ya tienes una cuenta?
+								</span>
+								<Link
+									to="/login/"
+									className="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
+								>
+									Inicia Sesión
+								</Link>
+							</div>
+						</div>
 					</form>
-					<div className="register__returnlogin">
-						<span className="register__returnlogin-question">
-							¿Ya tienes una cuenta?
-						</span>
-						<Link className="register__returnlogin-link" to={`/login`}>
-							Inicia Sesión
-						</Link>
-					</div>
 				</div>
 			</div>
-		</div>
+		</ContainerBodyStyled>
 	);
 };

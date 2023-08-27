@@ -1,9 +1,12 @@
+import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { Products } from "./Products";
 
 export const TabProducts = () => {
 	return (
 		<>
-			<Products />
+			<ContainerBodyStyled>
+				<Products />
+			</ContainerBodyStyled>
 		</>
 	);
 };

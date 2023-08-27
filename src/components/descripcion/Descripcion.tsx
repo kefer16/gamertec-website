@@ -1,4 +1,4 @@
-import { Alert, Button, Container, Snackbar, TextField } from "@mui/material";
+import { Alert, Button, Snackbar, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
@@ -17,6 +17,7 @@ import { CarritoEntity } from "../../entities/carrito.entities";
 import { CarritoApi } from "../../apis/carrito.api";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ModeloDescripcionProps } from "../../interfaces/modelo.interface";
+import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 
 interface Props {
 	modelo_id: number;
@@ -551,7 +552,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 	};
 	return (
 		<>
-			<Container maxWidth={"lg"}>
+			<ContainerBodyStyled>
 				<RutaProductos>{`${categoriaNombre} / ${marcaNombre} / ${modeloNombre}`}</RutaProductos>
 
 				<ContenidoArriba>
@@ -607,7 +608,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 						</DetallesTecnicos>
 					</AbajoDetalles>
 				</ContenidoAbajo>
-			</Container>
+			</ContainerBodyStyled>
 			<Comentarios
 				modeloId={modelo_id}
 				calificacionGeneral={calificacionGeneral}

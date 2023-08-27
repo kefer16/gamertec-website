@@ -54,12 +54,13 @@ export const MultiSelectPrimeUI = ({
 	};
 
 	return (
-		<div className="flex flex-wrap gap-3 p-fluid">
-			<label htmlFor="locale-user" className="font-bold mb-2">
+		<div className="flex flex-column">
+			<label htmlFor="locale-user" className="font-bold mb-1">
 				{title}
 			</label>
 
 			<MultiSelect
+				className="w-full"
 				value={selectedOptions}
 				onChange={(e: MultiSelectChangeEvent) => {
 					onChange(e);

@@ -1,9 +1,6 @@
 import styled from "styled-components";
 
 export const CompraStyled = styled.div`
-	max-width: 1260px;
-	min-height: calc(100vh - 60px);
-	margin: auto;
 	background-color: #fff;
 	.titulo {
 		width: 100%;

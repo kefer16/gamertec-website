@@ -72,7 +72,8 @@ export const SeriesRegistro = ({
 			header="Añadir Series"
 			visible={estadoModal}
 			maximizable
-			style={{ width: "50vw" }}
+			// style={{ width: "50vw" }}
+			className="grid col-11 md:col-4"
 			onHide={() => funcionCerrarModal()}
 		>
 			<label htmlFor="locale-user" className="font-bold mb-2">
@@ -93,7 +94,7 @@ export const SeriesRegistro = ({
 				title="Series"
 				placeholder="Escoger Series"
 				options={options}
-				disabled={false}
+				disabled={true}
 				selectedOptions={seriesSeleccionadas}
 				fuctionSelectedOptions={setSeriesSeleccionadas}
 			/>
