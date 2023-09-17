@@ -14,10 +14,7 @@ import {
 } from "@mui/material";
 
 import { ChangeEvent, useEffect, useState } from "react";
-import {
-	convertirFechaSQL,
-	convertirFechaVisual,
-} from "../../../utils/funciones.utils";
+import { fechaVisualDateToString } from "../../../utils/funciones.utils";
 import {
 	ComboboxProps,
 	ComboboxAnidadoProps,
@@ -63,7 +60,7 @@ export const ModeloRegistro = ({
 	const [caracteristicas, setCaracteristicas] = useState("");
 	const [color, setColor] = useState("");
 	const [precio, setPrecio] = useState("0");
-	const [fechaRegistro, seFechaRegistro] = useState("");
+	const [fechaRegistro, seFechaRegistro] = useState(new Date());
 	const [stock, setStock] = useState("0");
 	const [numeroSeries, setNumeroSeries] = useState("0");
 	const [activo, setActivo] = useState("0");
@@ -87,7 +84,6 @@ export const ModeloRegistro = ({
 		setPrecio(String(itemSeleccionado.precio));
 		seFechaRegistro(itemSeleccionado.fecha_registro);
 		setStock(String(itemSeleccionado.stock));
-		setNumeroSeries(itemSeleccionado.numero_series);
 		setActivo(itemSeleccionado.activo ? "1" : "0");
 		setFkCategoria(String(itemSeleccionado.fk_categoria));
 		const nuevoArray: ComboboxAnidadoProps[] = arrayMarcas.filter(
@@ -121,9 +117,8 @@ export const ModeloRegistro = ({
 			caracteristicas,
 			color,
 			parseInt(precio),
-			convertirFechaSQL(fechaRegistro),
+			fechaRegistro,
 			parseInt(stock),
-			numeroSeries,
 			activo === "1",
 			parseInt(fkMarca),
 			parseInt(fkCategoria)
@@ -274,7 +269,7 @@ export const ModeloRegistro = ({
 									fullWidth
 									label="Fecha Registro"
 									variant="outlined"
-									value={convertirFechaVisual(fechaRegistro)}
+									value={fechaVisualDateToString(fechaRegistro)}
 									name="date"
 									disabled
 								/>

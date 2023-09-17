@@ -1,12 +1,18 @@
 import { ComentarioService } from "../../entities/comentario.entities";
-import { formatoCalificacion } from "../../utils/funciones.utils";
+import {
+	fechaVisualDateToString,
+	formatoCalificacion,
+} from "../../utils/funciones.utils";
 
 import { ModalComentario } from "../global/ModalComentario";
+import { ContainerSectionStyled } from "../global/styles/ContainerStyled";
 import {
 	ComentariosStyled,
 	ListaComentariosStyled,
 } from "./styles/ComentariosStyles";
-import { Button, Container, Rating } from "@mui/material";
+import { Button } from "primereact/button";
+import { IconMessage2Plus } from "@tabler/icons-react";
+import { RatingPrimeUI } from "../controls/primeUI/RatingPrimeUI";
 
 interface Props {
 	modeloId: number;
@@ -36,7 +42,7 @@ export const Comentarios = ({
 }: Props) => {
 	return (
 		<>
-			<Container maxWidth={"lg"}>
+			<ContainerSectionStyled>
 				<ComentariosStyled>
 					<div className="cont-coment">
 						<h2>Comentarios</h2>
@@ -46,13 +52,7 @@ export const Comentarios = ({
 
 							<div id="calificacion-general" className="calificacion-general">
 								<div className="cali">
-									<Rating
-										name="no-value"
-										value={calificacionGeneral}
-										precision={0.1}
-										readOnly
-									/>
-
+									<RatingPrimeUI valoracion={calificacionGeneral} readonly={true} />
 									<div className="cali-numeros">
 										<p>{`${formatoCalificacion(calificacionGeneral)} / 5`}</p>
 									</div>
@@ -63,9 +63,11 @@ export const Comentarios = ({
 											: "Sin comentarios"}
 									</p>
 								</div>
-								<Button variant="contained" onClick={funcionAbrirModal}>
-									Escribir comentario
-								</Button>
+								<Button
+									icon={<IconMessage2Plus className="mr-2" size={24} />}
+									onClick={funcionAbrirModal}
+									label="Escribir comentario"
+								/>
 							</div>
 						</div>
 					</div>
@@ -79,19 +81,19 @@ export const Comentarios = ({
 									<h4 className="asunto">{comentario.titulo} </h4>
 									<p className="usuario">Por {comentario.usuario}</p>
 
-									<Rating value={comentario.valoracion} readOnly />
+									<RatingPrimeUI valoracion={comentario.valoracion} readonly={true} />
 									<div className="msj">
 										<p>{comentario.mensaje}</p>
 									</div>
 								</div>
 								<div className="fecha-comentario">
-									<p>{comentario.fecha_registro.toString()}</p>
+									<p>{fechaVisualDateToString(comentario.fecha_registro)}</p>
 								</div>
 							</div>
 						);
 					})}
 				</ListaComentariosStyled>
-			</Container>
+			</ContainerSectionStyled>
 			<ModalComentario
 				modeloId={modeloId}
 				modalComentario={modalComentario}

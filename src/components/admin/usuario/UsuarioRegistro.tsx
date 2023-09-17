@@ -12,10 +12,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import {
-	convertirFechaSQL,
-	convertirFechaVisual,
-} from "../../../utils/funciones.utils";
+import { fechaVisualDateToString } from "../../../utils/funciones.utils";
 import { UsuarioService } from "../../../entities/usuario.entities";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
@@ -53,7 +50,7 @@ export const UsuarioRegistro = ({
 	const [contrasenia, setContrasenia] = useState("");
 	const [dinero, setDinero] = useState("0");
 	const [foto, setFoto] = useState("");
-	const [fecha_registro, setFecha_registro] = useState("");
+	const [fecha_registro, setFecha_registro] = useState(new Date());
 	const [activo, setActivo] = useState("0");
 	const [fk_privilegio, setFk_privilegio] = useState("0");
 
@@ -92,7 +89,7 @@ export const UsuarioRegistro = ({
 			contrasenia,
 			parseInt(dinero),
 			foto,
-			convertirFechaSQL(fecha_registro),
+			fecha_registro,
 			activo === "0",
 			parseInt(fk_privilegio)
 		);
@@ -205,7 +202,7 @@ export const UsuarioRegistro = ({
 									fullWidth
 									label="Fecha Registro"
 									variant="outlined"
-									value={convertirFechaVisual(fecha_registro)}
+									value={fechaVisualDateToString(fecha_registro)}
 									name="date"
 									disabled
 								/>

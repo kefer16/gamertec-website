@@ -1,19 +1,8 @@
-import {
-	GridColDef,
-	GridColumnVisibilityModel,
-	GridRowsProp,
-	GridValidRowModel,
-} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import {
-	convertirFechaVisual,
-	crearFechaISO,
-} from "../../../utils/funciones.utils";
-import {
 	Alert,
 	Button,
-	Container,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -23,7 +12,13 @@ import {
 	Typography,
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { TableControl } from "../../controls/TableControl";
+import {
+	ColumnProps,
+	EstadoProps,
+	ImagenProps,
+	TableControl,
+	TypeColumn,
+} from "../../controls/TableControl";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ModeloRegistro } from "./ModeloRegistro";
 
@@ -33,57 +28,88 @@ import {
 	ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
 import { ModeloEntity } from "../../../entities/modelo.entity";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
-const columnas: GridColDef<GridValidRowModel>[] = [
+const columnsModelo2: ColumnProps[] = [
 	{
-		field: "id",
-		headerName: "ID",
-	},
-	{
+		type: TypeColumn.TEXT,
 		field: "index",
-		headerName: "N°",
-		width: 60,
-	},
-	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-	{
-		field: "nombre_categoria",
-		headerName: "Categoria",
-		width: 150,
+		header: "N°",
+		style: { width: "1%" },
 	},
 	{
-		field: "nombre_marca",
-		headerName: "Marca",
-		width: 150,
+		type: TypeColumn.DATE,
+		field: "fecha_registro",
+		header: "Fecha Registro",
+		style: { width: "10%" },
 	},
 	{
-		field: "nombre",
-		headerName: "Modelo",
-		width: 150,
+		type: TypeColumn.TEXT,
+		field: "categoria_nombre",
+		header: "Categoria",
+		style: { width: "5%" },
 	},
-
 	{
-		field: "descripcion",
-		headerName: "Nombre Producto",
-		width: 250,
+		type: TypeColumn.TEXT,
+		field: "marca_nombre",
+		header: "Marca",
+		style: { width: "5%" },
 	},
-
 	{
+		type: TypeColumn.TEXT,
+		field: "modelo_nombre",
+		header: "Modelo",
+		style: { width: "10%" },
+	},
+	{
+		type: TypeColumn.IMAGE,
+		field: "foto",
+		header: "Foto",
+		style: { width: "1%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "producto_nombre",
+		header: "Nombre Producto",
+		style: { width: "15%" },
+	},
+	{
+		type: TypeColumn.MONEY,
 		field: "precio",
-		headerName: "Precio",
-		width: 150,
+		header: "Precio",
+		style: { width: "4%" },
 	},
-
 	{
+		type: TypeColumn.NUMBER,
 		field: "stock",
-		headerName: "Stock",
-		width: 150,
+		header: "Stock",
+		style: { width: "1%" },
 	},
-	{ field: "activo_nombre", headerName: "Estado", width: 130 },
+	{
+		type: TypeColumn.STATUS,
+		field: "estado",
+		header: "Estado",
+		style: { width: "4%" },
+	},
 ];
 
-const columasVisibles: GridColumnVisibilityModel = {
-	id: false,
-};
+export interface ValuesModeloProps {
+	id: number;
+	index: number;
+	fecha_registro: Date;
+	categoria_id: number;
+	categoria_nombre?: string;
+	marca_id: number;
+	marca_nombre?: string;
+	modelo_nombre: string;
+	producto_nombre: string;
+	foto: ImagenProps;
+	precio: number;
+	stock: number;
+	color: string;
+	caracteristicas: string;
+	estado: EstadoProps;
+}
 interface Props {
 	nombreFormulario: string;
 }
@@ -112,20 +138,21 @@ export const funcionObteneModelo = async (): Promise<
 };
 
 export const Modelo = ({ nombreFormulario }: Props) => {
-	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
-	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
 	const [dialogo, setDialogo] = useState(false);
+	const [arrayModelo, setArrayModelo] = useState<ValuesModeloProps[]>([]);
+	const [modeloSeleccionado, setModeloSeleccionado] =
+		useState<ValuesModeloProps | null>(null);
 
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
 	};
 
 	const funcionAbrirDialogo = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayModelo.find((item) =>
+			item.id === modeloSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -138,14 +165,6 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 			return;
 		}
 		setDialogo(true);
-	};
-	const funcionClickFila = (params: any) => {
-		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
-	};
-
-	const funcionCheckFila = (params: any) => {
-		const item = params[params.length - 1];
-		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
 	const [itemSeleccionado, setItemSeleccionado] = useState<ModeloEntity>(
@@ -178,38 +197,41 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let array: {}[] = [];
+		let arrayModelo: ValuesModeloProps[] = [];
 		await ModeloEntity.ListarTodos()
 			.then((response) => {
 				response.data.data.forEach((element: ModeloEntity, index: number) => {
-					const newRow = {
+					const newRow: ValuesModeloProps = {
 						id: element.modelo_id,
 						index: index + 1,
 						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
-						fk_categoria: element.fk_categoria,
-						nombre_categoria: arrayCategoria.find(
+						categoria_id: element.fk_categoria,
+						categoria_nombre: arrayCategoria.find(
 							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
 						)?.descripcion,
-						fk_marca: element.fk_marca,
-						nombre_marca: arrayMarca.find(
+						marca_id: element.fk_marca,
+						marca_nombre: arrayMarca.find(
 							(marca: ComboboxAnidadoProps) => marca.valorAnidado === element.fk_marca
 						)?.descripcion,
-						nombre: element.nombre,
-						descripcion: element.descripcion,
-						foto: element.foto,
-						caracteristicas: element.caracteristicas,
-						color: element.color,
+						modelo_nombre: element.nombre,
+						producto_nombre: element.descripcion,
+						foto: {
+							img: element.foto,
+							alt: element.descripcion,
+						},
 						precio: element.precio,
 						stock: element.stock,
-						numero_series: element.numero_series,
-						activo: element.activo,
-						activo_nombre: element.activo ? "Activo" : "Inactivo",
+						color: element.color,
+						caracteristicas: element.caracteristicas,
+						estado: {
+							valor: element.activo,
+							estado: element.activo ? "Activo" : "Inactivo",
+						},
 					};
-					array.push(newRow);
+					arrayModelo.push(newRow);
 				});
 
-				setFilas(array);
+				setArrayModelo(arrayModelo);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -219,29 +241,15 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
 	const funcionCrear = () => {
 		setItemSeleccionado(
-			new ModeloEntity(
-				0,
-				"",
-				"",
-				"",
-				"",
-				"",
-				0,
-				crearFechaISO(),
-				0,
-				"",
-				false,
-				0,
-				0
-			)
+			new ModeloEntity(0, "", "", "", "", "", 0, new Date(), 0, false, 0, 0)
 		);
 		setEsEdicion(false);
 		setAbrirModal(true);
 	};
 
 	const funcionEditar = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayModelo.find((item) =>
+			item.id === modeloSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -257,18 +265,17 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 		setItemSeleccionado(
 			new ModeloEntity(
 				itemEdicion.id,
-				itemEdicion.nombre,
-				itemEdicion.descripcion,
-				itemEdicion.foto,
+				itemEdicion.modelo_nombre,
+				itemEdicion.producto_nombre,
+				itemEdicion.foto.img,
 				itemEdicion.caracteristicas,
 				itemEdicion.color,
 				itemEdicion.precio,
 				itemEdicion.fecha_registro,
 				itemEdicion.stock,
-				itemEdicion.numero_series,
-				itemEdicion.activo,
-				itemEdicion.fk_marca,
-				itemEdicion.fk_categoria
+				itemEdicion.estado.valor,
+				itemEdicion.marca_id,
+				itemEdicion.categoria_id
 			)
 		);
 
@@ -277,8 +284,8 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEliminar = async () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayModelo.find((item) =>
+			item.id === modeloSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -334,7 +341,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 	}, []);
 
 	return (
-		<Container maxWidth="lg">
+		<ContainerBodyStyled>
 			<Typography
 				variant="h5"
 				component={"h2"}
@@ -347,13 +354,12 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 				functionActualizar={funcionEditar}
 				functionEliminar={funcionAbrirDialogo}
 			/>
-			<TableControl
-				rows={filas}
-				columns={columnas}
-				filaSeleccionada={filaSeleccionada}
-				funcionClickFila={funcionClickFila}
-				funcionCheckFila={funcionCheckFila}
-				columnsVisivility={columasVisibles}
+			<TableControl<ValuesModeloProps>
+				ancho={{ minWidth: "110rem" }}
+				columnas={columnsModelo2}
+				filas={arrayModelo}
+				filaSeleccionada={modeloSeleccionado}
+				funcionFilaSeleccionada={setModeloSeleccionado}
 			/>
 
 			<ModeloRegistro
@@ -388,10 +394,9 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							filas.find(
-								(item) =>
-									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
-							)?.nombre
+							arrayModelo.find(
+								(item) => item.id === (modeloSeleccionado ? modeloSeleccionado.id : 0)
+							)?.modelo_nombre
 						}`}
 					</DialogContentText>
 				</DialogContent>
@@ -404,6 +409,6 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

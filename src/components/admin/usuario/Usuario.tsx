@@ -1,19 +1,8 @@
-import {
-	GridColDef,
-	GridColumnVisibilityModel,
-	GridRowsProp,
-	GridValidRowModel,
-} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import {
-	convertirFechaVisual,
-	crearFechaISO,
-} from "../../../utils/funciones.utils";
-import {
 	Alert,
 	Button,
-	Container,
 	DialogActions,
 	DialogContent,
 	DialogContentText,
@@ -23,92 +12,118 @@ import {
 	Dialog,
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { TableControl } from "../../controls/TableControl";
+import {
+	ColumnProps,
+	EstadoProps,
+	ImagenProps,
+	TableControl,
+	TypeColumn,
+} from "../../controls/TableControl";
 
 import { UsuarioService } from "../../../entities/usuario.entities";
 import { UsuarioRegistro } from "./UsuarioRegistro";
 import { funcionObtenerPrivilegios } from "../privilegio/Privilegio";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
-const columnas: GridColDef<GridValidRowModel>[] = [
+const columnsUsuario2: ColumnProps[] = [
 	{
-		field: "id",
-		headerName: "ID",
-	},
-
-	{
+		type: TypeColumn.TEXT,
 		field: "index",
-		headerName: "N°",
-		width: 60,
-	},
-	{ field: "fecha_registro", headerName: "", width: 0 },
-	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-	{
-		field: "nombre_privilegio",
-		headerName: "Privilegio",
-		width: 150,
+		header: "N°",
+		style: { width: "1%" },
 	},
 	{
-		field: "nombre",
-		headerName: "Nombre",
-		width: 150,
+		type: TypeColumn.DATE,
+		field: "fecha_registro",
+		header: "Fecha Registro",
+		style: { width: "10%" },
 	},
 	{
-		field: "apellido",
-		headerName: "Apellido",
-		width: 150,
+		type: TypeColumn.TEXT,
+		field: "privilegio_nombre",
+		header: "Privilegio",
+		style: { width: "5%" },
 	},
 	{
+		type: TypeColumn.TEXT,
+		field: "usuario_nombre",
+		header: "Nombre",
+		style: { width: "10%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "usuario_apellido",
+		header: "Apellido",
+		style: { width: "10%" },
+	},
+	{
+		type: TypeColumn.TEXT,
 		field: "correo",
-		headerName: "Correo",
-		width: 200,
+		header: "Correo",
+		style: { width: "5%" },
 	},
 	{
+		type: TypeColumn.IMAGE,
+		field: "foto",
+		header: "Foto",
+		style: { width: "4%" },
+	},
+	{
+		type: TypeColumn.TEXT,
 		field: "usuario",
-		headerName: "Usuario",
-		width: 100,
+		header: "Usuario",
+		style: { width: "5%" },
 	},
 	{
-		field: "contrasenia",
-		headerName: "",
-		width: 0,
-	},
-	{
+		type: TypeColumn.MONEY,
 		field: "dinero",
-		headerName: "Dinero",
-		width: 100,
+		header: "Dinero",
+		style: { width: "5%" },
 	},
-
-	{ field: "activo", headerName: "" },
-	{ field: "activo_nombre", headerName: "Estado", width: 130 },
+	{
+		type: TypeColumn.STATUS,
+		field: "estado",
+		header: "Estado",
+		style: { width: "4%" },
+	},
 ];
+export interface ValuesUsuarioProps {
+	id: number;
+	index: number;
+	fecha_registro: Date;
+	privilegio_id: number;
+	privilegio_nombre?: string;
+	usuario_nombre: string;
+	usuario_apellido: string;
+	correo: string;
+	foto: ImagenProps;
+	usuario: string;
+	dinero: number;
+	estado: EstadoProps;
+}
 
-const columasVisibles: GridColumnVisibilityModel = {
-	id: false,
-	activo: false,
-	contrasenia: false,
-	fecha_registro: false,
-};
 interface Props {
 	nombreFormulario: string;
 }
 let arrayPrivilegio: ComboboxProps[] = [];
 
 export const Usuario = ({ nombreFormulario }: Props) => {
-	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
-	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
 	const [dialogo, setDialogo] = useState(false);
+	const [arrayUsuario, setArrayUsuario] = useState<ValuesUsuarioProps[]>([]);
+	const [usuarioSeleccionado, setUsuarioSeleccioando] =
+		useState<ValuesUsuarioProps | null>(null);
 
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
 	};
 
 	const funcionAbrirDialogo = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayUsuario.find((item: ValuesUsuarioProps) =>
+			item.id === usuarioSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -121,14 +136,6 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 			return;
 		}
 		setDialogo(true);
-	};
-	const funcionClickFila = (params: any) => {
-		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
-	};
-
-	const funcionCheckFila = (params: any) => {
-		const item = params[params.length - 1];
-		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
 	const [itemSeleccionado, setItemSeleccionado] = useState<UsuarioService>(
@@ -161,32 +168,35 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let array: {}[] = [];
+		let arrayUsuario: ValuesUsuarioProps[] = [];
 		await UsuarioService.ListarTodos()
 			.then((response) => {
-				console.log(response.data.data);
-
 				response.data.data.forEach((element: UsuarioService, index: number) => {
-					const newRow = {
+					const newRow: ValuesUsuarioProps = {
 						id: element.usuario_id,
 						index: index + 1,
-						nombre: element.nombre,
-						apellido: element.apellido,
+						fecha_registro: element.fecha_registro,
+						privilegio_id: element.fk_privilegio,
+						privilegio_nombre: arrayPrivilegio.find(
+							(privilegio: ComboboxProps) => privilegio.valor === element.fk_privilegio
+						)?.descripcion,
+						usuario_nombre: element.nombre,
+						usuario_apellido: element.apellido,
 						correo: element.correo,
 						usuario: element.usuario,
 						dinero: element.dinero,
-						foto: element.foto,
-						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
-						nombre_privilegio: arrayPrivilegio.find(
-							(privilegio: ComboboxProps) => privilegio.valor === element.fk_privilegio
-						)?.descripcion,
-						activo: element.activo,
-						activo_nombre: element.activo ? "Activo" : "Inactivo",
+						foto: {
+							img: element.foto,
+							alt: element.usuario,
+						},
+						estado: {
+							valor: element.activo,
+							estado: element.activo ? "Activo" : "Inactivo",
+						},
 					};
-					array.push(newRow);
+					arrayUsuario.push(newRow);
 				});
-				setFilas(array);
+				setArrayUsuario(arrayUsuario);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -196,15 +206,15 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 
 	const funcionCrear = () => {
 		setItemSeleccionado(
-			new UsuarioService(0, "", "", "", "", "", 0, "", crearFechaISO(), false, 0)
+			new UsuarioService(0, "", "", "", "", "", 0, "", new Date(), false, 0)
 		);
 		setEsEdicion(false);
 		setAbrirModal(true);
 	};
 
 	const funcionEditar = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayUsuario.find((item) =>
+			item.id === usuarioSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -216,17 +226,17 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 
 		setItemSeleccionado(
 			new UsuarioService(
-				itemEdicion.usuario_id,
-				itemEdicion.nombre,
-				itemEdicion.apellido,
+				itemEdicion.id,
+				itemEdicion.usuario_nombre,
+				itemEdicion.usuario_apellido,
 				itemEdicion.correo,
 				itemEdicion.usuario,
-				itemEdicion.contrasenia,
+				"",
 				itemEdicion.dinero,
-				itemEdicion.foto,
+				itemEdicion.foto.img,
 				itemEdicion.fecha_registro,
-				itemEdicion.activo,
-				itemEdicion.fk_privilegio
+				itemEdicion.estado.valor,
+				itemEdicion.privilegio_id
 			)
 		);
 
@@ -235,8 +245,8 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEliminar = async () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayUsuario.find((item) =>
+			item.id === usuarioSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -287,7 +297,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 	}, []);
 
 	return (
-		<Container maxWidth="lg">
+		<ContainerBodyStyled>
 			<Typography
 				variant="h5"
 				component={"h2"}
@@ -300,13 +310,12 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 				functionActualizar={funcionEditar}
 				functionEliminar={funcionAbrirDialogo}
 			/>
-			<TableControl
-				rows={filas}
-				columns={columnas}
-				filaSeleccionada={filaSeleccionada}
-				funcionClickFila={funcionClickFila}
-				funcionCheckFila={funcionCheckFila}
-				columnsVisivility={columasVisibles}
+			<TableControl<ValuesUsuarioProps>
+				ancho={{ minWidth: "110rem" }}
+				columnas={columnsUsuario2}
+				filas={arrayUsuario}
+				filaSeleccionada={usuarioSeleccionado}
+				funcionFilaSeleccionada={setUsuarioSeleccioando}
 			/>
 
 			<UsuarioRegistro
@@ -340,10 +349,10 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							filas.find(
+							arrayUsuario.find(
 								(item) =>
-									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
-							)?.nombre
+									item.id === (usuarioSeleccionado === null ? 0 : usuarioSeleccionado.id)
+							)?.usuario
 						}`}
 					</DialogContentText>
 				</DialogContent>
@@ -356,6 +365,6 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

@@ -20,6 +20,8 @@ import IconGamertec from "../../images/svg/icon-gamertec.svg";
 import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
+import { IconShoppingCart } from "@tabler/icons-react";
+import { Badge } from "primereact/badge";
 
 export const Header = () => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
@@ -39,6 +41,10 @@ export const Header = () => {
 
 	const irInicio = () => {
 		navigate("/");
+	};
+
+	const irCarrito = () => {
+		navigate("/shoping_cart/");
 	};
 
 	const navigate = useNavigate();
@@ -91,15 +97,25 @@ export const Header = () => {
 		/>
 	);
 	const end = (
-		<>
+		<div className="flex align-items-center">
+			<Button
+				className="p-button-badge"
+				rounded
+				link
+				icon={<IconShoppingCart size={24} />}
+				onClick={irCarrito}
+			>
+				<Badge value="3" severity="danger"></Badge>
+			</Button>
+
 			<Avatar
-				className="shadow-1"
+				className="shadow-1 ml-2"
 				image={sesionGamertec.usuario.foto}
 				style={{ height: "48px", width: "48px" }}
 				shape="circle"
 				onClick={(event) => menuRight.current?.toggle(event)}
 			/>
-		</>
+		</div>
 	);
 
 	const menuRight = useRef<Menu>(null);

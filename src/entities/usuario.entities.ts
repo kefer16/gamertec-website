@@ -12,7 +12,7 @@ export class UsuarioService {
 		public contrasenia: string = "",
 		public dinero: number = 0,
 		public foto: string = "",
-		public fecha_registro: string = "",
+		public fecha_registro: Date = new Date(),
 		public activo: boolean = false,
 		public fk_privilegio: number = 0,
 		public fecha_inicial: string = "",

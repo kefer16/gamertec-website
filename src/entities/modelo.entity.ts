@@ -10,9 +10,8 @@ export class ModeloEntity {
 		public caracteristicas: string = "",
 		public color: string = "",
 		public precio: number = 0,
-		public fecha_registro: string = "",
+		public fecha_registro: Date = new Date(),
 		public stock: number = 0,
-		public numero_series: string = "",
 		public activo: boolean = false,
 		public fk_marca: number = 0,
 		public fk_categoria: number = 0

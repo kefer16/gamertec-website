@@ -4,6 +4,9 @@ export const ContainerBodyStyled = styled.div`
 	max-width: 1240px;
 	margin: 73px auto 0 auto;
 	min-height: calc(100vh - (75px + 295.05px));
+	@media screen and (max-width: 1200px) {
+		padding: 0 20px;
+	}
 `;
 
 export const ContainerBannerStyled = styled.div`

@@ -122,7 +122,7 @@ export const Register = () => {
 			password,
 			0,
 			"",
-			Date(),
+			new Date(),
 			true,
 			1
 		);
@@ -158,7 +158,7 @@ export const Register = () => {
 			<div className="register">
 				<div className="flex align-items-center justify-content-center py-5">
 					<form
-						className="surface-card p-4 shadow-2 border-round w-full lg:w-8 w-11"
+						className="surface-card p-4 shadow-2 border-round w-full lg:w-8"
 						onSubmit={(e) => onSubmit(e)}
 					>
 						<div className="text-center mb-5">

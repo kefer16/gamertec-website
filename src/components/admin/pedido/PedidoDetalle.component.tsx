@@ -1,4 +1,4 @@
-import { Container, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { ComprobanteStyled } from "../../comprobante/styles/Comprobante.styled";
 import { useContext, useEffect, useState } from "react";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
@@ -16,6 +16,7 @@ import { IMultiSelectProps } from "../../controls/primeUI/MultiSelectPrimeUI";
 import { ProductoService } from "../../../services/producto.service";
 import { IProductoSerie } from "../../../interfaces/producto.interface";
 import { opcionSerie } from "../../../apis/producto.api";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
 interface Props {
 	pedido_id: number;
@@ -96,7 +97,7 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 	}, [obtenerSesion, pedido_id]);
 	return (
 		<>
-			<Container maxWidth="lg">
+			<ContainerBodyStyled>
 				<ComprobanteStyled className="boleta">
 					<div className="titulo">
 						<h2>Pedido Pendiente</h2>
@@ -203,7 +204,7 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 					funcionCerrarModal={funcionCerrarModal}
 					disableButton={false}
 				/>
-			</Container>
+			</ContainerBodyStyled>
 		</>
 	);
 };

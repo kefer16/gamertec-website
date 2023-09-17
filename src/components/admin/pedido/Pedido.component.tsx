@@ -3,9 +3,10 @@ import { CardPedido } from "../../controls/CardPedido";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { PedidoService } from "../../../services/pedido.service";
-import { Container } from "@mui/material";
+
 import { PedidoCabeceraUsuarioProsp } from "../../../interfaces/pedido.interface";
 import { CardPedidoDetalleProps } from "../../../interfaces/card_pedido.interface";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
 export const Pedido = () => {
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
@@ -37,10 +38,7 @@ export const Pedido = () => {
 	}, [sesionGamertec, obtenerSesion]);
 
 	return (
-		<Container
-			maxWidth="xl"
-			sx={{ display: "grid", gap: "2rem", padding: "2rem 0rem" }}
-		>
+		<ContainerBodyStyled className="grid gap-3">
 			{arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
 				let sumaCantidad: number = 0;
 				let sumaPrecio: number = 0;
@@ -67,6 +65,6 @@ export const Pedido = () => {
 					/>
 				);
 			})}
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

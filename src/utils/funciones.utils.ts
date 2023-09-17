@@ -19,6 +19,23 @@ export function convertirFechaVisual(fecha: string | undefined): string {
 	return "";
 }
 
+export function fechaVisualDateToString(fecha: Date): string {
+	// 2023-04-12T00:25:06.657Z
+	const fechaString = fecha.toString();
+	if (fechaString) {
+		const dia = fechaString.substring(8, 10);
+		const mes = fechaString.substring(5, 7);
+		const anio = fechaString.substring(0, 4);
+		const hora = fechaString.substring(11, 13);
+		const minutos = fechaString.substring(14, 16);
+		const segundos = fechaString.substring(17, 19);
+		return `${dia}/${mes}/${anio} ${hora}:${minutos}:${segundos} ${
+			parseInt(hora) >= 0 && parseInt(hora) <= 11 ? "AM" : "PM"
+		}`;
+	}
+	return "";
+}
+
 export function convertirFechaSQL(fecha: string): string {
 	// 2023-04-12T00:25:06.657Z
 	const dia = fecha.substring(8, 10);
@@ -58,3 +75,7 @@ export function formatoCalificacion(decimal: number): string {
 	const roundedNumber = Math.round(decimal * 10) / 10;
 	return roundedNumber.toFixed(1);
 }
+
+export const formatoMonedaPerunana = (value: number) => {
+	return value.toLocaleString("es-PE", { style: "currency", currency: "PEN" });
+};

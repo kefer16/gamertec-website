@@ -29,6 +29,7 @@ export const ComentariosStyled = styled.div`
 					margin-top: 10px;
 					width: 70%;
 					display: flex;
+					align-items: center;
 					.estrellas {
 						a {
 							text-decoration: none;

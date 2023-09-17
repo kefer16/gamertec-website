@@ -1,19 +1,9 @@
-import {
-	GridColDef,
-	GridColumnVisibilityModel,
-	GridRowsProp,
-	GridValidRowModel,
-} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import {
-	convertirFechaVisual,
-	fechaActualISO,
-} from "../../../utils/funciones.utils";
+import { fechaActualISO } from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
-	Container,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -23,7 +13,12 @@ import {
 	Typography,
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { TableControl } from "../../controls/TableControl";
+import {
+	ColumnProps,
+	EstadoProps,
+	TableControl,
+	TypeColumn,
+} from "../../controls/TableControl";
 import { MarcaRegistro } from "./MarcaRegistro";
 import { MarcaService } from "../../../entities/marca.entities";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
@@ -31,37 +26,49 @@ import {
 	ComboboxProps,
 	ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
-const columnas: GridColDef<GridValidRowModel>[] = [
+export interface ValuesMarcaProps {
+	id: number;
+	index: number;
+	fecha_registro: Date;
+	categoria_id: number;
+	categoria_nombre?: string;
+	marca_nombre: string;
+	estado: EstadoProps;
+}
+const columnsMarcas2: ColumnProps[] = [
 	{
-		field: "id",
-		headerName: "ID",
-	},
-
-	{
+		type: TypeColumn.TEXT,
 		field: "index",
-		headerName: "N°",
-		width: 60,
-	},
-
-	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-
-	{
-		field: "nombre_categoria",
-		headerName: "Categoria",
-		width: 150,
+		header: "N°",
+		style: { width: "1%" },
 	},
 	{
-		field: "nombre",
-		headerName: "Marca",
-		width: 150,
+		type: TypeColumn.DATE,
+		field: "fecha_registro",
+		header: "Fecha Registro",
+		style: { width: "10%" },
 	},
-	{ field: "activo_nombre", headerName: "Estado", width: 130 },
+	{
+		type: TypeColumn.TEXT,
+		field: "categoria_nombre",
+		header: "Categoria",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "marca_nombre",
+		header: "Marca",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.STATUS,
+		field: "estado",
+		header: "Estado",
+		style: { width: "20%" },
+	},
 ];
-
-const columasVisibles: GridColumnVisibilityModel = {
-	id: false,
-};
 interface Props {
 	nombreFormulario: string;
 }
@@ -89,11 +96,12 @@ export const funcionObtenerMarcas = async (): Promise<
 };
 
 export const Marca = ({ nombreFormulario }: Props) => {
-	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
-	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+	const [marcaSeleccionada, setMarcaSeleccionada] =
+		useState<ValuesMarcaProps | null>(null);
+	const [arrayMarca, setArrayMarca] = useState<ValuesMarcaProps[]>([]);
 	const [dialogo, setDialogo] = useState(false);
 
 	const funcionCerrarDialogo = () => {
@@ -101,8 +109,8 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionAbrirDialogo = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayMarca.find((item) =>
+			item.id === marcaSeleccionada?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -115,14 +123,6 @@ export const Marca = ({ nombreFormulario }: Props) => {
 			return;
 		}
 		setDialogo(true);
-	};
-	const funcionClickFila = (params: any) => {
-		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
-	};
-
-	const funcionCheckFila = (params: any) => {
-		const item = params[params.length - 1];
-		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
 	const [itemSeleccionado, setItemSeleccionado] = useState<MarcaService>(
@@ -155,31 +155,27 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let array: {}[] = [];
+		let arrayMarca: ValuesMarcaProps[] = [];
 		await MarcaService.ListarTodos()
 			.then((response) => {
-				console.log(response.data.data);
-
 				response.data.data.forEach((element: MarcaService, index: number) => {
-					const newRow = {
+					const newRow: ValuesMarcaProps = {
 						id: element.marca_id,
 						index: index + 1,
-						nombre: element.nombre,
-						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(
-							element.fecha_registro.toString()
-						),
-						fk_categoria: element.fk_categoria,
-						nombre_categoria: arrayCategoria.find(
+						categoria_id: element.fk_categoria,
+						categoria_nombre: arrayCategoria.find(
 							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
 						)?.descripcion,
-						activo: element.activo,
-						activo_nombre: element.activo ? "Activo" : "Inactivo",
+						marca_nombre: element.nombre,
+						fecha_registro: element.fecha_registro,
+						estado: {
+							valor: element.activo,
+							estado: element.activo ? "Activo" : "Inactivo",
+						},
 					};
-					array.push(newRow);
+					arrayMarca.push(newRow);
 				});
-
-				setFilas(array);
+				setArrayMarca(arrayMarca);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -194,8 +190,8 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEditar = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayMarca.find((item) =>
+			item.id === marcaSeleccionada?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -211,9 +207,9 @@ export const Marca = ({ nombreFormulario }: Props) => {
 		setItemSeleccionado(
 			new MarcaService(
 				itemEdicion.id,
-				itemEdicion.nombre,
-				itemEdicion.activo,
-				itemEdicion.fk_categoria,
+				itemEdicion.marca_nombre,
+				itemEdicion.estado.valor,
+				itemEdicion.categoria_id,
 				itemEdicion.fecha_registro
 			)
 		);
@@ -223,8 +219,8 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEliminar = async () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayMarca.find((item) =>
+			item.id === marcaSeleccionada?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -274,7 +270,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 	}, []);
 
 	return (
-		<Container maxWidth="lg">
+		<ContainerBodyStyled>
 			<Typography
 				variant="h5"
 				component={"h2"}
@@ -287,13 +283,12 @@ export const Marca = ({ nombreFormulario }: Props) => {
 				functionActualizar={funcionEditar}
 				functionEliminar={funcionAbrirDialogo}
 			/>
-			<TableControl
-				rows={filas}
-				columns={columnas}
-				filaSeleccionada={filaSeleccionada}
-				funcionClickFila={funcionClickFila}
-				funcionCheckFila={funcionCheckFila}
-				columnsVisivility={columasVisibles}
+			<TableControl<ValuesMarcaProps>
+				ancho={{ minWidth: "70rem" }}
+				columnas={columnsMarcas2}
+				filas={arrayMarca}
+				filaSeleccionada={marcaSeleccionada}
+				funcionFilaSeleccionada={setMarcaSeleccionada}
 			/>
 
 			<MarcaRegistro
@@ -327,10 +322,9 @@ export const Marca = ({ nombreFormulario }: Props) => {
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							filas.find(
-								(item) =>
-									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
-							)?.nombre
+							arrayMarca.find(
+								(item) => item.id === (marcaSeleccionada ? marcaSeleccionada.id : 0)
+							)?.marca_nombre
 						}`}
 					</DialogContentText>
 				</DialogContent>
@@ -343,6 +337,6 @@ export const Marca = ({ nombreFormulario }: Props) => {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

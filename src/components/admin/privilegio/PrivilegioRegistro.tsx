@@ -14,10 +14,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-import {
-	convertirFechaSQL,
-	convertirFechaVisual,
-} from "../../../utils/funciones.utils";
+import { fechaVisualDateToString } from "../../../utils/funciones.utils";
 import { PrivilegioService } from "../../../entities/privilegio.entities";
 
 interface Props {
@@ -47,7 +44,7 @@ export const PrivilegioRegistro = ({
 	const [privilegioId, setPrivilegioId] = useState(0);
 	const [tipo, setTipo] = useState("");
 	const [activo, setActivo] = useState("");
-	const [fecha_registro, setFecha_registro] = useState("");
+	const [fecha_registro, setFecha_registro] = useState(new Date());
 	const [abreviatura, setAbreviatura] = useState("");
 
 	useEffect(() => {
@@ -72,7 +69,7 @@ export const PrivilegioRegistro = ({
 			tipo,
 			activo === "1",
 			abreviatura,
-			convertirFechaSQL(fecha_registro)
+			fecha_registro
 		);
 
 		if (esEdicion) {
@@ -184,7 +181,7 @@ export const PrivilegioRegistro = ({
 									fullWidth
 									label="Fecha Registro"
 									variant="outlined"
-									value={convertirFechaVisual(fecha_registro)}
+									value={fechaVisualDateToString(fecha_registro)}
 									name="fecha_registro"
 									disabled
 								/>

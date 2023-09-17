@@ -6,11 +6,12 @@ import {
 } from "@mui/icons-material";
 import { useContext, useEffect, useState } from "react";
 
-import { convertirFormatoMoneda } from "../../utils/funciones.utils";
-import { Button, Container } from "@mui/material";
+import { formatoMonedaPerunana } from "../../utils/funciones.utils";
+import { Button } from "@mui/material";
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 
 export const Carrito = () => {
 	const { sesionGamertec } = useContext(GamertecSesionContext);
@@ -52,7 +53,7 @@ export const Carrito = () => {
 	}, [sesionGamertec]);
 
 	return (
-		<Container maxWidth={"lg"}>
+		<ContainerBodyStyled>
 			<CarritoStyles>
 				<div className="titulo">
 					<h1>Carrito de Compras</h1>
@@ -75,10 +76,9 @@ export const Carrito = () => {
 											<p>{item.cls_modelo.nombre}</p>
 										</div>
 										<div className="precio">
-											<h2>{convertirFormatoMoneda(item.cls_modelo.precio)}</h2>
+											<h2>{formatoMonedaPerunana(item.cls_modelo.precio)}</h2>
 											<span>Envio a Domicilio</span>
 											<p className="stock">
-												{" "}
 												{`${item.cls_modelo.stock} Un. disponibles `}
 											</p>
 										</div>
@@ -114,14 +114,14 @@ export const Carrito = () => {
 					<div className="carrito_orden">
 						<h1>RESUMEN DE TU ORDEN</h1>
 						<p>
-							Sub-total productos<span>{convertirFormatoMoneda(precioSubTotal)}</span>
+							Sub-total productos<span>{formatoMonedaPerunana(precioSubTotal)}</span>
 						</p>
 						<p>
-							Envío<span>{convertirFormatoMoneda(precioEnvio)}</span>
+							Envío<span>{formatoMonedaPerunana(precioEnvio)}</span>
 						</p>
 
 						<p>
-							Total<span>{convertirFormatoMoneda(precioTotal)}</span>
+							Total<span>{formatoMonedaPerunana(precioTotal)}</span>
 						</p>
 
 						<Link to={`/before_purchase/`} style={{ color: "red" }}>
@@ -131,6 +131,6 @@ export const Carrito = () => {
 					</div>
 				</div>
 			</CarritoStyles>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

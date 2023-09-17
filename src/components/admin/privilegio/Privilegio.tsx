@@ -1,19 +1,8 @@
-import {
-	GridColDef,
-	GridColumnVisibilityModel,
-	GridRowsProp,
-	GridValidRowModel,
-} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import {
-	convertirFechaVisual,
-	crearFechaISO,
-} from "../../../utils/funciones.utils";
-import {
 	Alert,
 	Button,
-	Container,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -23,39 +12,58 @@ import {
 	Typography,
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { TableControl } from "../../controls/TableControl";
+import {
+	ColumnProps,
+	TableControl,
+	TypeColumn,
+} from "../../controls/TableControl";
 import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
-const columnsCategorias: GridColDef<GridValidRowModel>[] = [
+const columnsPrivilegio2: ColumnProps[] = [
 	{
-		field: "id",
-		headerName: "ID",
-	},
-
-	{
+		type: TypeColumn.TEXT,
 		field: "index",
-		headerName: "N°",
-		width: 100,
+		header: "N°",
+		style: { width: "1%" },
 	},
-
-	{ field: "fecha_registro", headerName: "", width: 200 },
-	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 250 },
-
-	{ field: "tipo", headerName: "Tipo", width: 200 },
-	{ field: "abreviatura", headerName: "Abreviatura", width: 200 },
-
-	{ field: "activo", headerName: "" },
-	{ field: "activo_nombre", headerName: "Estado", width: 130 },
+	{
+		type: TypeColumn.DATE,
+		field: "fecha_registro",
+		header: "Fecha Registro",
+		style: { width: "10%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "tipo",
+		header: "Tipo",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "abreviatura",
+		header: "Abreviatura",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.STATUS,
+		field: "activo_nombre",
+		header: "Estado",
+		style: { width: "10%" },
+	},
 ];
 
-const columasVisibles: GridColumnVisibilityModel = {
-	id: false,
-	activo: false,
-	fecha_registro: false,
-};
-
+export interface ValuesPrivilegioProps {
+	id: number;
+	index: number;
+	fecha_registro: Date;
+	tipo: string;
+	abreviatura: string;
+	activo: boolean;
+	activo_nombre: string;
+}
 interface Props {
 	nombreFormulario: string;
 }
@@ -75,19 +83,24 @@ export const funcionObtenerPrivilegios = async (): Promise<ComboboxProps[]> => {
 };
 
 export const Privilegio = ({ nombreFormulario }: Props) => {
-	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
-	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+
 	const [dialogo, setDialogo] = useState(false);
+	const [arrayPrivilegio, setArrayPrivilegio] = useState<
+		ValuesPrivilegioProps[]
+	>([]);
+	const [privilegioSeleccionado, setPrivilegioSeleccionado] =
+		useState<ValuesPrivilegioProps | null>(null);
+
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
 	};
 
 	const funcionAbrirDialogo = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayPrivilegio.find((item) =>
+			item.id === privilegioSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -100,14 +113,6 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 			return;
 		}
 		setDialogo(true);
-	};
-	const funcionClickFila = (params: any) => {
-		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
-	};
-
-	const funcionCheckFila = (params: any) => {
-		const item = params[params.length - 1];
-		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
 	const [itemSeleccionado, setItemSeleccionado] = useState<PrivilegioService>(
@@ -140,25 +145,22 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let array: {}[] = [];
+		let arrayPrivilegio: ValuesPrivilegioProps[] = [];
 		await PrivilegioService.ListarTodos()
 			.then((response) => {
-				console.log(response.data.data);
-
 				response.data.data.forEach((element: PrivilegioService, index: number) => {
-					const newRow = {
+					const newRow: ValuesPrivilegioProps = {
 						id: element.privilegio_id,
 						index: index + 1,
+						fecha_registro: element.fecha_registro,
 						tipo: element.tipo,
+						abreviatura: element.abreviatura,
 						activo: element.activo,
 						activo_nombre: element.activo ? "Activo" : "Inactivo",
-						fecha_registro: element.fecha_registro,
-						abreviatura: element.abreviatura,
-						fecha_registro_visual: convertirFechaVisual(element.fecha_registro),
 					};
-					array.push(newRow);
+					arrayPrivilegio.push(newRow);
 				});
-				setFilas(array);
+				setArrayPrivilegio(arrayPrivilegio);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -167,14 +169,14 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionCrear = () => {
-		setItemSeleccionado(new PrivilegioService(0, "", false, "", crearFechaISO()));
+		setItemSeleccionado(new PrivilegioService(0, "", false, "", new Date()));
 		setEsEdicion(false);
 		setAbrirModal(true);
 	};
 
 	const funcionEditar = () => {
-		const itemEdicion = filas.find((categoria) =>
-			categoria.id === filaSeleccionada ? categoria : undefined
+		const itemEdicion = arrayPrivilegio.find((categoria) =>
+			categoria.id === privilegioSeleccionado?.id ? categoria : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -186,11 +188,11 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 
 		setItemSeleccionado(
 			new PrivilegioService(
-				itemEdicion?.id,
-				itemEdicion?.tipo,
-				itemEdicion?.activo,
-				itemEdicion?.abreviatura,
-				itemEdicion?.fecha_registro
+				itemEdicion.id,
+				itemEdicion.tipo,
+				itemEdicion.activo,
+				itemEdicion.abreviatura,
+				itemEdicion.fecha_registro
 			)
 		);
 
@@ -199,8 +201,8 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEliminar = async () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayPrivilegio.find((item) =>
+			item.id === privilegioSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -243,7 +245,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 	}, []);
 
 	return (
-		<Container maxWidth="lg">
+		<ContainerBodyStyled>
 			<Typography
 				variant="h5"
 				component={"h2"}
@@ -256,13 +258,12 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 				functionActualizar={funcionEditar}
 				functionEliminar={funcionAbrirDialogo}
 			/>
-			<TableControl
-				rows={filas}
-				columns={columnsCategorias}
-				filaSeleccionada={filaSeleccionada}
-				funcionClickFila={funcionClickFila}
-				funcionCheckFila={funcionCheckFila}
-				columnsVisivility={columasVisibles}
+			<TableControl<ValuesPrivilegioProps>
+				ancho={{ minWidth: "70rem" }}
+				columnas={columnsPrivilegio2}
+				filas={arrayPrivilegio}
+				filaSeleccionada={privilegioSeleccionado}
+				funcionFilaSeleccionada={setPrivilegioSeleccionado}
 			/>
 
 			<PrivilegioRegistro
@@ -295,10 +296,11 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							filas.find(
+							arrayPrivilegio.find(
 								(item) =>
-									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
-							)?.nombre
+									item.id ===
+									(privilegioSeleccionado === null ? 0 : privilegioSeleccionado.id)
+							)?.tipo
 						}`}
 					</DialogContentText>
 				</DialogContent>
@@ -311,6 +313,6 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

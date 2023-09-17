@@ -195,7 +195,7 @@ export const Login = () => {
 		<>
 			<div className="flex align-items-center justify-content-center py-5">
 				<form
-					className="surface-card p-4 shadow-2 border-round w-full lg:w-6 w-11"
+					className="surface-card p-4 shadow-2 border-round w-full lg:w-6"
 					onSubmit={(e) => onSubmit(e)}
 				>
 					<div className="text-center mb-5">
@@ -227,7 +227,7 @@ export const Login = () => {
 							onChange={(e) => onChange(e)}
 						/>
 
-						<label htmlFor="password" className="block text-900 font-medium mb-2">
+						<label htmlFor="password" className="text-900 font-medium mb-2">
 							Contraseña
 						</label>
 						<InputText

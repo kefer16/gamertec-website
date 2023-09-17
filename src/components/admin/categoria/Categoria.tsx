@@ -1,6 +1,5 @@
 import {
 	Typography,
-	Container,
 	Snackbar,
 	Alert,
 	Dialog,
@@ -10,38 +9,57 @@ import {
 	DialogActions,
 	Button,
 } from "@mui/material";
-import { TableControl } from "../../controls/TableControl";
+import {
+	ColumnProps,
+	EstadoProps,
+	TableControl,
+	TypeColumn,
+} from "../../controls/TableControl";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { CategoryService } from "../../../entities/categoria.entities";
 import { useEffect, useState } from "react";
-import {
-	GridRowsProp,
-	GridColDef,
-	GridValidRowModel,
-	GridColumnVisibilityModel,
-} from "@mui/x-data-grid";
 import { CategoryRegister } from "./CategoriaRegistro";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
-import {
-	convertirFechaVisual,
-	fechaActualISO,
-} from "../../../utils/funciones.utils";
+import { fechaActualISO } from "../../../utils/funciones.utils";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
-const columnsCategorias: GridColDef<GridValidRowModel>[] = [
-	{ field: "id", headerName: "ID", width: 0 },
-	{ field: "index", headerName: "N°", width: 60 },
-	{ field: "fecha_registro", headerName: "Fecha Registro", width: 0 },
-	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-	{ field: "nombre", headerName: "Nombre", width: 200 },
-	{ field: "activo", headerName: "", width: 0 },
-	{ field: "activo_nombre", headerName: "Estado", width: 130 },
+const columnsCategorias2: ColumnProps[] = [
+	{
+		type: TypeColumn.TEXT,
+		field: "index",
+		header: "N°",
+		style: { width: "1%" },
+	},
+	{
+		type: TypeColumn.DATE,
+		field: "fecha_registro",
+		header: "Fecha Registro",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "categoria_nombre",
+		header: "Categoria",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.STATUS,
+		field: "estado",
+		header: "Estado",
+		style: { width: "15%" },
+	},
 ];
-const columasVisibles: GridColumnVisibilityModel = {
-	id: false,
-	activo: false,
-	fecha_registro: false,
-};
+
+export interface ValuesCategoriaProps {
+	id: number;
+	index: number;
+	categoria_nombre: string;
+	fecha_registro: Date;
+	fecha_actualizacion: Date;
+	estado: EstadoProps;
+}
+
 interface Props {
 	nombreFormulario: string;
 }
@@ -61,11 +79,14 @@ export const funcionObtenerCategorias = async (): Promise<ComboboxProps[]> => {
 };
 
 export const Categoria = ({ nombreFormulario }: Props) => {
-	const [filas, setFilas] = useState<GridRowsProp>([]);
+	const [arrayCategoria, setArrayCategoria] = useState<ValuesCategoriaProps[]>(
+		[]
+	);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
-	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+	const [categoriaSeleccionada, setCategoriaSeleccionada] =
+		useState<ValuesCategoriaProps | null>(null);
 	const [dialogo, setDialogo] = useState(false);
 
 	const funcionCerrarDialogo = () => {
@@ -73,8 +94,8 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionAbrirDialogo = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayCategoria.find((item) =>
+			item.id === categoriaSeleccionada?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -89,17 +110,9 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 		setDialogo(true);
 	};
 
-	const funcionClickFila = (params: any) => {
-		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
-	};
-
-	const funcionCheckFila = (params: any) => {
-		const item = params[params.length - 1];
-		setFilaSeleccionada(item === undefined ? null : item);
-	};
-
-	const [categoriaSeleccionada, setCategoriaSeleccionada] =
-		useState<CategoryService>(new CategoryService());
+	const [itemSeleccionado, setItemSeleccionado] = useState<CategoryService>(
+		new CategoryService()
+	);
 
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
 		active: false,
@@ -127,27 +140,24 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let arrayCategorias: {}[] = [];
+		let arrayCategorias: ValuesCategoriaProps[] = [];
 		await CategoryService.ListarTodos()
 			.then((response) => {
 				response.data.data.forEach((element: CategoryService, index: number) => {
-					const newRow = {
+					const newRow: ValuesCategoriaProps = {
 						id: element.categoria_id,
 						index: index + 1,
-						nombre: element.nombre,
+						categoria_nombre: element.nombre,
 						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: convertirFechaVisual(
-							element.fecha_registro.toString()
-						),
-						fecha_actualizacion: convertirFechaVisual(
-							element.fecha_actualizacion.toString()
-						),
-						activo: element.activo,
-						activo_nombre: element.activo ? "Activo" : "Inactivo",
+						fecha_actualizacion: element.fecha_actualizacion,
+						estado: {
+							valor: element.activo,
+							estado: element.activo ? "Activo" : "Inactivo",
+						},
 					};
 					arrayCategorias.push(newRow);
 				});
-				setFilas(arrayCategorias);
+				setArrayCategoria(arrayCategorias);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -156,7 +166,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionCrearCategoria = () => {
-		setCategoriaSeleccionada(
+		setItemSeleccionado(
 			new CategoryService(0, "", false, fechaActualISO(), fechaActualISO())
 		);
 		setEsEdicion(false);
@@ -164,24 +174,24 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEditarCategoria = () => {
-		const categoriaSeleccionada = filas.find((categoria) =>
-			categoria.id === filaSeleccionada ? categoria : undefined
+		const editarItem = arrayCategoria.find((item) =>
+			item.id === categoriaSeleccionada?.id ? item : undefined
 		);
 
-		if (categoriaSeleccionada === undefined) {
+		if (editarItem === undefined) {
 			funcionAsignarAlerta("warning", "Elija un usuario para poder editar");
 			funcionAbrirAlerta();
 
 			return;
 		}
 
-		setCategoriaSeleccionada(
+		setItemSeleccionado(
 			new CategoryService(
-				categoriaSeleccionada?.id,
-				categoriaSeleccionada?.nombre,
-				categoriaSeleccionada?.activo,
-				categoriaSeleccionada?.fecha_registro,
-				categoriaSeleccionada?.fecha_actualizacion
+				editarItem.id,
+				editarItem.categoria_nombre,
+				editarItem.estado.valor,
+				editarItem.fecha_registro,
+				editarItem.fecha_actualizacion
 			)
 		);
 
@@ -190,11 +200,11 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEliminar = async () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const eliminarItem = arrayCategoria.find((item) =>
+			item.id === categoriaSeleccionada?.id ? item : undefined
 		);
 
-		if (itemEdicion === undefined) {
+		if (eliminarItem === undefined) {
 			funcionAsignarAlerta(
 				"warning",
 				`Elija un ${nombreFormulario} para poder eliminar`
@@ -204,7 +214,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 			return;
 		}
 
-		await CategoryService.EliminarUno(itemEdicion.id)
+		await CategoryService.EliminarUno(eliminarItem.id)
 			.then((response) => {
 				if (response.data.code === 200) {
 					funcionAsignarAlerta(
@@ -235,7 +245,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	}, []);
 
 	return (
-		<Container maxWidth="lg">
+		<ContainerBodyStyled>
 			<Typography
 				variant="h5"
 				component={"h2"}
@@ -248,20 +258,19 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 				functionActualizar={funcionEditarCategoria}
 				functionEliminar={funcionAbrirDialogo}
 			/>
-			<TableControl
-				rows={filas}
-				columns={columnsCategorias}
-				filaSeleccionada={filaSeleccionada}
-				funcionClickFila={funcionClickFila}
-				funcionCheckFila={funcionCheckFila}
-				columnsVisivility={columasVisibles}
+			<TableControl<ValuesCategoriaProps>
+				ancho={{ minWidth: "50rem" }}
+				columnas={columnsCategorias2}
+				filas={arrayCategoria}
+				filaSeleccionada={categoriaSeleccionada}
+				funcionFilaSeleccionada={setCategoriaSeleccionada}
 			/>
 
 			<CategoryRegister
 				nombreFormulario={nombreFormulario}
 				abrir={abrirModal}
 				esEdicion={esEdicion}
-				itemSeleccionado={categoriaSeleccionada}
+				itemSeleccionado={itemSeleccionado}
 				funcionCerrarModal={funcionCerrarModal}
 				funcionActualizarTabla={funcionListar}
 				funcionAsignarAlerta={funcionAsignarAlerta}
@@ -287,10 +296,8 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							filas.find(
-								(item) =>
-									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
-							)?.nombre
+							arrayCategoria.find((item) => item.id === (categoriaSeleccionada ?? 0))
+								?.categoria_nombre
 						}`}
 					</DialogContentText>
 				</DialogContent>
@@ -303,6 +310,6 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

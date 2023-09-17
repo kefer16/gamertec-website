@@ -1,4 +1,5 @@
-import { Alert, Button, Snackbar, TextField } from "@mui/material";
+import { Button } from "primereact/button";
+import { Alert, Snackbar, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
@@ -18,6 +19,7 @@ import { CarritoApi } from "../../apis/carrito.api";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ModeloDescripcionProps } from "../../interfaces/modelo.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
+import { IconShoppingCartPlus } from "@tabler/icons-react";
 
 interface Props {
 	modelo_id: number;
@@ -592,9 +594,11 @@ export const Descripcion = ({ modelo_id }: Props) => {
 							</DetallesPro>
 
 							<DetallesPro>
-								<Button variant="contained" onClick={funcionActivarModalCarrito}>
-									Añadir al Carrito
-								</Button>
+								<Button
+									icon={<IconShoppingCartPlus className="mr-2" size={24} />}
+									onClick={funcionActivarModalCarrito}
+									label="Añadir al Carrito"
+								/>
 							</DetallesPro>
 						</Detalles>
 					</ContenidoArribaDerecha>
@@ -634,9 +638,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					<div className="login__formulario">
 						<TextField type="text" placeholder="Usuario" />
 						<TextField type="password" placeholder="Contraseña" />
-						<Button variant="contained" type="submit">
-							Ingresar
-						</Button>
+						<Button type="submit" label="Ingresar" />
 					</div>
 
 					<p className="login__irregistro">

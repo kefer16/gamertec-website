@@ -1,16 +1,9 @@
-import {
-	GridColDef,
-	GridColumnVisibilityModel,
-	GridRowsProp,
-	GridValidRowModel,
-} from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import { InterfaceAlertControl } from "../../controls/AlertControl";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import {
 	Alert,
 	Button,
-	Container,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -20,7 +13,12 @@ import {
 	Typography,
 } from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
-import { TableControl } from "../../controls/TableControl";
+import {
+	ColumnProps,
+	EstadoProps,
+	TableControl,
+	TypeColumn,
+} from "../../controls/TableControl";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { funcionObtenerMarcas } from "../marca/Marca";
 
@@ -31,45 +29,67 @@ import {
 	ComboboxProps,
 	ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
+import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
-const columnas: GridColDef<GridValidRowModel>[] = [
+const columnsProducto2: ColumnProps[] = [
 	{
-		field: "id",
-		headerName: "ID",
-	},
-	{
+		type: TypeColumn.TEXT,
 		field: "index",
-		headerName: "N°",
-		width: 60,
-	},
-	{ field: "fecha_registro_visual", headerName: "Fecha Registro", width: 190 },
-	{
-		field: "nombre_categoria",
-		headerName: "Categoria",
-		width: 150,
+		header: "N°",
+		style: { width: "1%" },
 	},
 	{
-		field: "nombre_marca",
-		headerName: "Marca",
-		width: 150,
+		type: TypeColumn.DATE,
+		field: "fecha_registro",
+		header: "Fecha Registro",
+		style: { width: "10%" },
 	},
 	{
-		field: "nombre_modelo",
-		headerName: "Modelo",
-		width: 150,
+		type: TypeColumn.TEXT,
+		field: "categoria_nombre",
+		header: "Categoria",
+		style: { width: "5%" },
 	},
 	{
+		type: TypeColumn.TEXT,
+		field: "marca_nombre",
+		header: "Marca",
+		style: { width: "5%" },
+	},
+	{
+		type: TypeColumn.TEXT,
+		field: "modelo_nombre",
+		header: "Modelo",
+		style: { width: "10%" },
+	},
+	{
+		type: TypeColumn.TEXT,
 		field: "numero_serie",
-		headerName: "Número de Serie",
-		width: 150,
+		header: "Número Serie",
+		style: { width: "5%" },
 	},
-
-	{ field: "activo_nombre", headerName: "Estado", width: 130 },
+	{
+		type: TypeColumn.STATUS,
+		field: "estado",
+		header: "Estado",
+		style: { width: "4%" },
+	},
 ];
 
-const columasVisibles: GridColumnVisibilityModel = {
-	id: false,
-};
+export interface ValuesProductoProps {
+	id: number;
+	index: number;
+	fecha_registro: Date;
+	categoria_id: number;
+	categoria_nombre?: string;
+	marca_id: number;
+	marca_nombre?: string;
+	modelo_id: number;
+	modelo_nombre?: string;
+	numero_serie: string;
+	estado: EstadoProps;
+}
+
 interface Props {
 	nombreFormulario: string;
 }
@@ -79,20 +99,22 @@ let arrayMarca: ComboboxAnidadoProps[] = [];
 let arrayModelo: ComboboxAnidadoProps[] = [];
 
 export const Producto = ({ nombreFormulario }: Props) => {
-	const [filas, setFilas] = useState<GridRowsProp>([]);
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
-	const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+
 	const [dialogo, setDialogo] = useState(false);
+	const [arrayProducto, setArrayProducto] = useState<ValuesProductoProps[]>([]);
+	const [productoSeleccionado, setProductoSeleccionado] =
+		useState<ValuesProductoProps | null>(null);
 
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
 	};
 
 	const funcionAbrirDialogo = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayProducto.find((item) =>
+			item.id === productoSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -105,14 +127,6 @@ export const Producto = ({ nombreFormulario }: Props) => {
 			return;
 		}
 		setDialogo(true);
-	};
-	const funcionClickFila = (params: any) => {
-		setFilaSeleccionada(params.id === filaSeleccionada ? null : params.id);
-	};
-
-	const funcionCheckFila = (params: any) => {
-		const item = params[params.length - 1];
-		setFilaSeleccionada(item === undefined ? null : item);
 	};
 
 	const [itemSeleccionado, setItemSeleccionado] = useState<ProductoService>(
@@ -145,38 +159,37 @@ export const Producto = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let array: {}[] = [];
+		let arrayProducto: ValuesProductoProps[] = [];
 		await ProductoService.ListarTodos()
 			.then((response) => {
-				console.log(response.data.data);
-
 				response.data.data.forEach((element: ProductoService, index: number) => {
-					const newRow = {
+					const newRow: ValuesProductoProps = {
 						id: element.producto_id,
 						index: index + 1,
 						fecha_registro: element.fecha_registro,
-						fecha_registro_visual: element.fecha_registro,
-						fk_categoria: element.fk_categoria,
-						nombre_categoria: arrayCategoria.find(
+						categoria_id: element.fk_categoria,
+						categoria_nombre: arrayCategoria.find(
 							(categoria: ComboboxProps) => categoria.valor === element.fk_categoria
 						)?.descripcion,
-						fk_marca: element.fk_marca,
-						nombre_marca: arrayMarca.find(
+						marca_id: element.fk_marca,
+						marca_nombre: arrayMarca.find(
 							(marca: ComboboxAnidadoProps) => marca.valorAnidado === element.fk_marca
 						)?.descripcion,
-						fk_modelo: element.fk_modelo,
-						nombre_modelo: arrayModelo.find(
+						modelo_id: element.fk_modelo,
+						modelo_nombre: arrayModelo.find(
 							(modelo: ComboboxAnidadoProps) =>
 								modelo.valorAnidado === element.fk_modelo
 						)?.descripcion,
 						numero_serie: element.numero_serie,
-						activo: element.activo,
-						activo_nombre: element.activo ? "Activo" : "Inactivo",
+						estado: {
+							valor: element.activo,
+							estado: element.activo ? "Activo" : "Inactivo",
+						},
 					};
-					array.push(newRow);
+					arrayProducto.push(newRow);
 				});
 
-				setFilas(array);
+				setArrayProducto(arrayProducto);
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -193,8 +206,8 @@ export const Producto = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEditar = () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayProducto.find((item) =>
+			item.id === productoSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -211,11 +224,11 @@ export const Producto = ({ nombreFormulario }: Props) => {
 			new ProductoService(
 				itemEdicion.id,
 				itemEdicion.numero_serie,
-				itemEdicion.fk_modelo,
-				itemEdicion.fk_marca,
-				itemEdicion.fk_categoria,
+				itemEdicion.modelo_id,
+				itemEdicion.marca_id,
+				itemEdicion.categoria_id,
 				itemEdicion.fecha_registro,
-				itemEdicion.activo
+				itemEdicion.estado.valor
 			)
 		);
 
@@ -224,8 +237,8 @@ export const Producto = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionEliminar = async () => {
-		const itemEdicion = filas.find((item) =>
-			item.id === filaSeleccionada ? item : undefined
+		const itemEdicion = arrayProducto.find((item) =>
+			item.id === productoSeleccionado?.id ? item : undefined
 		);
 
 		if (itemEdicion === undefined) {
@@ -285,7 +298,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 	}, []);
 
 	return (
-		<Container maxWidth="lg">
+		<ContainerBodyStyled>
 			<Typography
 				variant="h5"
 				component={"h2"}
@@ -299,12 +312,11 @@ export const Producto = ({ nombreFormulario }: Props) => {
 				functionEliminar={funcionAbrirDialogo}
 			/>
 			<TableControl
-				rows={filas}
-				columns={columnas}
-				filaSeleccionada={filaSeleccionada}
-				funcionClickFila={funcionClickFila}
-				funcionCheckFila={funcionCheckFila}
-				columnsVisivility={columasVisibles}
+				ancho={{ minWidth: "90rem" }}
+				columnas={columnsProducto2}
+				filas={arrayProducto}
+				filaSeleccionada={productoSeleccionado}
+				funcionFilaSeleccionada={setProductoSeleccionado}
 			/>
 
 			<ProductoRegistro
@@ -340,10 +352,11 @@ export const Producto = ({ nombreFormulario }: Props) => {
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							filas.find(
+							arrayProducto.find(
 								(item) =>
-									item.id === (filaSeleccionada === undefined ? 0 : filaSeleccionada)
-							)?.nombre
+									item.id ===
+									(productoSeleccionado === null ? 0 : productoSeleccionado.id)
+							)?.numero_serie
 						}`}
 					</DialogContentText>
 				</DialogContent>
@@ -356,6 +369,6 @@ export const Producto = ({ nombreFormulario }: Props) => {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</Container>
+		</ContainerBodyStyled>
 	);
 };

@@ -1,11 +1,12 @@
-import { Button, Grid, Rating, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import { FondoModalStyled } from "./styles/FondoModalStyled";
 import { ModalStyled } from "./styles/ModalStyled";
 import { ButtonCerrarModal } from "./ButtonCerrarModal";
 import { useState } from "react";
 import { ComentarioService } from "../../entities/comentario.entities";
 import { fechaActualISO } from "../../utils/funciones.utils";
-
+import { Nullable } from "primereact/ts-helpers";
+import { RatingPrimeUI } from "../controls/primeUI/RatingPrimeUI";
 interface Props {
 	modeloId: number;
 	modalComentario: boolean;
@@ -28,7 +29,7 @@ export const ModalComentario = ({
 }: Props) => {
 	const [titulo, setTitulo] = useState<string>("");
 	const [mensaje, setMensaje] = useState<string>("");
-	const [valoracion, setValoracion] = useState<number | null>(0);
+	const [valoracion, setValoracion] = useState<Nullable<number>>(0);
 
 	const funcionLimpiarControles = () => {
 		setValoracion(0);
@@ -81,12 +82,10 @@ export const ModalComentario = ({
 				>
 					<Grid item xs={1}>
 						<p>Calificacion General:</p>
-						<Rating
-							name="simple-controlled"
-							value={valoracion}
-							onChange={(event, newValue) => {
-								setValoracion(newValue);
-							}}
+						<RatingPrimeUI
+							valoracion={valoracion}
+							funcionValoracion={setValoracion}
+							readonly={false}
 						/>
 					</Grid>
 					<Grid item xs={1}>

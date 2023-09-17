@@ -1,16 +1,3 @@
-import {
-	Box,
-	Button,
-	FormControl,
-	InputLabel,
-	MenuItem,
-	Select,
-	SelectChangeEvent,
-	TextField,
-	Typography,
-} from "@mui/material";
-import { SearchTwoTone as SearchIcon } from "@mui/icons-material";
-
 import { useEffect, useState } from "react";
 import { funcionObtenerCategorias } from "../admin/categoria/Categoria";
 import styled from "styled-components";
@@ -18,18 +5,40 @@ import { funcionListarModelosPorFiltro } from "../../apis/producto.api";
 import { Link } from "react-router-dom";
 import { ComboboxProps } from "../../interfaces/combobox.interface";
 import { ModeloPorFiltroProps } from "../../interfaces/modelo.interface";
+import { InputText } from "primereact/inputtext";
+// import { IconSearch } from "@tabler/icons-react";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Button } from "primereact/button";
+import { IconSearch } from "@tabler/icons-react";
+import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
+import { formatoMonedaPerunana } from "../../utils/funciones.utils";
+
+interface DropdownProps {
+	name: string;
+	code: string;
+}
 
 export const Products = () => {
-	const [categoria, setCategoria] = useState<string>("0");
+	const [categoria, setCategoria] = useState<DropdownProps>({
+		code: "0",
+		name: "Todas las Categorias",
+	});
 	const [nombreModelo, setNombreModelo] = useState<string>("");
-	const [arrayCategoria, setArrayCategoria] = useState<ComboboxProps[]>([]);
+	const [arrayCategoria, setArrayCategoria] = useState<DropdownProps[]>([]);
 	const [arrayModelo, setArrayModelo] = useState<ModeloPorFiltroProps[]>([]);
-
 	useEffect(() => {
 		const obtenerData = async () => {
-			await funcionObtenerCategorias().then((response) => {
-				setArrayCategoria(response);
+			let array: DropdownProps[] = [];
+			await funcionObtenerCategorias().then((resp: ComboboxProps[]) => {
+				if (resp) {
+					array = resp.map((item) => ({
+						code: String(item.valor),
+						name: item.descripcion,
+					}));
+				}
 			});
+
+			setArrayCategoria([{ code: "0", name: "Todas las Categorias" }, ...array]);
 
 			await funcionListarModelosPorFiltro(0, "").then((response) => {
 				setArrayModelo(response);
@@ -43,81 +52,45 @@ export const Products = () => {
 		event: React.FormEvent<HTMLFormElement>
 	) => {
 		event.preventDefault();
+		console.log(categoria);
 
-		await funcionListarModelosPorFiltro(parseInt(categoria), nombreModelo).then(
-			(response) => {
-				setArrayModelo(response);
-			}
-		);
+		await funcionListarModelosPorFiltro(
+			parseInt(categoria.code),
+			nombreModelo
+		).then((response: ModeloPorFiltroProps[]) => {
+			setArrayModelo(response);
+		});
 	};
 
 	return (
-		<>
-			<Typography
-				variant="h5"
-				component={"h2"}
-				style={{ textAlign: "center", margin: "30px 0 20px 0" }}
-			>
-				Productos
-			</Typography>
+		<ContainerBodyStyled>
+			<h2 className="text-2xl text-center">Productos</h2>
 
-			<Box
-				component={"form"}
-				style={{ display: "flex", justifyContent: "space-between" }}
+			<form
+				className="flex flex-start justify-content-between"
 				onSubmit={funcionAsignarFiltroCategoria}
 			>
-				<FormControl sx={{ width: "30%" }}>
-					<InputLabel id="categoria-select-label">Categoria</InputLabel>
-					<Select
-						labelId="categoria-select-label"
-						id="categoria-select"
-						value={categoria}
-						label="Categoria"
-						onChange={(event: SelectChangeEvent) =>
-							setCategoria(event.target.value as string)
-						}
-					>
-						<MenuItem value={"0"}>Selec. Categoria</MenuItem>
-						{arrayCategoria.map((categoria: ComboboxProps) => {
-							return (
-								<MenuItem key={categoria.valor} value={String(categoria.valor)}>
-									{categoria.descripcion}
-								</MenuItem>
-							);
-						})}
-					</Select>
-				</FormControl>
-				<Box
-					sx={{
-						display: "flex",
-						width: "60%",
-					}}
-				>
-					<TextField
-						sx={{ width: "100%", height: "100%" }}
-						placeholder="Buscar Productos…"
-						// inputProps={{ "aria-label": "search" }}
-						value={nombreModelo}
-						name="nombre_producto"
-						onChange={(event) => setNombreModelo(event.target.value as string)}
-					/>
-					<Button
-						variant="contained"
-						sx={{
-							width: "50px",
-							// background: "#000",
-							// color: "#fff",
-							cursor: "pointer",
-						}}
-						type="submit"
-					>
-						<SearchIcon />
-					</Button>
-				</Box>
-			</Box>
-			<Box
-				sx={{ width: "100%", height: "calc(100vh - 364px)", padding: "1.5em 0 " }}
-			>
+				<Dropdown
+					className="w-3 mr-3"
+					value={categoria}
+					onChange={(e: DropdownChangeEvent) => setCategoria(e.value)}
+					options={arrayCategoria}
+					optionLabel="name"
+					placeholder="Todas las Categorias"
+				/>
+
+				<InputText
+					className="flex-auto"
+					id="search"
+					type="text"
+					name="search"
+					placeholder="Buscar por nombre de producto"
+					value={nombreModelo}
+					onChange={(event) => setNombreModelo(event.target.value as string)}
+				/>
+				<Button icon={<IconSearch size={24} />} type="submit" />
+			</form>
+			<div className="w-full my-3">
 				{arrayModelo.length <= 0 ? (
 					<p
 						style={{
@@ -131,14 +104,13 @@ export const Products = () => {
 						Tu búsqueda no coincide con ningun resultado, ingrese otro producto
 					</p>
 				) : (
-					<Box
-						sx={{
+					<div
+						style={{
 							width: "100%",
 							display: "grid",
 							height: "auto",
 							gridTemplateColumns: "repeat(4, 1fr)",
-							gap: "1.5em",
-							// padding: "1.5em",
+							gap: "1.5rem",
 						}}
 					>
 						{arrayModelo.map((item: ModeloPorFiltroProps) => {
@@ -157,15 +129,17 @@ export const Products = () => {
 												? `${item.descripcion.substring(0, 45)}...`
 												: item.descripcion}
 										</CardTextProductTitle>
-										<CardTextProductPrice>{`S./ ${item.precio}`}</CardTextProductPrice>
+										<CardTextProductPrice>
+											{formatoMonedaPerunana(item.precio)}
+										</CardTextProductPrice>
 									</CardTextProduct>
 								</CardProduct>
 							);
 						})}
-					</Box>
+					</div>
 				)}
-			</Box>
-		</>
+			</div>
+		</ContainerBodyStyled>
 	);
 };
 
@@ -174,7 +148,6 @@ const CardProduct = styled(Link)`
 	border-radius: 10px;
 	text-decoration: none;
 	transition: 0.2s;
-	/* box-shadow: 0 0 10px 1px rgba(128, 128, 128, 0.3); */
 	&:hover {
 		transform: translateY(-2px);
 		filter: brightness(85%);
@@ -191,7 +164,7 @@ const CardImageProduct = styled.img`
 	background-color: #fff;
 `;
 
-const CardTextProduct = styled(Box)`
+const CardTextProduct = styled.div`
 	width: 1fr;
 	padding: 10px 20px;
 	display: flex;

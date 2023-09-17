@@ -1,11 +1,13 @@
-import { Toolbar, IconButton } from "@mui/material";
-import { IonIcon } from "@ionic/react";
+import { Toolbar } from "primereact/toolbar";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 import {
-	addOutline,
-	trashOutline,
-	createOutline,
-	analyticsOutline,
-} from "ionicons/icons";
+	IconTrash,
+	IconPlus,
+	IconEdit,
+	IconHistory,
+	IconSearch,
+} from "@tabler/icons-react";
 
 interface Props {
 	functionCrear?: () => void;
@@ -20,28 +22,49 @@ export const ToolbarControl = ({
 	functionEliminar,
 	functionHistoria,
 }: Props) => {
-	return (
-		<Toolbar
-			sx={{
-				backgroundColor: "#99999936",
+	const startContent = (
+		<>
+			<Button
+				label="Nuevo"
+				icon={<IconPlus className="mr-2" size={24} />}
+				className="mr-2 p-button-success"
+				onClick={functionCrear}
+			/>
+			<Button
+				label="Modificar"
+				icon={<IconEdit className="mr-2" size={24} />}
+				className="mr-2 p-button-warning"
+				onClick={functionActualizar}
+			/>
 
-				borderTopLeftRadius: "10px",
-				borderTopRightRadius: "10px",
-				justifyContent: "flex-end",
-			}}
-		>
-			<IconButton style={{ color: "#00c853" }} onClick={functionCrear}>
-				<IonIcon icon={addOutline} size="30" color="#00c853" />
-			</IconButton>
-			<IconButton style={{ color: "#448aff" }} onClick={functionActualizar}>
-				<IonIcon icon={createOutline} size="30" />
-			</IconButton>
-			<IconButton style={{ color: "#d50000" }} onClick={functionEliminar}>
-				<IonIcon icon={trashOutline} size="30" />
-			</IconButton>
-			<IconButton style={{ color: "#7c4dff" }} onClick={functionHistoria}>
-				<IonIcon icon={analyticsOutline} size="30" />
-			</IconButton>
-		</Toolbar>
+			<Button
+				label="Eliminar"
+				icon={<IconTrash className="mr-2" size={24} />}
+				className="mr-2 p-button-danger"
+				onClick={functionEliminar}
+			/>
+			<Button
+				label="Historial"
+				icon={<IconHistory className="mr-2" size={24} />}
+				className="mr-2"
+				onClick={functionHistoria}
+			/>
+		</>
+	);
+
+	const endContent = (
+		<>
+			<div className="p-inputgroup">
+				<InputText placeholder="Buscar..." />
+				<Button icon={<IconSearch size={24} />} />
+			</div>
+		</>
+	);
+	return (
+		<>
+			<div className="card">
+				<Toolbar start={startContent} end={endContent} />
+			</div>
+		</>
 	);
 };
