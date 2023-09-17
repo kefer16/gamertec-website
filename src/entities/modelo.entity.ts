@@ -17,7 +17,7 @@ export class ModeloEntity {
 		public fk_categoria: number = 0
 	) {}
 
-	private static url: string = `${API_URL}/modelo`;
+	private static url = `${API_URL}/modelo`;
 
 	static async Registrar(data: ModeloEntity): Promise<AxiosResponse> {
 		try {

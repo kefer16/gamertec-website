@@ -11,7 +11,7 @@ export class PrivilegioService {
 		public fecha_registro: Date = new Date()
 	) {}
 
-	private static url: string = `${API_URL}/privilegio`;
+	private static url = `${API_URL}/privilegio`;
 
 	static async Registrar(data: PrivilegioService): Promise<AxiosResponse> {
 		try {

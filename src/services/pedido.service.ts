@@ -32,7 +32,7 @@ export class PedidoService {
 				};
 				return this.respuestaPedidoCabecera;
 			})
-			.catch((error: any) => {
+			.catch(() => {
 				return this.respuestaPedidoCabecera;
 			});
 		return this.respuestaPedidoCabecera;
@@ -51,7 +51,7 @@ export class PedidoService {
 				};
 				return this.respuestaPedidoCabecera;
 			})
-			.catch((error: any) => {
+			.catch(() => {
 				return this.respuestaPedidoCabecera;
 			});
 		return this.respuestaPedidoCabecera;
@@ -70,7 +70,7 @@ export class PedidoService {
 				};
 				return this.respuestaArrayPedidoCabecera;
 			})
-			.catch((error: any) => {
+			.catch(() => {
 				return this.respuestaArrayPedidoCabecera;
 			});
 		return this.respuestaArrayPedidoCabecera;
@@ -89,7 +89,7 @@ export class PedidoService {
 				};
 				return this.respuestaPedidoListarUno;
 			})
-			.catch((error: any) => {
+			.catch(() => {
 				return this.respuestaPedidoListarUno;
 			});
 		return this.respuestaPedidoListarUno;

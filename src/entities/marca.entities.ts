@@ -11,7 +11,7 @@ export class MarcaService {
 		public fecha_registro: Date = new Date()
 	) {}
 
-	private static url: string = `${API_URL}/marca`;
+	private static url = `${API_URL}/marca`;
 
 	static async Registrar(data: MarcaService): Promise<AxiosResponse> {
 		try {

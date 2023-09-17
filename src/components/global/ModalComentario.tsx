@@ -52,7 +52,7 @@ export const ModalComentario = ({
 		await ComentarioService.Registrar(data)
 			.then((response) => {
 				if (response.data.code === 200) {
-					funcionAsignarAlerta("success", `Comentario se registró correctamente`);
+					funcionAsignarAlerta("success", "Comentario se registró correctamente");
 
 					funcionAbrirAlerta();
 					funcionLimpiarControles();
@@ -61,7 +61,7 @@ export const ModalComentario = ({
 					return;
 				}
 			})
-			.catch((error) => {
+			.catch(() => {
 				funcionAsignarAlerta("error", "Hubo un error");
 
 				funcionAbrirAlerta();

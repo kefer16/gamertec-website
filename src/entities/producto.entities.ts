@@ -13,7 +13,7 @@ export class ProductoService {
 		public activo: boolean = false
 	) {}
 
-	public static url: string = `${API_URL}/producto`;
+	public static url = `${API_URL}/producto`;
 
 	static async Registrar(data: ProductoService): Promise<AxiosResponse> {
 		try {

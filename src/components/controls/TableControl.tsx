@@ -27,8 +27,8 @@ interface Props<T> {
 	ancho: CSSProperties;
 	columnas: ColumnProps[];
 	filas: T[];
-	filaSeleccionada?: T | null;
-	funcionFilaSeleccionada: (param: T | null) => void;
+	filaSeleccionada: T ;
+	funcionFilaSeleccionada: (param: T ) => void;
 }
 export interface ImagenProps {
 	img: string;
@@ -66,8 +66,7 @@ export const TableControl = <T extends object>({
 					rows={10}
 					rowsPerPageOptions={[10, 20, 30]}
 					tableStyle={ancho}
-					// selectionMode={rowClick ? undefined : 'radiobutton'}
-					selection={filaSeleccionada!}
+					selection={filaSeleccionada}
 					onSelectionChange={(e) => {
 						funcionFilaSeleccionada(e.value);
 					}}
@@ -81,114 +80,114 @@ export const TableControl = <T extends object>({
 					) : (
 						columnas.map((item: ColumnProps) => {
 							switch (item.type) {
-								case TypeColumn.TEXT: {
+							case TypeColumn.TEXT: {
+								return (
+									<Column
+										key={item.field}
+										field={item.field}
+										header={item.header}
+										style={item.style}
+										sortable
+									/>
+								);
+							}
+							case TypeColumn.STATUS: {
+								const body = (fila: any) => {
+									const estado: EstadoProps = fila[`${item.field}`];
 									return (
-										<Column
-											key={item.field}
-											field={item.field}
-											header={item.header}
-											style={item.style}
-											sortable
+										<Tag
+											value={estado.estado}
+											severity={estado.valor ? "success" : "danger"}
 										/>
 									);
-								}
-								case TypeColumn.STATUS: {
-									const body = (fila: any) => {
-										const estado: EstadoProps = fila[`${item.field}`];
-										return (
-											<Tag
-												value={estado.estado}
-												severity={estado.valor ? "success" : "danger"}
-											/>
-										);
-									};
-									return (
-										<Column
-											key={item.field}
-											field={item.field}
-											header={item.header}
-											style={item.style}
-											body={body}
-											sortable
-										/>
-									);
-								}
-								case TypeColumn.IMAGE: {
-									const body = (fila: any) => {
-										const imagen: ImagenProps = fila[`${item.field}`];
-
-										return (
-											<img
-												src={imagen.img}
-												alt={imagen.alt}
-												className="w-4rem shadow-2 border-round"
-											/>
-										);
-									};
+								};
+								return (
+									<Column
+										key={item.field}
+										field={item.field}
+										header={item.header}
+										style={item.style}
+										body={body}
+										sortable
+									/>
+								);
+							}
+							case TypeColumn.IMAGE: {
+								const body = (fila: any) => {
+									const imagen: ImagenProps = fila[`${item.field}`];
 
 									return (
-										<Column
-											key={item.field}
-											field={item.field}
-											header={item.header}
-											style={item.style}
-											body={body}
+										<img
+											src={imagen.img}
+											alt={imagen.alt}
+											className="w-4rem shadow-2 border-round"
 										/>
 									);
-								}
-								case TypeColumn.DATE: {
-									const body = (fila: any) => {
-										const fecha: Date = fila[`${item.field}`];
-										return fechaVisualDateToString(fecha);
-									};
+								};
 
-									return (
-										<Column
-											key={item.field}
-											field={item.field}
-											header={item.header}
-											style={item.style}
-											dataType="date"
-											body={body}
-											sortable
-										/>
-									);
-								}
-								case TypeColumn.MONEY: {
-									const body = (fila: any) => {
-										const money: number = fila[`${item.field}`];
-										return formatoMonedaPerunana(money);
-									};
+								return (
+									<Column
+										key={item.field}
+										field={item.field}
+										header={item.header}
+										style={item.style}
+										body={body}
+									/>
+								);
+							}
+							case TypeColumn.DATE: {
+								const body = (fila: any) => {
+									const fecha: Date = fila[`${item.field}`];
+									return fechaVisualDateToString(fecha);
+								};
 
-									return (
-										<Column
-											key={item.field}
-											field={item.field}
-											header={item.header}
-											style={item.style}
-											dataType="number"
-											className="text-right"
-											body={body}
-											sortable
-										/>
-									);
-								}
-								case TypeColumn.NUMBER: {
-									return (
-										<Column
-											key={item.field}
-											dataType="number"
-											field={item.field}
-											header={item.header}
-											style={item.style}
-											className="text-right"
-											sortable
-										/>
-									);
-								}
-								default: {
-									return <></>;
-								}
+								return (
+									<Column
+										key={item.field}
+										field={item.field}
+										header={item.header}
+										style={item.style}
+										dataType="date"
+										body={body}
+										sortable
+									/>
+								);
+							}
+							case TypeColumn.MONEY: {
+								const body = (fila: any) => {
+									const money: number = fila[`${item.field}`];
+									return formatoMonedaPerunana(money);
+								};
+
+								return (
+									<Column
+										key={item.field}
+										field={item.field}
+										header={item.header}
+										style={item.style}
+										dataType="number"
+										className="text-right"
+										body={body}
+										sortable
+									/>
+								);
+							}
+							case TypeColumn.NUMBER: {
+								return (
+									<Column
+										key={item.field}
+										dataType="number"
+										field={item.field}
+										header={item.header}
+										style={item.style}
+										className="text-right"
+										sortable
+									/>
+								);
+							}
+							default: {
+								return <></>;
+							}
 							}
 						})
 					)}

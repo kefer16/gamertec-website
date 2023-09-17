@@ -8,5 +8,5 @@ export class DepartamentoEntity {
 		public activo: boolean = false
 	) {}
 
-	public static url: string = `${API_URL}/departamento`;
+	public static url = `${API_URL}/departamento`;
 }

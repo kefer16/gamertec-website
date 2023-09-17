@@ -13,5 +13,5 @@ export class CarritoEntity {
 		public fk_modelo: number = 0
 	) {}
 
-	public static url: string = `${API_URL}/carrito`;
+	public static url = `${API_URL}/carrito`;
 }

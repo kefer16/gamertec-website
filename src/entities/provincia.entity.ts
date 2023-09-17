@@ -8,5 +8,5 @@ export class ProvinciaEntity {
 		public fk_departamento: number = 0
 	) {}
 
-	public static url: string = `${API_URL}/provincia`;
+	public static url = `${API_URL}/provincia`;
 }

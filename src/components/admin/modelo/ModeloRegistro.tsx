@@ -161,7 +161,7 @@ export const ModeloRegistro = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
@@ -194,7 +194,7 @@ export const ModeloRegistro = ({
 						setFoto(compressedImage);
 					};
 				},
-				error(err) {
+				error() {
 					funcionAsignarAlerta("error", "Error al comprimir la imagen");
 					funcionAbrirAlerta();
 					return;

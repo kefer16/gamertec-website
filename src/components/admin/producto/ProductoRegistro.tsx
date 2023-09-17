@@ -170,7 +170,7 @@ export const ProductoRegistro = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;

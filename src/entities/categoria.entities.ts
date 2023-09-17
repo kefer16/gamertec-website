@@ -9,7 +9,7 @@ export class CategoryService {
 		public fecha_registro: Date = new Date(),
 		public fecha_actualizacion: Date = new Date()
 	) {}
-	private static url: string = `${API_URL}/categoria`;
+	private static url = `${API_URL}/categoria`;
 
 	static async Registrar(data_usuario: CategoryService): Promise<AxiosResponse> {
 		try {

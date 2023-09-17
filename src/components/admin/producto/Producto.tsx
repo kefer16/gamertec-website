@@ -106,7 +106,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 	const [dialogo, setDialogo] = useState(false);
 	const [arrayProducto, setArrayProducto] = useState<ValuesProductoProps[]>([]);
 	const [productoSeleccionado, setProductoSeleccionado] =
-		useState<ValuesProductoProps | null>(null);
+		useState<ValuesProductoProps>({} as ValuesProductoProps);
 
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
@@ -159,7 +159,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let arrayProducto: ValuesProductoProps[] = [];
+		const arrayProducto: ValuesProductoProps[] = [];
 		await ProductoService.ListarTodos()
 			.then((response) => {
 				response.data.data.forEach((element: ProductoService, index: number) => {
@@ -348,7 +348,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 				aria-labelledby="alert-dialog-title"
 				aria-describedby="alert-dialog-description"
 			>
-				<DialogTitle id="alert-dialog-title">{` ¿Desea continuar?`}</DialogTitle>
+				<DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${

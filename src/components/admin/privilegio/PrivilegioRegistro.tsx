@@ -87,7 +87,7 @@ export const PrivilegioRegistro = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
@@ -108,7 +108,7 @@ export const PrivilegioRegistro = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
@@ -144,7 +144,7 @@ export const PrivilegioRegistro = ({
 								justifyContent: "center",
 								alignItems: "center",
 								color: "#ffffff",
-								// border: "1px solid red",
+								
 							},
 							esEdicion
 								? { backgroundColor: "#448aff" }

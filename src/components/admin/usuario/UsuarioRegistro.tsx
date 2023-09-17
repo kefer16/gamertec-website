@@ -109,7 +109,7 @@ export const UsuarioRegistro = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
@@ -129,7 +129,7 @@ export const UsuarioRegistro = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;
@@ -218,9 +218,9 @@ export const UsuarioRegistro = ({
 										onChange={funcionCambiarPrivilegio}
 									>
 										<MenuItem value={"0"}>Selec. Privilegio</MenuItem>
-										{arrayPrivilegios.map((item: ComboboxProps) => {
+										{arrayPrivilegios.map((item: ComboboxProps,index) => {
 											return (
-												<MenuItem value={String(item.valor)}>{item.descripcion}</MenuItem>
+												<MenuItem key={index} value={String(item.valor)}>{item.descripcion}</MenuItem>
 											);
 										})}
 									</Select>

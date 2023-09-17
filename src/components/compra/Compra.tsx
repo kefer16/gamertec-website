@@ -67,8 +67,8 @@ export const Compra = () => {
 					<div id="contenedor_compras" className="contenedor_compras">
 						<h3>Pedidos</h3>
 						{arrayPedido.map((item: PedidoCabeceraUsuarioProsp) => {
-							let sumaCantidad: number = 0;
-							let sumaPrecio: number = 0;
+							let sumaCantidad = 0;
+							let sumaPrecio = 0;
 
 							const arrayImagenes: string[][] = [];
 							item.lst_pedido_detalle.forEach((element: CardPedidoDetalleProps) => {
@@ -100,8 +100,8 @@ export const Compra = () => {
 					<div id="contenedor_compras" className="contenedor_compras">
 						<h3>Compras</h3>
 						{arrayCompra.map((item: ICompraCard) => {
-							let sumaCantidad: number = 0;
-							let sumaPrecio: number = 0;
+							let sumaCantidad = 0;
+							let sumaPrecio = 0;
 
 							const arrayImagenes: string[][] = [];
 							item.lst_compra_detalle.forEach((element: ICompraDetalleCard) => {

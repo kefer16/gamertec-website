@@ -40,8 +40,8 @@ export const Pedido = () => {
 	return (
 		<ContainerBodyStyled className="grid gap-3">
 			{arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
-				let sumaCantidad: number = 0;
-				let sumaPrecio: number = 0;
+				let sumaCantidad = 0;
+				let sumaPrecio = 0;
 
 				const arrayImagenes: string[][] = [];
 				item.lst_pedido_detalle.forEach((element: CardPedidoDetalleProps) => {

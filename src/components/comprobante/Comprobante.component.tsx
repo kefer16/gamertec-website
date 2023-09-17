@@ -49,7 +49,7 @@ export const Comprobante = () => {
 					0
 				);
 				setPrecioSubTotal(precioSubTotal);
-				const precioEnvio: number = 0;
+				const precioEnvio = 0;
 				setPrecioEnvio(precioEnvio);
 				const precioTotal: number = precioSubTotal + precioEnvio;
 				setPrecioTotal(precioTotal);
@@ -148,7 +148,7 @@ export const Comprobante = () => {
 							<tbody id="productos-comprar">
 								{arrayCarrito.map((carrito: CarritoUsuarioProps) => {
 									return (
-										<tr>
+										<tr key={carrito.carrito_id}>
 											<td>{carrito.cantidad}</td>
 											<td>
 												<img
@@ -194,10 +194,10 @@ export const Comprobante = () => {
 				</ComprobanteStyled>
 			</Container>
 			<ModalConfirmacion
-				className={modalConfirmacion ? `active` : ``}
+				className={modalConfirmacion ? "active" : ""}
 				id="overlay"
 			>
-				<div className={modalConfirmacion ? `modal active` : `modal`} id="modal">
+				<div className={modalConfirmacion ? "modal active" : "modal"} id="modal">
 					<span className="cerrar" id="cerrar" onClick={funcionCerrarModal}>
 						x
 					</span>

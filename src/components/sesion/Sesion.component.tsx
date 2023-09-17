@@ -9,7 +9,7 @@ export interface SesionGamertecContextProps {
 
 export const GamertecSesionContext = createContext<SesionGamertecContextProps>({
 	sesionGamertec: sesionGamertec,
-	obtenerSesion: () => {},
+	obtenerSesion: () => { console.log("hola"); },
 });
 
 export const SesionProvider = ({ children }: any) => {
@@ -32,9 +32,11 @@ export const SesionProvider = ({ children }: any) => {
 	});
 
 	const obtenerSesion = () => {
-		if (!sessionStorage.hasOwnProperty("sesion_gamertec")) {
+
+		if (!Object.prototype.hasOwnProperty.call(sessionStorage, "sesion_gamertec")) {
 			return sesionGamertec;
 		}
+
 		const sesion = sessionStorage.getItem("sesion_gamertec");
 
 		sesionGamertec.usuario = sesion ? JSON.parse(sesion).usuario : sesionGamertec;

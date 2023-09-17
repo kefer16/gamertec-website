@@ -69,7 +69,7 @@ interface Props {
 }
 
 export const funcionObtenerPrivilegios = async (): Promise<ComboboxProps[]> => {
-	let array: ComboboxProps[] = [];
+	const array: ComboboxProps[] = [];
 	await PrivilegioService.ListarTodos()
 		.then((response) => {
 			response.data.data.forEach((element: PrivilegioService) => {
@@ -92,7 +92,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 		ValuesPrivilegioProps[]
 	>([]);
 	const [privilegioSeleccionado, setPrivilegioSeleccionado] =
-		useState<ValuesPrivilegioProps | null>(null);
+		useState<ValuesPrivilegioProps>({} as ValuesPrivilegioProps);
 
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
@@ -145,7 +145,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let arrayPrivilegio: ValuesPrivilegioProps[] = [];
+		const arrayPrivilegio: ValuesPrivilegioProps[] = [];
 		await PrivilegioService.ListarTodos()
 			.then((response) => {
 				response.data.data.forEach((element: PrivilegioService, index: number) => {
@@ -228,7 +228,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 					return;
 				}
 			})
-			.catch((error) => {
+			.catch(() => {
 				funcionAsignarAlerta("error", "Hubo un error");
 				funcionAbrirAlerta();
 				funcionCerrarDialogo();
@@ -292,7 +292,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 				aria-labelledby="alert-dialog-title"
 				aria-describedby="alert-dialog-description"
 			>
-				<DialogTitle id="alert-dialog-title">{` ¿Desea continuar?`}</DialogTitle>
+				<DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${

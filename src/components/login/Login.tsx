@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "./styles/Login.scss";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext,  useState } from "react";
 import { InterfaceAlertControl } from "../controls/AlertControl";
 import { UsuarioService } from "../../entities/usuario.entities";
 import { PrivilegioService } from "../../entities/privilegio.entities";
@@ -98,7 +98,7 @@ export const Login = () => {
 			direccion: "",
 			telefono: "",
 		};
-		let id_privilegio: number = 0;
+		let id_privilegio = 0;
 
 		await UsuarioService.Logearse(user, password)
 			.then((response) => {
@@ -129,7 +129,7 @@ export const Login = () => {
 					return;
 				}
 			})
-			.catch((error) => {
+			.catch(() => {
 				funcionAsignarAlerta(
 					"error",
 					"Hubo un error, contacte al administrador..."
@@ -174,12 +174,12 @@ export const Login = () => {
 					);
 					funcionAbrirAlerta();
 
-					navigate(`/products/`);
+					navigate("/products/");
 
 					return;
 				}
 			})
-			.catch((error) => {
+			.catch(() => {
 				funcionAsignarAlerta(
 					"error",
 					"Hubo un error, contacte al administrador..."
@@ -190,7 +190,7 @@ export const Login = () => {
 			});
 	};
 
-	useEffect(() => {}, []);
+
 	return (
 		<>
 			<div className="flex align-items-center justify-content-center py-5">

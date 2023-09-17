@@ -26,7 +26,7 @@ export const Carrito = () => {
 			0
 		);
 		setPrecioSubTotal(precioSubTotal);
-		const precioEnvio: number = 0;
+		const precioEnvio = 0;
 		setPrecioEnvio(precioEnvio);
 		const precioTotal: number = precioSubTotal + precioEnvio;
 		setPrecioTotal(precioTotal);
@@ -43,7 +43,7 @@ export const Carrito = () => {
 					0
 				);
 				setPrecioSubTotal(precioSubTotal);
-				const precioEnvio: number = 0;
+				const precioEnvio = 0;
 				setPrecioEnvio(precioEnvio);
 				const precioTotal: number = precioSubTotal + precioEnvio;
 				setPrecioTotal(precioTotal);
@@ -124,7 +124,7 @@ export const Carrito = () => {
 							Total<span>{formatoMonedaPerunana(precioTotal)}</span>
 						</p>
 
-						<Link to={`/before_purchase/`} style={{ color: "red" }}>
+						<Link to={"/before_purchase/"} style={{ color: "red" }}>
 							Procesar Compra
 						</Link>
 						<Button onClick={calcularTotalOrden}>Volver a calcular</Button>

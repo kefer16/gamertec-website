@@ -19,8 +19,8 @@ export class UsuarioService {
 		public fecha_final: string = "",
 		public cambia: string = ""
 	) {}
-	public index: number = 0;
-	private static url: string = `${API_URL}/usuario`;
+	public index = 0;
+	private static url = `${API_URL}/usuario`;
 
 	static async Logearse(
 		usuario: string,

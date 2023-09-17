@@ -17,5 +17,5 @@ export class PedidoCabeceraEntity {
 		// public pedido_detalle?: PedidoDetalleEntity,
 		public array_pedido_detalle?: PedidoDetalleEntity[]
 	) {}
-	public static url: string = `${API_URL}/pedido`;
+	public static url = `${API_URL}/pedido`;
 }

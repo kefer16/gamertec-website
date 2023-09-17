@@ -86,7 +86,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	const [esEdicion, setEsEdicion] = useState(false);
 	const [abrirAlerta, setAbrirAlerta] = useState(false);
 	const [categoriaSeleccionada, setCategoriaSeleccionada] =
-		useState<ValuesCategoriaProps | null>(null);
+		useState<ValuesCategoriaProps>({} as ValuesCategoriaProps);
 	const [dialogo, setDialogo] = useState(false);
 
 	const funcionCerrarDialogo = () => {
@@ -140,7 +140,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 	};
 
 	const funcionListar = async () => {
-		let arrayCategorias: ValuesCategoriaProps[] = [];
+		const arrayCategorias: ValuesCategoriaProps[] = [];
 		await CategoryService.ListarTodos()
 			.then((response) => {
 				response.data.data.forEach((element: CategoryService, index: number) => {
@@ -292,11 +292,11 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 				aria-labelledby="alert-dialog-title"
 				aria-describedby="alert-dialog-description"
 			>
-				<DialogTitle id="alert-dialog-title">{` ¿Desea continuar?`}</DialogTitle>
+				<DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
 						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							arrayCategoria.find((item) => item.id === (categoriaSeleccionada ?? 0))
+							arrayCategoria.find((item: ValuesCategoriaProps	) => item.id === (categoriaSeleccionada ? categoriaSeleccionada.id : 0))
 								?.categoria_nombre
 						}`}
 					</DialogContentText>

@@ -462,8 +462,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		let calificacionGeneral: number =
 			arrayComentarios.length === 0
 				? 0
-				: arrayComentarios.reduce((suma, item) => suma + item.valoracion, 0) /
-				  arrayComentarios.length;
+				: arrayComentarios.reduce((suma, item) => suma + item.valoracion, 0) / arrayComentarios.length;
 
 		calificacionGeneral = Number(formatoCalificacion(calificacionGeneral));
 		setCalificacionGeneral(calificacionGeneral);
@@ -547,7 +546,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		);
 
 		await CarritoApi.Registrar(data)
-			.then(() => {})
+			.then()
 			.catch((error) => {
 				console.log(error);
 			});
@@ -676,7 +675,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 						</div>
 					</div>
 					<div className="mini-botones">
-						<Link className="seguir" to={`/products/`}>
+						<Link className="seguir" to={"/products/"}>
 							Seguir comprando
 						</Link>
 						<Button type="submit" onClick={funcionAgregarProductoCarrito}>

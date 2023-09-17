@@ -15,7 +15,7 @@ export class ComentarioService {
 		public fk_modelo: number = 0
 	) {}
 
-	private static url: string = `${API_URL}/comentario`;
+	private static url = `${API_URL}/comentario`;
 
 	static async Registrar(data: ComentarioService): Promise<AxiosResponse> {
 		try {

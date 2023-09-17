@@ -9,5 +9,5 @@ export class DistritoEntity {
 		public fk_departamento: number = 0
 	) {}
 
-	public static url: string = `${API_URL}/distrito`;
+	public static url = `${API_URL}/distrito`;
 }

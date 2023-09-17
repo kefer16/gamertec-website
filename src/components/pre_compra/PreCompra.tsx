@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { PreCompraStyled } from "./styles/PreCompra";
 import {
@@ -74,7 +75,7 @@ export const PreCompra = () => {
 					0
 				);
 				setPrecioSubTotal(precioSubTotal);
-				const precioEnvio: number = 0;
+				const precioEnvio = 0;
 				setPrecioEnvio(precioEnvio);
 				const precioTotal: number = precioSubTotal + precioEnvio;
 				setPrecioTotal(precioTotal);
@@ -232,7 +233,7 @@ export const PreCompra = () => {
 								onChange={(event) => setTelefono(event.target.value)}
 							/>
 
-							<Link to={`/voucher/`} type="submit">
+							<Link to={"/voucher/"} type="submit">
 								CONTINUAR
 							</Link>
 						</div>
