@@ -1,16 +1,18 @@
 import { createContext, useState } from "react";
 import { SesionGamertec } from "../../interfaces/sesion.interface";
-import { sesionGamertec } from "../../session/gamertec.session";
+import { CarritoService } from "../../services/carrito.service";
+import { RespuestaEntity } from "../../entities/respuesta.entity";
+import { CarritoCantidadUsuario } from "../../interfaces/carrito.interface";
+
 
 export interface SesionGamertecContextProps {
 	sesionGamertec: SesionGamertec;
+	cantidadCarrito: number;
 	obtenerSesion: () => void;
+	obtenerCantidadCarrito: () => void;
 }
 
-export const GamertecSesionContext = createContext<SesionGamertecContextProps>({
-	sesionGamertec: sesionGamertec,
-	obtenerSesion: () => { console.log("hola"); },
-});
+export const GamertecSesionContext = createContext<SesionGamertecContextProps>({} as SesionGamertecContextProps);
 
 export const SesionProvider = ({ children }: any) => {
 	const [sesionGamertec, setSesionGamertec] = useState<SesionGamertec>({
@@ -30,6 +32,7 @@ export const SesionProvider = ({ children }: any) => {
 			abreviatura: "",
 		},
 	});
+	const [cantidadCarrito, setCantidadCarrito] = useState<number>(0);
 
 	const obtenerSesion = () => {
 
@@ -48,11 +51,24 @@ export const SesionProvider = ({ children }: any) => {
 		setSesionGamertec(sesionGamertec);
 	};
 
+	const obtenerCantidadCarrito = async () => {
+		const servCarrito = new CarritoService();
+
+		await servCarrito.obtenerCantidadCarrito(sesionGamertec.usuario.usuario_id).then((resp: RespuestaEntity<CarritoCantidadUsuario[]>) => {
+				
+			if (resp.data){
+				setCantidadCarrito(resp.data[0].cantidad);
+			}
+		});
+	};
+
 	return (
 		<GamertecSesionContext.Provider
 			value={{
 				sesionGamertec,
+				cantidadCarrito,
 				obtenerSesion,
+				obtenerCantidadCarrito
 			}}
 		>
 			{children}

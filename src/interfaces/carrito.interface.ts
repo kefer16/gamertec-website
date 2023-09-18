@@ -18,3 +18,7 @@ export interface CarritoUsuarioProps {
 		};
 	};
 }
+
+export interface CarritoCantidadUsuario{
+	cantidad: number;
+}

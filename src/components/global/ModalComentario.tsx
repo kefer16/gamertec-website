@@ -1,12 +1,13 @@
-import { Button, Grid, TextField } from "@mui/material";
-import { FondoModalStyled } from "./styles/FondoModalStyled";
-import { ModalStyled } from "./styles/ModalStyled";
-import { ButtonCerrarModal } from "./ButtonCerrarModal";
 import { useState } from "react";
 import { ComentarioService } from "../../entities/comentario.entities";
 import { fechaActualISO } from "../../utils/funciones.utils";
 import { Nullable } from "primereact/ts-helpers";
 import { RatingPrimeUI } from "../controls/primeUI/RatingPrimeUI";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { IconMessage2Up } from "@tabler/icons-react";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 interface Props {
 	modeloId: number;
 	modalComentario: boolean;
@@ -69,66 +70,47 @@ export const ModalComentario = ({
 			});
 	};
 	return (
-		<FondoModalStyled activo={modalComentario}>
-			<ModalStyled activo={modalComentario}>
-				<ButtonCerrarModal funcionCerrarModal={funcionCerrarModal} />
-				<h2>Tu opinión nos importa ¡Evalúa tu producto!</h2>
 
-				<Grid
-					container
-					direction={"column"}
-					rowSpacing={2}
-					columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-				>
-					<Grid item xs={1}>
-						<p>Calificacion General:</p>
-						<RatingPrimeUI
-							valoracion={valoracion}
-							funcionValoracion={setValoracion}
-							readonly={false}
-						/>
-					</Grid>
-					<Grid item xs={1}>
-						<TextField
-							fullWidth
-							type="text"
-							name="titulo"
-							value={titulo}
-							onChange={(event) => {
-								setTitulo(event.target.value);
-							}}
-							placeholder="Título"
-							label="Titulo"
-						/>
-					</Grid>
+		<Dialog header="Tu opinión nos importa ¡Evalúa tu producto!" visible={modalComentario} style={{ width: "50vw" }} onHide={funcionCerrarModal}>
 
-					<Grid item xs={1}>
-						<TextField
-							fullWidth
-							type="text"
-							name="comentario"
-							value={mensaje}
-							onChange={(event) => {
-								setMensaje(event.target.value);
-							}}
-							placeholder="Comentario"
-							label="Comentario"
-							multiline
-						/>
-					</Grid>
+			<div className="flex flex-column">
+				<p className="mb-1">Calificacion General:</p>
+				<RatingPrimeUI
+					style={{ marginBottom: "20px" }}
+					valoracion={valoracion}
+					funcionValoracion={setValoracion}
+					readonly={false}
+				/>
 
-					<Grid item xs={1}>
-						<Button
-							fullWidth
-							variant="contained"
-							type="submit"
-							onClick={funcionRegistarComentario}
-						>
-							Publicar comentario
-						</Button>
-					</Grid>
-				</Grid>
-			</ModalStyled>
-		</FondoModalStyled>
+				<InputText
+					className="w-full mb-2"
+					type="text"
+					name="titulo"
+					value={titulo}
+					onChange={(event) => {
+						setTitulo(event.target.value);
+					}}
+					placeholder="Título"
+				/>
+
+				<InputTextarea
+					className="w-full mb-2"
+					name="comentario"
+					value={mensaje}
+					onChange={(event) => {
+						setMensaje(event.target.value);
+					}}
+					placeholder="Comentario"
+				/>
+				<Button
+					className="w-full"
+					type="submit"
+					onClick={funcionRegistarComentario}
+					icon={<IconMessage2Up size={24} className="mr-2" />}
+					label="Publicar comentario"
+				/>
+			</div>
+		</Dialog>
+
 	);
 };

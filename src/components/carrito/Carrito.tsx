@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
 import { CarritoStyles } from "./styles/CarritoStyles";
-import {
-	DeleteForeverTwoTone as DeleteIcon,
-	ArchiveTwoTone as ArchiveIcon,
-} from "@mui/icons-material";
+import { IconTrash,IconHistoryToggle  } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 
 import { formatoMonedaPerunana } from "../../utils/funciones.utils";
@@ -94,14 +91,14 @@ export const Carrito = () => {
 									<div className="cont-botones">
 										<div className="boton">
 											<Link to="#">
-												<ArchiveIcon />
+												<IconHistoryToggle size={16} />
 												Guardar para depués
 											</Link>
 										</div>
 										<span>|</span>
 										<div className="boton">
 											<Link to="#" className="eliminar">
-												<DeleteIcon />
+												<IconTrash size={16} />
 												Eliminar
 											</Link>
 										</div>

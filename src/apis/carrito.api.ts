@@ -122,4 +122,23 @@ export class CarritoApi {
 			return Promise.reject(err);
 		}
 	}
+
+	async obtenerCantidadCarrito(
+		usuario_id: number
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id,
+				},
+			};
+			return await axios.get(
+				`${CarritoEntity.url}/obtener_cantidad_carrito`,
+				config
+			);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
 }

@@ -2,15 +2,14 @@ import { Button } from "primereact/button";
 import { Alert, Snackbar, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import styled, { css } from "styled-components";
 import { ApiModelo } from "../../apis/modelo.api";
 import {
 	convertirFormatoMoneda,
 	fechaActualISO,
 	formatoCalificacion,
 } from "../../utils/funciones.utils";
-import { CircleRounded } from "@mui/icons-material";
-import { CloseRounded } from "@mui/icons-material";
+
+
 import { Comentarios } from "./Comentarios";
 import { ComentarioService } from "../../entities/comentario.entities";
 import { InterfaceAlertControl } from "../controls/AlertControl";
@@ -20,392 +19,20 @@ import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ModeloDescripcionProps } from "../../interfaces/modelo.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
+import { AbajoDetalles, ContenidoAbajo, ContenidoArriba, ContenidoArribaDerecha, ContenidoArribaIzquierda, ContenidoArribaIzquierdaImagen, Detalles, DetallesMarca, DetallesPro, DetallesTecnicos, FondoOpaco, ModalInicioSesion, RutaProductos } from "./styles/DescripcionStyled";
+import { Dialog } from "primereact/dialog";
+import { IconShoppingCartUp, IconPlus, IconMinus } from "@tabler/icons-react";
+import { Avatar } from "primereact/avatar";
+
+
 
 interface Props {
 	modelo_id: number;
 }
 
-const RutaProductos = styled.p`
-	width: 100%;
-	height: 30px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: rgba(gray, 0.4);
-	font-size: 0.9em;
-	margin-left: 40px;
-	color: rgba(#000, 0.8);
-	text-transform: uppercase;
-	font-weight: 300;
-`;
-
-const ContenidoArriba = styled.div`
-	margin-top: 25px;
-	width: 100%;
-	display: flex;
-`;
-
-const ContenidoArribaIzquierda = styled.div`
-	width: 50%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-right: 1px solid rgba(gray, 0.3);
-`;
-
-const ContenidoArribaIzquierdaImagen = styled.img`
-	width: 350px;
-	height: 350px;
-	object-fit: scale-down;
-`;
-
-const ContenidoArribaDerecha = styled.div`
-	width: 40%;
-	margin-left: 5%;
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	color: #000;
-`;
-
-const Detalles = styled.div`
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-`;
-
-const DetallesMarca = styled.div`
-	margin-bottom: 5px;
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	& h3 {
-		font-size: 0.8em;
-		padding: 1px 10px;
-		background-color: #80808083;
-		color: white;
-		font-weight: 600;
-	}
-`;
-
-const DetallesPro = styled.div`
-	width: 100%;
-
-	& h1 {
-		font-weight: 200;
-		font-size: 1.8em;
-		line-height: 1;
-	}
-
-	& h2 {
-		color: #ea2840;
-		font-size: 1.4em;
-		font-weight: 600;
-		line-height: 2;
-	}
-
-	& h3 {
-		font-size: 1em;
-		color: rgb(100, 96, 96);
-		font-weight: 500;
-	}
-
-	& p {
-		padding: 10px 0 5px;
-		font-size: 0.9em;
-		display: flex;
-		align-items: center;
-		font-weight: 300;
-	}
-	& h4 {
-		display: flex;
-		align-items: center;
-		color: #45a00a;
-	}
-
-	& a {
-		margin-top: 20px;
-
-		width: 210px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-`;
-
-const ContenidoAbajo = styled.div`
-	width: 100%;
-	display: flex;
-`;
-
-const AbajoDetalles = styled.div`
-	width: 50%;
-`;
-
-const DetallesTecnicos = styled.div`
-	width: 90%;
-	margin: auto;
-
-	& h1 {
-		color: $colorTexto;
-		font-weight: 600;
-		font-size: 1.4em;
-		line-height: 2;
-		border-bottom: 1px solid rgba(gray, 0.3);
-	}
-
-	& p {
-		margin: 20px 0;
-		color: #333333;
-		font-size: 0.93em;
-		font-weight: 300;
-	}
-`;
-
-interface ActiveModalProps {
-	activo: boolean;
-}
-
-const FondoOpaco = styled.div<ActiveModalProps>`
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: #000000a3;
-	visibility: hidden;
-	opacity: 0;
-	transition: 0.4s all;
-	z-index: 8;
-	${({ activo }) =>
-		activo &&
-		css`
-			visibility: visible;
-			opacity: 1;
-			overflow: hidden;
-		`}
-`;
-const ModalInicioSesion = styled.div<ActiveModalProps>`
-	position: relative;
-	width: 400px;
-	border-radius: 5px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	visibility: hidden;
-	padding: 30px;
-	transform: translateY(-200px);
-	transition: 0.5s;
-	background-color: #fff;
-
-	${({ activo }) =>
-		activo &&
-		css`
-			visibility: visible;
-			opacity: 1;
-			transform: translateY(0);
-		`}
-
-	& .login__titulo {
-		font-size: 1.7em;
-		color: $colorApp;
-		font-family: "Audiowide", cursive;
-		margin-bottom: 30px;
-	}
-	& .login__subtitulo {
-		text-transform: uppercase;
-		font-size: 0.9em;
-		color: $colorTexto;
-		margin-bottom: 10px;
-	}
-	& .login__saludo {
-		font-size: 0.9em;
-		text-align: center;
-		font-weight: 300;
-		margin-bottom: 10px;
-	}
-
-	& .login__formulario {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-		width: 100%;
-		min-height: 150px;
-		margin: auto;
-
-		input {
-			@include inputs;
-		}
-		input[type="submit"] {
-			@include botonEnviar;
-		}
-	}
-	& .login__mensaje {
-		width: 100%;
-		min-height: 30px;
-	}
-
-	& .login__irregistro {
-		margin-top: 10px;
-		font-size: 0.9em;
-		margin-left: auto;
-		font-weight: 300;
-
-		span {
-			color: #6c63ff;
-		}
-	}
-`;
-
-const ModalAggregarCarrito = styled.div<ActiveModalProps>`
-	position: relative;
-	background-color: #fff;
-	width: 600px;
-	border-radius: 5px;
-	display: flex;
-	flex-direction: column;
-	visibility: hidden;
-	padding: 30px;
-	transform: translateY(-200px);
-	transition: 0.5s;
-
-	${({ activo }) =>
-		activo &&
-		css`
-			visibility: visible;
-			opacity: 1;
-			transform: translateY(0);
-		`};
-
-	h1 {
-		font-size: 1.3em;
-		font-weight: 600;
-		color: $colorFondo;
-	}
-
-	& .mini-detalles {
-		width: 100%;
-		display: flex;
-
-		margin-top: 20px;
-
-		& .mini-img {
-			width: 20%;
-			display: flex;
-			justify-content: center;
-
-			img {
-				width: 100px;
-				object-fit: scale-down;
-			}
-		}
-
-		& .mini-textos {
-			width: 40%;
-			@media screen and (max-width: 700px) {
-				width: 33%;
-			}
-			p {
-				text-transform: uppercase;
-				font-size: 0.9em;
-				font-weight: 700;
-				color: gray;
-			}
-		}
-
-		& .mini-precio {
-			width: 20%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding-right: 20px;
-
-			h2 {
-				font-size: 1em;
-				color: #ea2840;
-			}
-		}
-
-		& .mini-cantidad {
-			width: 20%;
-			display: flex;
-			align-items: center;
-			justify-content: space-around;
-			@media screen and (max-width: 700px) {
-				margin: 20px auto;
-				width: 50%;
-			}
-			button {
-				width: 25px;
-				height: 25px;
-				text-align: center;
-				border-radius: 50%;
-				border: none;
-				background-color: rgba(gray, 0.3);
-				outline: none;
-				cursor: pointer;
-
-				&.disabled {
-					cursor: not-allowed;
-				}
-			}
-
-			input {
-				border: none;
-				text-align: center;
-				width: 30px;
-				height: 30px;
-				outline: none;
-			}
-			p {
-				font-size: 0.9em;
-			}
-		}
-	}
-
-	& .mini-botones {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: end;
-		.seguir {
-			text-decoration: none;
-			color: gray;
-			font-size: 0.9em;
-			transition: 0.5s all;
-			margin-right: 15px;
-
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
-`;
-
-const CerrarLogin = styled(CloseRounded)`
-	position: absolute;
-	top: 5px;
-	right: 7px;
-	width: 25px;
-	height: 25px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 3px;
-	cursor: pointer;
-	transition: 0.5s all;
-	border-radius: 50%;
-	color: gray;
-	/* box-shadow: 0px 0px -2px -2px gray; */
-	background-color: #80808057;
-`;
-
 export const Descripcion = ({ modelo_id }: Props) => {
 	// const [nombre, setNombre] = useState<string>("");
+	const { obtenerCantidadCarrito } = useContext(GamertecSesionContext);
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 	const [categoriaNombre, setCategoriaNombre] = useState<string>("");
 	const [marcaNombre, setMarcaNombre] = useState<string>("");
@@ -419,7 +46,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 	const [usuarioId, setUsuarioId] = useState<number>(0);
 
 	const [modalLogin, setModalLogin] = useState<boolean>(false);
-	const [modalCarrito, setModalCarrito] = useState<boolean>(false);
+
 	const [modalComentario, setModalComentario] = useState<boolean>(false);
 	const [calificacionGeneral, setCalificacionGeneral] = useState<number>(0);
 	const [arrayComentarios, setArrayComentarios] = useState<ComentarioService[]>(
@@ -495,17 +122,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		setModalLogin(true);
 	};
 
-	const funcionDesactivarModalLogin = () => {
-		setModalLogin(false);
-	};
 
-	const funcionActivarModalCarrito = () => {
-		setModalCarrito(true);
-	};
-
-	const funcionDesactivarModalCarrito = () => {
-		setModalCarrito(false);
-	};
 
 	const funcionActivarModalComentario = () => {
 		setModalComentario(true);
@@ -524,6 +141,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			totalProductosCarrrito > stock ? stock : totalProductosCarrrito;
 
 		setProductosCarrito(validar);
+		
 	};
 
 	const funcionDisminuirProductosCarrito = () => {
@@ -550,6 +168,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			.catch((error) => {
 				console.log(error);
 			});
+		obtenerCantidadCarrito();
 	};
 	return (
 		<>
@@ -584,7 +203,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 
 							<DetallesPro>
 								<p>
-									Color: <CircleRounded htmlColor={color} />{" "}
+									Color: <Avatar  size="normal" style={ {backgroundColor: `${color}`} } shape="circle" />
 								</p>
 							</DetallesPro>
 
@@ -595,8 +214,8 @@ export const Descripcion = ({ modelo_id }: Props) => {
 							<DetallesPro>
 								<Button
 									icon={<IconShoppingCartPlus className="mr-2" size={24} />}
-									onClick={funcionActivarModalCarrito}
-									label="Añadir al Carrito"
+									onClick={() => setModalLogin(true)}
+									label="Agregar al Carrito"
 								/>
 							</DetallesPro>
 						</Detalles>
@@ -623,10 +242,9 @@ export const Descripcion = ({ modelo_id }: Props) => {
 				funcionAsignarAlerta={funcionAsignarAlerta}
 				funcionAbrirAlerta={funcionAbrirAlerta}
 			/>
-
 			<FondoOpaco activo={modalLogin}>
 				<ModalInicioSesion activo={modalLogin}>
-					<CerrarLogin onClick={funcionDesactivarModalLogin} />
+					{/* <CerrarLogin onClick={funcionDesactivarModalLogin} /> */}
 
 					<h1 className="login__titulo">GamerShop</h1>
 					<h2 className="login__subtitulo">Inicio de Sesión</h2>
@@ -648,42 +266,93 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					</p>
 				</ModalInicioSesion>
 			</FondoOpaco>
-			<FondoOpaco activo={modalCarrito}>
-				<ModalAggregarCarrito activo={modalCarrito}>
-					<CerrarLogin onClick={funcionDesactivarModalCarrito} />
-					<h1>Productos agregados al carrito</h1>
+			<Dialog header="Agregar productos al Carrito" visible={modalLogin} style={{ width: "50vw" }} onHide={() => setModalLogin(false)}>
+				<div style={{
+					width: "100%",
+					display: "flex",
+					marginTop: "20px"
+				}}>
+					<div style={{
+						width: "20%",
+						display: "flex",
+						justifyContent: "center"
+					}}>
+						<img style={{ width: "100px", objectFit: "scale-down" }} src={foto} alt={descripcion} />
+					</div>
+					<div style={{
+						width: "40%"
+					}}>
+						<p style={{
+							textTransform: "uppercase",
+							fontSize: "0.9em",
+							fontWeight: 700,
+							color: "gray",
+						}}>{marcaNombre}</p>
+						<span>{descripcion}</span>
+					</div>
+					<div style={{
+						width: "20%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						paddingRight: "20px",
+					}}>
+						<h2 style={{
+							fontSize: "1em",
+							color: "#ea2840",
+						}}>{convertirFormatoMoneda(precio)}</h2>
+					</div>
+					<div style={{
+						width: "20%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-around",
+					}}>
+						<Button icon={<IconMinus size={16} />} style={{
+							width: "25px",
+							height: "25px",
+							textAlign: "center",
+							borderRadius: "50%",
+							border: "none",
+							backgroundColor: "gray",
+							outline: "none",
+							cursor: "pointer",
+						}} onClick={funcionDisminuirProductosCarrito} />
 
-					<div className="mini-detalles">
-						<div className="mini-img">
-							<img src={foto} alt="" />
-						</div>
-						<div className="mini-textos">
-							<p>{marcaNombre}</p>
-							<span>{descripcion}</span>
-						</div>
-						<div className="mini-precio">
-							<h2>{convertirFormatoMoneda(precio)}</h2>
-						</div>
-						<div id="cantidad" className="mini-cantidad">
-							<button id="disminuir" onClick={funcionDisminuirProductosCarrito}>
-								-
-							</button>
-							<input disabled type="number" value={productosCarrito} />
-							<button id="aumentar" onClick={funcionAmentarProductosCarrito}>
-								+
-							</button>
-						</div>
+						
+						<input style={{ width: "20px" }} value={productosCarrito} />
+						<Button icon={<IconPlus size={16} />} style={{
+							width: "25px",
+							height: "25px",
+							textAlign: "center",
+							borderRadius: "50%",
+							border: "none",
+							backgroundColor: "GrayText",
+							outline: "none",
+							cursor: "pointer",
+						}} onClick={funcionAmentarProductosCarrito} />
+
 					</div>
-					<div className="mini-botones">
-						<Link className="seguir" to={"/products/"}>
-							Seguir comprando
-						</Link>
-						<Button type="submit" onClick={funcionAgregarProductoCarrito}>
-							Ir a carrito
-						</Button>
-					</div>
-				</ModalAggregarCarrito>
-			</FondoOpaco>
+				</div>
+				<div style={{
+					width: "100%",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "end",
+				}}>
+					<Link style={{
+						textDecoration: "none",
+						color: "gray",
+						fontSize: "0.9em",
+						transition: "0.5s all",
+						marginRight: "15px",
+						textDecorationLine: "underline"
+					}} to={"/shoping_cart/"}>
+						Ir a carrito
+					</Link>
+					<Button icon={<IconShoppingCartUp size={24} className="mr-2" />} type="submit" onClick={funcionAgregarProductoCarrito} label="Subir a carrito" />
+				</div>
+			</Dialog>
 			<Snackbar
 				open={abrirAlerta}
 				anchorOrigin={{ vertical: "top", horizontal: "center" }}

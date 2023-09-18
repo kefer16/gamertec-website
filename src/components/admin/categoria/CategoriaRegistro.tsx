@@ -87,7 +87,7 @@ export const CategoryRegister = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 
 					funcionAbrirAlerta();
@@ -108,7 +108,7 @@ export const CategoryRegister = ({
 						return;
 					}
 				})
-				.catch((error) => {
+				.catch(() => {
 					funcionAsignarAlerta("error", "Hubo un error");
 					funcionAbrirAlerta();
 					return;

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 
@@ -24,8 +24,8 @@ import { IconShoppingCart } from "@tabler/icons-react";
 import { Badge } from "primereact/badge";
 
 export const Header = () => {
-	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
-
+	const { sesionGamertec, obtenerSesion, cantidadCarrito,obtenerCantidadCarrito } = useContext(GamertecSesionContext);
+	const [cantidadCarritoCabecera,setCantidadCarritoCabecera] = useState<number>(0);
 	interface MenuItemBar {
 		label?: string;
 		icon?: JSX.Element;
@@ -105,7 +105,7 @@ export const Header = () => {
 				icon={<IconShoppingCart size={24} />}
 				onClick={irCarrito}
 			>
-				<Badge value="3" severity="danger"></Badge>
+				<Badge value={cantidadCarritoCabecera} severity="danger"></Badge>
 			</Button>
 
 			<Avatar
@@ -167,7 +167,11 @@ export const Header = () => {
 
 	useEffect(() => {
 		obtenerSesion();
-	}, [obtenerSesion, sesionGamertec]);
+		obtenerCantidadCarrito();
+		console.log("cantidadCarrito", cantidadCarrito);
+		
+		setCantidadCarritoCabecera(cantidadCarrito);
+	}, [obtenerSesion, obtenerCantidadCarrito,sesionGamertec]);
 
 	return (
 		<div className="fixed top-0 left-0 w-full z-5 bg-white shadow-1">
