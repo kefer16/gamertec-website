@@ -225,6 +225,7 @@ export const Login = () => {
 							className="w-full mb-3"
 							name="user"
 							onChange={(e) => onChange(e)}
+							autoComplete="none"
 						/>
 
 						<label htmlFor="password" className="text-900 font-medium mb-2">

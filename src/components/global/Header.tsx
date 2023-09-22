@@ -110,7 +110,7 @@ export const Header = () => {
 
 			<Avatar
 				className="shadow-1 ml-2"
-				image={sesionGamertec.usuario.foto}
+				image={sesionGamertec.usuario.foto} 
 				style={{ height: "48px", width: "48px" }}
 				shape="circle"
 				onClick={(event) => menuRight.current?.toggle(event)}

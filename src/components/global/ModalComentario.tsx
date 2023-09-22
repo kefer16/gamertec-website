@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { ComentarioService } from "../../entities/comentario.entities";
 import { fechaActualISO } from "../../utils/funciones.utils";
 import { Nullable } from "primereact/ts-helpers";
@@ -8,16 +8,12 @@ import { Button } from "primereact/button";
 import { IconMessage2Up } from "@tabler/icons-react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
 interface Props {
 	modeloId: number;
 	modalComentario: boolean;
 	funcionObtenerComentarios: (modelo_id: number) => void;
 	funcionCerrarModal: () => void;
-	funcionAsignarAlerta: (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => void;
-	funcionAbrirAlerta: () => void;
 }
 
 export const ModalComentario = ({
@@ -25,9 +21,8 @@ export const ModalComentario = ({
 	modalComentario,
 	funcionObtenerComentarios,
 	funcionCerrarModal,
-	funcionAsignarAlerta,
-	funcionAbrirAlerta,
 }: Props) => {
+	const {mostrarNotificacion } = useContext(GamertecSesionContext);
 	const [titulo, setTitulo] = useState<string>("");
 	const [mensaje, setMensaje] = useState<string>("");
 	const [valoracion, setValoracion] = useState<Nullable<number>>(0);
@@ -53,19 +48,16 @@ export const ModalComentario = ({
 		await ComentarioService.Registrar(data)
 			.then((response) => {
 				if (response.data.code === 200) {
-					funcionAsignarAlerta("success", "Comentario se registró correctamente");
+					mostrarNotificacion({tipo: "success",titulo: "Éxito", detalle: "Se publicó el comentario",pegado : false});
 
-					funcionAbrirAlerta();
 					funcionLimpiarControles();
 					funcionObtenerComentarios(modeloId);
 					funcionCerrarModal();
 					return;
 				}
 			})
-			.catch(() => {
-				funcionAsignarAlerta("error", "Hubo un error");
-
-				funcionAbrirAlerta();
+			.catch((error : Error) => {
+				mostrarNotificacion({tipo: "error",titulo: "Error", detalle: `surgió un error: ${error.message}`,pegado : true});
 				return;
 			});
 	};

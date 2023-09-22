@@ -1,5 +1,4 @@
 import { Button } from "primereact/button";
-import { Alert, Snackbar, TextField } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiModelo } from "../../apis/modelo.api";
@@ -12,7 +11,6 @@ import {
 
 import { Comentarios } from "./Comentarios";
 import { ComentarioService } from "../../entities/comentario.entities";
-import { InterfaceAlertControl } from "../controls/AlertControl";
 import { CarritoEntity } from "../../entities/carrito.entities";
 import { CarritoApi } from "../../apis/carrito.api";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
@@ -23,6 +21,7 @@ import { AbajoDetalles, ContenidoAbajo, ContenidoArriba, ContenidoArribaDerecha,
 import { Dialog } from "primereact/dialog";
 import { IconShoppingCartUp, IconPlus, IconMinus } from "@tabler/icons-react";
 import { Avatar } from "primereact/avatar";
+import { InputText } from "primereact/inputtext";
 
 
 
@@ -32,7 +31,7 @@ interface Props {
 
 export const Descripcion = ({ modelo_id }: Props) => {
 	// const [nombre, setNombre] = useState<string>("");
-	const { obtenerCantidadCarrito } = useContext(GamertecSesionContext);
+	const { obtenerCantidadCarrito, mostrarNotificacion } = useContext(GamertecSesionContext);
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 	const [categoriaNombre, setCategoriaNombre] = useState<string>("");
 	const [marcaNombre, setMarcaNombre] = useState<string>("");
@@ -52,32 +51,6 @@ export const Descripcion = ({ modelo_id }: Props) => {
 	const [arrayComentarios, setArrayComentarios] = useState<ComentarioService[]>(
 		[]
 	);
-	const [abrirAlerta, setAbrirAlerta] = useState(false);
-
-	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-		active: false,
-		type: "info",
-		text: "",
-	});
-
-	const funcionAsignarAlerta = (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => {
-		setAlerta({
-			active: true,
-			type: type,
-			text: text,
-		});
-	};
-
-	const funcionAbrirAlerta = () => {
-		setAbrirAlerta(true);
-	};
-
-	const funcionCerrarAlerta = () => {
-		setAbrirAlerta(false);
-	};
 
 	const funcionObtenerComentarios = async (modelo_id: number) => {
 		let arrayComentarios: ComentarioService[] = [];
@@ -141,7 +114,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			totalProductosCarrrito > stock ? stock : totalProductosCarrrito;
 
 		setProductosCarrito(validar);
-		
+
 	};
 
 	const funcionDisminuirProductosCarrito = () => {
@@ -164,9 +137,22 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		);
 
 		await CarritoApi.Registrar(data)
-			.then()
-			.catch((error) => {
-				console.log(error);
+			.then(() => {
+				
+				mostrarNotificacion({
+					tipo: "success",
+					titulo :"Éxito", 
+					detalle : "Producto agregado al carrito",
+					pegado: false
+				});
+			})
+			.catch((error: Error) => {
+				mostrarNotificacion({
+					tipo: "error",
+					titulo :"Error", 
+					detalle : `surgio un error: ${error.message}`,
+					pegado: true
+				});
 			});
 		obtenerCantidadCarrito();
 	};
@@ -203,7 +189,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 
 							<DetallesPro>
 								<p>
-									Color: <Avatar  size="normal" style={ {backgroundColor: `${color}`} } shape="circle" />
+									Color: <Avatar size="normal" style={{ backgroundColor: `${color}` }} shape="circle" />
 								</p>
 							</DetallesPro>
 
@@ -239,8 +225,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 				funcionObtenerComentarios={funcionObtenerComentarios}
 				funcionAbrirModal={funcionActivarModalComentario}
 				funcionCerrarModal={funcionDesactivarModalComentario}
-				funcionAsignarAlerta={funcionAsignarAlerta}
-				funcionAbrirAlerta={funcionAbrirAlerta}
+
 			/>
 			<FondoOpaco activo={modalLogin}>
 				<ModalInicioSesion activo={modalLogin}>
@@ -253,8 +238,8 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					</p>
 					<div className="login__mensaje"></div>
 					<div className="login__formulario">
-						<TextField type="text" placeholder="Usuario" />
-						<TextField type="password" placeholder="Contraseña" />
+						<InputText type="text" placeholder="Usuario" />
+						<InputText type="password" placeholder="Contraseña" />
 						<Button type="submit" label="Ingresar" />
 					</div>
 
@@ -319,7 +304,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 							cursor: "pointer",
 						}} onClick={funcionDisminuirProductosCarrito} />
 
-						
+
 						<input style={{ width: "20px" }} value={productosCarrito} />
 						<Button icon={<IconPlus size={16} />} style={{
 							width: "25px",
@@ -353,16 +338,6 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					<Button icon={<IconShoppingCartUp size={24} className="mr-2" />} type="submit" onClick={funcionAgregarProductoCarrito} label="Subir a carrito" />
 				</div>
 			</Dialog>
-			<Snackbar
-				open={abrirAlerta}
-				anchorOrigin={{ vertical: "top", horizontal: "center" }}
-				autoHideDuration={3000}
-				onClose={funcionCerrarAlerta}
-			>
-				<Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-					{alerta.text}
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };

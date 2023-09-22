@@ -22,11 +22,6 @@ interface Props {
 	funcionObtenerComentarios: (modelo_id: number) => void;
 	funcionAbrirModal: () => void;
 	funcionCerrarModal: () => void;
-	funcionAsignarAlerta: (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => void;
-	funcionAbrirAlerta: () => void;
 }
 
 export const Comentarios = ({
@@ -37,8 +32,6 @@ export const Comentarios = ({
 	funcionObtenerComentarios,
 	funcionAbrirModal,
 	funcionCerrarModal,
-	funcionAsignarAlerta,
-	funcionAbrirAlerta,
 }: Props) => {
 	return (
 		<>
@@ -99,8 +92,6 @@ export const Comentarios = ({
 				modalComentario={modalComentario}
 				funcionObtenerComentarios={funcionObtenerComentarios}
 				funcionCerrarModal={funcionCerrarModal}
-				funcionAsignarAlerta={funcionAsignarAlerta}
-				funcionAbrirAlerta={funcionAbrirAlerta}
 			/>
 		</>
 	);
