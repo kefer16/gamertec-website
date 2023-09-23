@@ -81,7 +81,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					setPrecio(data.precio);
 					setCaracteristicas(data.caracteristicas);
 					setColor(data.color);
-					setStock(data.stock);
+					setStock(data._count.lst_producto);
 				}
 			);
 			setUsuarioId(sesionGamertec.usuario.usuario_id);

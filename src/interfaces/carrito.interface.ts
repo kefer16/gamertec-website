@@ -16,6 +16,9 @@ export interface CarritoUsuarioProps {
 			marca_id: number;
 			nombre: string;
 		};
+		_count:{
+			lst_producto: number;
+		}
 	};
 }
 

@@ -141,4 +141,44 @@ export class CarritoApi {
 			return Promise.reject(err);
 		}
 	}
+
+	async eliminarModeloCarrito(
+		carrito_id: number,
+		usuario_id: number
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					carrito_id,
+					usuario_id,
+				},
+			};
+			return await axios.delete(`${CarritoEntity.url}/eliminar_modelo_carrito`,config);
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
+
+	async actualizarCantidadCarrito(
+		carrito_id: number,
+		cantidad: number,
+		usuario_id: number
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					carrito_id,
+					cantidad,
+					usuario_id,
+				},
+			};
+
+			return await axios.put(`${CarritoEntity.url}/actualizar_cantidad_carrito`, {}, config);
+
+		} catch (err: any) {
+			console.log(err);
+			return Promise.reject(err);
+		}
+	}
 }

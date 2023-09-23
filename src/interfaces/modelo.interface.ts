@@ -27,4 +27,7 @@ export interface ModeloDescripcionProps {
 			nombre: string;
 		};
 	};
+	_count: {
+		lst_producto: number;
+	}
 }

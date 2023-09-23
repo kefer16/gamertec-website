@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { CarritoStyles } from "./styles/CarritoStyles";
-import { IconTrash,IconHistoryToggle  } from "@tabler/icons-react";
+import { IconTrash, IconHistoryToggle } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 
 import { formatoMonedaPerunana } from "../../utils/funciones.utils";
@@ -11,11 +11,12 @@ import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 
 export const Carrito = () => {
-	const { sesionGamertec } = useContext(GamertecSesionContext);
+	const { sesionGamertec, mostrarNotificacion, obtenerCantidadCarrito } = useContext(GamertecSesionContext);
 	const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
 	const [precioEnvio, setPrecioEnvio] = useState<number>(0);
 	const [precioSubTotal, setPrecioSubTotal] = useState<number>(0);
 	const [precioTotal, setPrecioTotal] = useState<number>(0);
+
 
 	const calcularTotalOrden = () => {
 		const precioSubTotal: number = arrayCarrito.reduce(
@@ -29,11 +30,9 @@ export const Carrito = () => {
 		setPrecioTotal(precioTotal);
 	};
 
-	useEffect(() => {
-		const ObtenerData = async () => {
-			await CarritoService.listarCaracteristicas(
-				sesionGamertec.usuario.usuario_id
-			).then((respuesta) => {
+	const obtenerModelosCarrito = async (usuario_id: number) => {
+		await CarritoService.listarCaracteristicas(usuario_id)
+			.then((respuesta) => {
 				setArrayCarrito(respuesta);
 				const precioSubTotal: number = respuesta.reduce(
 					(suma, item) => suma + item.cls_modelo.precio * item.cantidad,
@@ -44,9 +43,53 @@ export const Carrito = () => {
 				setPrecioEnvio(precioEnvio);
 				const precioTotal: number = precioSubTotal + precioEnvio;
 				setPrecioTotal(precioTotal);
+			}).catch((error: Error) => {
+				mostrarNotificacion({ tipo: "error", titulo: "Error", detalle: `surgió un error: ${error.message}`, pegado: true });
 			});
-		};
-		ObtenerData();
+	};
+
+	const eliminarModeloCarrito = async (carrito_id: number, usuario_id: number) => {
+		const servCarrito = new CarritoService();
+
+		await servCarrito.eliminarModeloCarrito(carrito_id, usuario_id).
+			then(() => {
+
+				mostrarNotificacion({ tipo: "success", titulo: "Éxito", detalle: "Se eliminó el producto del carrito", pegado: false });
+			}).catch((error: Error) => {
+				mostrarNotificacion({ tipo: "error", titulo: "Error", detalle: `surgió un error: ${error.message}`, pegado: true });
+
+			});
+
+		obtenerCantidadCarrito();
+
+		await obtenerModelosCarrito(usuario_id);
+	};
+
+	const actualizarCantidadCarrito = async (tipo: "disminuir" | "aumentar", carrito_id: number, cantidad: number, usuario_id: number) => {
+		if (tipo === "disminuir") {
+			cantidad = cantidad - 1;
+		}
+		if (tipo === "aumentar") {
+			cantidad = cantidad + 1;
+		}
+		console.log("cantidad: ", cantidad);
+
+
+		const servCarrito = new CarritoService();
+		await servCarrito.actualizarCantidadCarrito(carrito_id, cantidad, usuario_id)
+			.then()
+			.catch(() => {
+				mostrarNotificacion({ tipo: "error", titulo: "Error", detalle: "Surgió un error al actualizar cantidad", pegado: true });
+
+			});
+
+		obtenerCantidadCarrito();
+
+		await obtenerModelosCarrito(usuario_id);
+	};
+
+	useEffect(() => {
+		obtenerModelosCarrito(sesionGamertec.usuario.usuario_id);
 	}, [sesionGamertec]);
 
 	return (
@@ -76,14 +119,14 @@ export const Carrito = () => {
 											<h2>{formatoMonedaPerunana(item.cls_modelo.precio)}</h2>
 											<span>Envio a Domicilio</span>
 											<p className="stock">
-												{`${item.cls_modelo.stock} Un. disponibles `}
+												{`${item.cls_modelo._count.lst_producto} Un. disponibles `}
 											</p>
 										</div>
 										<div className="opciones">
 											<div className="cantidad">
-												<button className="disminuir">-</button>
+												<button className="disminuir" onClick={() => actualizarCantidadCarrito("disminuir", item.carrito_id, item.cantidad, sesionGamertec.usuario.usuario_id)}>-</button>
 												<input type="number" value={item.cantidad} disabled />
-												<button className="aumentar">+</button>
+												<button className="aumentar" onClick={() => actualizarCantidadCarrito("aumentar", item.carrito_id, item.cantidad, sesionGamertec.usuario.usuario_id)}>+</button>
 											</div>
 										</div>
 									</div>
@@ -96,7 +139,7 @@ export const Carrito = () => {
 											</Link>
 										</div>
 										<span>|</span>
-										<div className="boton">
+										<div className="boton" onClick={() => eliminarModeloCarrito(item.carrito_id, sesionGamertec.usuario.usuario_id)} >
 											<Link to="#" className="eliminar">
 												<IconTrash size={16} />
 												Eliminar

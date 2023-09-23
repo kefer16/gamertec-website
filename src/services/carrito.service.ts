@@ -4,6 +4,8 @@ import { CarritoCantidadUsuario, CarritoUsuarioProps } from "../interfaces/carri
 
 export class CarritoService {
 	private respObtenerCantidadCarrito = new RespuestaEntity<CarritoCantidadUsuario[]>;
+	private respEliminarModeloCarrito = new RespuestaEntity<number[]>;
+	private respActualizarCantidadCarrito = new RespuestaEntity<number[]>;
 
 	static listarCaracteristicas = async (
 		usuario_id: number
@@ -33,6 +35,35 @@ export class CarritoService {
 			};
 		});
 		return this.respObtenerCantidadCarrito;
+
+	}
+	async eliminarModeloCarrito(carrito_id: number, usuario_id: number): Promise<RespuestaEntity<number[]>> {
+		const apiCarrito = new CarritoApi();
+
+		await apiCarrito.eliminarModeloCarrito(carrito_id, usuario_id).then((resp) => {
+			this.respObtenerCantidadCarrito = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+		return this.respEliminarModeloCarrito;
+
+	}
+
+	async actualizarCantidadCarrito(carrito_id: number, cantidad: number, usuario_id: number): Promise<RespuestaEntity<number[]>> {
+		const apiCarrito = new CarritoApi();
+
+		await apiCarrito.actualizarCantidadCarrito(carrito_id, cantidad, usuario_id).then((resp) => {
+			this.respObtenerCantidadCarrito = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+		return this.respActualizarCantidadCarrito;
 
 	}
 }
