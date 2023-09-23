@@ -96,7 +96,7 @@ export const Carrito = () => {
 		<ContainerBodyStyled>
 			<CarritoStyles>
 				<div className="titulo">
-					<h1>Carrito de Compras</h1>
+					<h2>Carrito de Compras</h2>
 				</div>
 
 				<div className="contenido">

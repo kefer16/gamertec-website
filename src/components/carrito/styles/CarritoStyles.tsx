@@ -10,7 +10,7 @@ export const CarritoStyles = styled.div`
 		width: 100%;
 		display: block;
 
-		& h1 {
+		& h2 {
 			font-size: 1.3em;
 			line-height: 3;
 			color: $colorTexto;
