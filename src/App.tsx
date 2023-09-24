@@ -33,6 +33,7 @@ import { IndexCompraDetalleDetalle } from "./components/compra/IndexCompraDetall
 import { IndexCompraPedidoDetalle } from "./components/compra/IndexCompraPedidoDetalle.component";
 import "primeflex/primeflex.css";
 import { PerfilIndex } from "./components/perfil/PefilIndex";
+import { AcccionIndex } from "./components/perfil/accion/Accion.index";
 
 function App() {
 	return (
@@ -46,12 +47,14 @@ function App() {
 						<Route path="/contact/" element={<TabContact />} />
 						<Route path="/login/" element={<TabLogin />} />
 						<Route path="/register/" element={<TabRegister />} />
-						<Route path="/profile/" element={<PerfilIndex />} />
+
 						<Route path="/product/description/:modelo_id" element={<TabDescripcion />} />
 						<Route path="/shoping_cart/" element={<TabCarrito />} />
 						<Route path="/before_purchase/" element={<TabPreCompra />} />
 						<Route path="/voucher/" element={<IndexComprobante />} />
 						<Route path="/order_successful/" element={<IndexPedidoExitoso />} />
+						<Route path="/profile/" element={<PerfilIndex />} />
+						<Route path="/profile/action/:action_name" element={<AcccionIndex />} />
 
 						<Route path="/buy/" element={<TabCompra />} />
 						<Route path="/buy/detail/:compra_cabecera_id" element={<IndexCompraDetalleDetalle />} />
