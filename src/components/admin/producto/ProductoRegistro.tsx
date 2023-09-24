@@ -130,7 +130,8 @@ export const ProductoRegistro = ({
 			parseInt(fkMarca),
 			parseInt(fkCategoria),
 			fechaActualISO(),
-			activo === "1"
+			activo === "1",
+			false
 		);
 		console.log(data, esEdicion);
 

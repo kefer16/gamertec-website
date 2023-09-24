@@ -24,8 +24,8 @@ import { IconShoppingCart } from "@tabler/icons-react";
 import { Badge } from "primereact/badge";
 
 export const Header = () => {
-	const { sesionGamertec, obtenerSesion, cantidadCarrito,obtenerCantidadCarrito } = useContext(GamertecSesionContext);
-	const [cantidadCarritoCabecera,setCantidadCarritoCabecera] = useState<number>(0);
+	const { sesionGamertec, cerrarSesion, obtenerSesion, cantidadCarrito, obtenerCantidadCarrito } = useContext(GamertecSesionContext);
+	const [cantidadCarritoCabecera, setCantidadCarritoCabecera] = useState<number>(0);
 	interface MenuItemBar {
 		label?: string;
 		icon?: JSX.Element;
@@ -110,7 +110,7 @@ export const Header = () => {
 
 			<Avatar
 				className="shadow-1 ml-2"
-				image={sesionGamertec.usuario.foto} 
+				image={sesionGamertec.usuario.foto}
 				style={{ height: "48px", width: "48px" }}
 				shape="circle"
 				onClick={(event) => menuRight.current?.toggle(event)}
@@ -137,7 +137,7 @@ export const Header = () => {
 				</button>
 			),
 			command: () => {
-				console.log("hola");
+				navigate("/profile/");
 			},
 		},
 		{ separator: true },
@@ -162,6 +162,12 @@ export const Header = () => {
 		{
 			label: "Cerrar Sesión",
 			icon: <IconLogout2 size={24} style={{ marginRight: "10px" }} />,
+			command: () => {
+				cerrarSesion();
+				obtenerSesion();
+				obtenerCantidadCarrito();
+				navigate("/products/");
+			}
 		},
 	];
 
@@ -169,9 +175,9 @@ export const Header = () => {
 		obtenerSesion();
 		obtenerCantidadCarrito();
 		console.log("cantidadCarrito", cantidadCarrito);
-		
+
 		setCantidadCarritoCabecera(cantidadCarrito);
-	}, [obtenerSesion, obtenerCantidadCarrito,sesionGamertec]);
+	}, [obtenerSesion, obtenerCantidadCarrito, sesionGamertec]);
 
 	return (
 		<div className="fixed top-0 left-0 w-full z-5 bg-white shadow-1">

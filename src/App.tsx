@@ -32,6 +32,7 @@ import "primereact/resources/primereact.min.css";
 import { IndexCompraDetalleDetalle } from "./components/compra/IndexCompraDetalle.component";
 import { IndexCompraPedidoDetalle } from "./components/compra/IndexCompraPedidoDetalle.component";
 import "primeflex/primeflex.css";
+import { PerfilIndex } from "./components/perfil/PefilIndex";
 
 function App() {
 	return (
@@ -43,9 +44,18 @@ function App() {
 						<Route path="/" element={<TabHome />} />
 						<Route path="/products/" element={<TabProducts />} />
 						<Route path="/contact/" element={<TabContact />} />
-
 						<Route path="/login/" element={<TabLogin />} />
 						<Route path="/register/" element={<TabRegister />} />
+						<Route path="/profile/" element={<PerfilIndex />} />
+						<Route path="/product/description/:modelo_id" element={<TabDescripcion />} />
+						<Route path="/shoping_cart/" element={<TabCarrito />} />
+						<Route path="/before_purchase/" element={<TabPreCompra />} />
+						<Route path="/voucher/" element={<IndexComprobante />} />
+						<Route path="/order_successful/" element={<IndexPedidoExitoso />} />
+
+						<Route path="/buy/" element={<TabCompra />} />
+						<Route path="/buy/detail/:compra_cabecera_id" element={<IndexCompraDetalleDetalle />} />
+						<Route path="/buy/order/detail/:pedido_cabecera_id" element={<IndexCompraPedidoDetalle />} />
 						<Route path="/admin/" element={<TabAdmin />} />
 						<Route path="/admin/category/" element={<TabCategory />} />
 						<Route path="/admin/privilege/" element={<TabPrivilege />} />
@@ -54,28 +64,8 @@ function App() {
 						<Route path="/admin/model/" element={<TabModelo />} />
 						<Route path="/admin/product/" element={<TabProducto />} />
 						<Route path="/admin/order/" element={<IndexPedido />} />
-						<Route
-							path="/admin/order/detail/:pedido_id"
-							element={<IndexPedidoDetalle />}
-						/>
-						<Route
-							path="/product/description/:modelo_id"
-							element={<TabDescripcion />}
-						/>
-						<Route path="/shoping_cart/" element={<TabCarrito />} />
-						<Route path="/before_purchase/" element={<TabPreCompra />} />
-						<Route path="/voucher/" element={<IndexComprobante />} />
-						<Route path="/order_successful/" element={<IndexPedidoExitoso />} />
+						<Route path="/admin/order/detail/:pedido_id" element={<IndexPedidoDetalle />} />
 
-						<Route path="/buy/" element={<TabCompra />} />
-						<Route
-							path="/buy/detail/:compra_cabecera_id"
-							element={<IndexCompraDetalleDetalle />}
-						/>
-						<Route
-							path="/buy/order/detail/:pedido_cabecera_id"
-							element={<IndexCompraPedidoDetalle />}
-						/>
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 					<Footer />

@@ -8,7 +8,6 @@ import {
 	formatoCalificacion,
 } from "../../utils/funciones.utils";
 
-
 import { Comentarios } from "./Comentarios";
 import { ComentarioService } from "../../entities/comentario.entities";
 import { CarritoEntity } from "../../entities/carrito.entities";
@@ -17,13 +16,25 @@ import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ModeloDescripcionProps } from "../../interfaces/modelo.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
-import { AbajoDetalles, ContenidoAbajo, ContenidoArriba, ContenidoArribaDerecha, ContenidoArribaIzquierda, ContenidoArribaIzquierdaImagen, Detalles, DetallesMarca, DetallesPro, DetallesTecnicos, FondoOpaco, ModalInicioSesion, RutaProductos } from "./styles/DescripcionStyled";
+import {
+	AbajoDetalles,
+	ContenidoAbajo,
+	ContenidoArriba,
+	ContenidoArribaDerecha,
+	ContenidoArribaIzquierda,
+	ContenidoArribaIzquierdaImagen,
+	Detalles,
+	DetallesMarca,
+	DetallesPro,
+	DetallesTecnicos,
+	FondoOpaco,
+	ModalInicioSesion,
+	RutaProductos,
+} from "./styles/DescripcionStyled";
 import { Dialog } from "primereact/dialog";
 import { IconShoppingCartUp, IconPlus, IconMinus } from "@tabler/icons-react";
 import { Avatar } from "primereact/avatar";
 import { InputText } from "primereact/inputtext";
-
-
 
 interface Props {
 	modelo_id: number;
@@ -48,9 +59,9 @@ export const Descripcion = ({ modelo_id }: Props) => {
 
 	const [modalComentario, setModalComentario] = useState<boolean>(false);
 	const [calificacionGeneral, setCalificacionGeneral] = useState<number>(0);
-	const [arrayComentarios, setArrayComentarios] = useState<ComentarioService[]>(
-		[]
-	);
+	const [arrayComentarios, setArrayComentarios] = useState<
+		ComentarioService[]
+	>([]);
 
 	const funcionObtenerComentarios = async (modelo_id: number) => {
 		let arrayComentarios: ComentarioService[] = [];
@@ -59,10 +70,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			setArrayComentarios(arrayComentarios);
 		});
 
-		let calificacionGeneral: number =
-			arrayComentarios.length === 0
-				? 0
-				: arrayComentarios.reduce((suma, item) => suma + item.valoracion, 0) / arrayComentarios.length;
+		let calificacionGeneral: number = arrayComentarios.length === 0 ? 0 : arrayComentarios.reduce((suma, item) => suma + item.valoracion, 0) / arrayComentarios.length;
 
 		calificacionGeneral = Number(formatoCalificacion(calificacionGeneral));
 		setCalificacionGeneral(calificacionGeneral);
@@ -95,8 +103,6 @@ export const Descripcion = ({ modelo_id }: Props) => {
 		setModalLogin(true);
 	};
 
-
-
 	const funcionActivarModalComentario = () => {
 		setModalComentario(true);
 	};
@@ -114,7 +120,6 @@ export const Descripcion = ({ modelo_id }: Props) => {
 			totalProductosCarrrito > stock ? stock : totalProductosCarrrito;
 
 		setProductosCarrito(validar);
-
 	};
 
 	const funcionDisminuirProductosCarrito = () => {
@@ -138,20 +143,19 @@ export const Descripcion = ({ modelo_id }: Props) => {
 
 		await CarritoApi.Registrar(data)
 			.then(() => {
-				
 				mostrarNotificacion({
 					tipo: "success",
-					titulo :"Éxito", 
-					detalle : "Producto agregado al carrito",
-					pegado: false
+					titulo: "Éxito",
+					detalle: "Producto agregado al carrito",
+					pegado: false,
 				});
 			})
 			.catch((error: Error) => {
 				mostrarNotificacion({
 					tipo: "error",
-					titulo :"Error", 
-					detalle : `surgio un error: ${error.message}`,
-					pegado: true
+					titulo: "Error",
+					detalle: `surgio un error: ${error.message}`,
+					pegado: true,
 				});
 			});
 		obtenerCantidadCarrito();
@@ -169,7 +173,10 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					<ContenidoArribaDerecha>
 						<Detalles>
 							<DetallesMarca>
-								<h3 onClick={funcionActivarModalLogin}> {marcaNombre} </h3>
+								<h3 onClick={funcionActivarModalLogin}>
+									{" "}
+									{marcaNombre}{" "}
+								</h3>
 							</DetallesMarca>
 
 							<DetallesPro>
@@ -189,19 +196,34 @@ export const Descripcion = ({ modelo_id }: Props) => {
 
 							<DetallesPro>
 								<p>
-									Color: <Avatar size="normal" style={{ backgroundColor: `${color}` }} shape="circle" />
+									Color:{" "}
+									<Avatar
+										size="normal"
+										style={{ backgroundColor: `${color}` }}
+										shape="circle"
+									/>
 								</p>
 							</DetallesPro>
 
 							<DetallesPro>
-								<p>{`Unidades disponibles: ${stock}`}</p>
+								<p>
+									{stock > 0
+										? `Unidades disponibles: ${stock}`
+										: "producto sin stock"}
+								</p>
 							</DetallesPro>
 
 							<DetallesPro>
 								<Button
-									icon={<IconShoppingCartPlus className="mr-2" size={24} />}
+									icon={
+										<IconShoppingCartPlus
+											className="mr-2"
+											size={24}
+										/>
+									}
 									onClick={() => setModalLogin(true)}
 									label="Agregar al Carrito"
+									disabled={stock > 0 ? false : true}
 								/>
 							</DetallesPro>
 						</Detalles>
@@ -225,7 +247,6 @@ export const Descripcion = ({ modelo_id }: Props) => {
 				funcionObtenerComentarios={funcionObtenerComentarios}
 				funcionAbrirModal={funcionActivarModalComentario}
 				funcionCerrarModal={funcionDesactivarModalComentario}
-
 			/>
 			<FondoOpaco activo={modalLogin}>
 				<ModalInicioSesion activo={modalLogin}>
@@ -251,91 +272,134 @@ export const Descripcion = ({ modelo_id }: Props) => {
 					</p>
 				</ModalInicioSesion>
 			</FondoOpaco>
-			<Dialog header="Agregar productos al Carrito" visible={modalLogin} style={{ width: "50vw" }} onHide={() => setModalLogin(false)}>
-				<div style={{
-					width: "100%",
-					display: "flex",
-					marginTop: "20px"
-				}}>
-					<div style={{
-						width: "20%",
+			<Dialog
+				header="Agregar productos al carrito"
+				visible={modalLogin}
+				style={{ width: "50vw" }}
+				onHide={() => setModalLogin(false)}
+			>
+				<div
+					style={{
+						width: "100%",
 						display: "flex",
-						justifyContent: "center"
-					}}>
-						<img style={{ width: "100px", objectFit: "scale-down" }} src={foto} alt={descripcion} />
+						marginTop: "20px",
+					}}
+				>
+					<div
+						style={{
+							width: "20%",
+							display: "flex",
+							justifyContent: "center",
+						}}
+					>
+						<img
+							style={{ width: "100px", objectFit: "scale-down" }}
+							src={foto}
+							alt={descripcion}
+						/>
 					</div>
-					<div style={{
-						width: "40%"
-					}}>
-						<p style={{
-							textTransform: "uppercase",
-							fontSize: "0.9em",
-							fontWeight: 700,
-							color: "gray",
-						}}>{marcaNombre}</p>
+					<div
+						style={{
+							width: "40%",
+						}}
+					>
+						<p
+							style={{
+								textTransform: "uppercase",
+								fontSize: "0.9em",
+								fontWeight: 700,
+								color: "gray",
+							}}
+						>
+							{marcaNombre}
+						</p>
 						<span>{descripcion}</span>
 					</div>
-					<div style={{
-						width: "20%",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						paddingRight: "20px",
-					}}>
-						<h2 style={{
-							fontSize: "1em",
-							color: "#ea2840",
-						}}>{convertirFormatoMoneda(precio)}</h2>
+					<div
+						style={{
+							width: "20%",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							paddingRight: "20px",
+						}}
+					>
+						<h2
+							style={{
+								fontSize: "1em",
+								color: "#ea2840",
+							}}
+						>
+							{convertirFormatoMoneda(precio)}
+						</h2>
 					</div>
-					<div style={{
-						width: "20%",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-around",
-					}}>
-						<Button icon={<IconMinus size={16} />} style={{
-							width: "25px",
-							height: "25px",
-							textAlign: "center",
-							borderRadius: "50%",
-							border: "none",
-							backgroundColor: "gray",
-							outline: "none",
-							cursor: "pointer",
-						}} onClick={funcionDisminuirProductosCarrito} />
-
+					<div
+						style={{
+							width: "20%",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-around",
+						}}
+					>
+						<Button
+							icon={<IconMinus size={16} />}
+							style={{
+								width: "25px",
+								height: "25px",
+								textAlign: "center",
+								borderRadius: "50%",
+								border: "none",
+								backgroundColor: "gray",
+								outline: "none",
+								cursor: "pointer",
+							}}
+							onClick={funcionDisminuirProductosCarrito}
+						/>
 
 						<input style={{ width: "20px" }} value={productosCarrito} />
-						<Button icon={<IconPlus size={16} />} style={{
-							width: "25px",
-							height: "25px",
-							textAlign: "center",
-							borderRadius: "50%",
-							border: "none",
-							backgroundColor: "GrayText",
-							outline: "none",
-							cursor: "pointer",
-						}} onClick={funcionAmentarProductosCarrito} />
-
+						<Button
+							icon={<IconPlus size={16} />}
+							style={{
+								width: "25px",
+								height: "25px",
+								textAlign: "center",
+								borderRadius: "50%",
+								border: "none",
+								backgroundColor: "GrayText",
+								outline: "none",
+								cursor: "pointer",
+							}}
+							onClick={funcionAmentarProductosCarrito}
+						/>
 					</div>
 				</div>
-				<div style={{
-					width: "100%",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "end",
-				}}>
-					<Link style={{
-						textDecoration: "none",
-						color: "gray",
-						fontSize: "0.9em",
-						transition: "0.5s all",
-						marginRight: "15px",
-						textDecorationLine: "underline"
-					}} to={"/shoping_cart/"}>
+				<div
+					style={{
+						width: "100%",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "end",
+					}}
+				>
+					<Link
+						style={{
+							textDecoration: "none",
+							color: "gray",
+							fontSize: "0.9em",
+							transition: "0.5s all",
+							marginRight: "15px",
+							textDecorationLine: "underline",
+						}}
+						to={"/shoping_cart/"}
+					>
 						Ir a carrito
 					</Link>
-					<Button icon={<IconShoppingCartUp size={24} className="mr-2" />} type="submit" onClick={funcionAgregarProductoCarrito} label="Subir a carrito" />
+					<Button
+						icon={<IconShoppingCartUp size={24} className="mr-2" />}
+						type="submit"
+						onClick={funcionAgregarProductoCarrito}
+						label="Subir a carrito"
+					/>
 				</div>
 			</Dialog>
 		</>

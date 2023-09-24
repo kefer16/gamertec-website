@@ -105,35 +105,7 @@ export const CarritoStyles = styled.div`
 						justify-content: center;
 						align-items: center;
 
-						.cantidad {
-							border: 1px solid rgba(gray, 0.5);
-							border-radius: 5px;
-							display: flex;
-							align-items: center;
-							height: 35px;
-
-							input {
-								width: 30px;
-								color: gray;
-								height: 35px;
-								text-align: center;
-								border: 1px solid rgba(gray, 0.5);
-								outline: none;
-								font-weight: 400;
-							}
-
-							button {
-								width: 30px;
-								height: 30px;
-								text-align: center;
-								border: none;
-								cursor: pointer;
-								background-color: #fff;
-								font-weight: 600;
-								color: gray;
-								outline: none;
-							}
-						}
+						
 					}
 				}
 
@@ -149,6 +121,7 @@ export const CarritoStyles = styled.div`
 						padding: 0 10px;
 						align-items: center;
 						justify-content: center;
+						
 
 						& a {
 							display: flex;
@@ -214,6 +187,62 @@ export const CarritoStyles = styled.div`
 				font-weight: 800;
 				text-transform: uppercase;
 			}
+		}
+	}
+
+	.cantidad {
+		display: flex;
+		height: 35px;
+		align-items: center;
+
+		&__input {
+			width: 30px;
+			height: 30px;
+			text-align: center;
+			border: 1px solid rgba(0,0,0, 0.2);
+			border-radius: 7px;
+			outline: none;
+			font-weight: 400;
+			color: gray;
+			margin: 0 5px;
+		}
+
+		&__button {
+			width: 30px;
+			height: 30px;
+			text-align: center;
+			border: none;
+			border-radius: 50%;
+			cursor: pointer;
+			background: #fff;
+			font-weight: 600;
+			color: gray;
+			outline: none;
+			transition: 0.2s;
+
+			&-inactivo {
+				width: 30px;
+				height: 30px;
+				text-align: center;
+				border: none;
+				border-radius: 50%;
+				cursor: not-allowed;
+				background: #fff;
+				font-weight: 600;
+				color: gray;
+				outline: none;
+				transition: 0.2s;
+				&:hover{
+					background-color: rgba(0,0,0,0.2);
+				
+				}
+			}
+			
+			&:hover{
+				background-color: rgba(0,0,0,0.2);
+				
+			}
+			
 		}
 	}
 `;

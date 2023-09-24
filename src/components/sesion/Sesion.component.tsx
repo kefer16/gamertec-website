@@ -15,6 +15,7 @@ export interface SesionGamertecContextProps {
 	sesionGamertec: SesionGamertec;
 	cantidadCarrito: number;
 	obtenerSesion: () => void;
+	cerrarSesion: () => void;
 	obtenerCantidadCarrito: () => void;
 	mostrarNotificacion: (prosp: NotificacionProps) => void;
 }
@@ -74,7 +75,9 @@ export const SesionProvider = ({ children }: any) => {
 
 		setSesionGamertec(sesionGamertec);
 	};
-
+	const cerrarSesion = () => {
+		sessionStorage.removeItem("sesion_gamertec");
+	};
 	const obtenerCantidadCarrito = async () => {
 		const servCarrito = new CarritoService();
 
@@ -96,6 +99,7 @@ export const SesionProvider = ({ children }: any) => {
 				sesionGamertec,
 				cantidadCarrito,
 				obtenerSesion,
+				cerrarSesion,
 				obtenerCantidadCarrito,
 				mostrarNotificacion
 			}}

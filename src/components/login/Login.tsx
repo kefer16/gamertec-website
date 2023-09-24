@@ -22,7 +22,7 @@ import NombreGamertec from "../../images/svg/name-gamertec.svg";
 import { IconLogout } from "@tabler/icons-react";
 
 export const Login = () => {
-	const { obtenerSesion } = useContext(GamertecSesionContext);
+	const { obtenerSesion,obtenerCantidadCarrito } = useContext(GamertecSesionContext);
 	const navigate = useNavigate();
 
 	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
@@ -168,6 +168,8 @@ export const Login = () => {
 					GuadarSession(data_sesion);
 
 					obtenerSesion();
+					obtenerCantidadCarrito();
+
 					funcionAsignarAlerta(
 						"success",
 						`Hola ${data_usuario.usuario}, Bienvenido...`

@@ -124,9 +124,9 @@ export const Carrito = () => {
 										</div>
 										<div className="opciones">
 											<div className="cantidad">
-												<button className="disminuir" onClick={() => actualizarCantidadCarrito("disminuir", item.carrito_id, item.cantidad, sesionGamertec.usuario.usuario_id)}>-</button>
-												<input type="number" value={item.cantidad} disabled />
-												<button className="aumentar" onClick={() => actualizarCantidadCarrito("aumentar", item.carrito_id, item.cantidad, sesionGamertec.usuario.usuario_id)}>+</button>
+												<button disabled={item.cantidad === 1 ? true : false} className={item.cantidad === 1 ? "cantidad__button-inactivo" : "cantidad__button"} onClick={() => actualizarCantidadCarrito("disminuir", item.carrito_id, item.cantidad, sesionGamertec.usuario.usuario_id)}>-</button>
+												<input className="cantidad__input" type="number" value={item.cantidad} disabled />
+												<button disabled={item.cantidad >= item.cls_modelo._count.lst_producto ? true : false} className={item.cantidad >= item.cls_modelo._count.lst_producto ? "cantidad__button-inactivo" : "cantidad__button"} onClick={() => actualizarCantidadCarrito("aumentar", item.carrito_id, item.cantidad, sesionGamertec.usuario.usuario_id)}>+</button>
 											</div>
 										</div>
 									</div>
