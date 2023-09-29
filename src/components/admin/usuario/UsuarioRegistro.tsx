@@ -11,23 +11,21 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { fechaVisualDateToString } from "../../../utils/funciones.utils";
-import { UsuarioService } from "../../../entities/usuario.entities";
+
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
+import { UsuarioService } from "../../../services/usuario.service";
+import { UsuarioEntity } from "../../../entities/usuario.entities";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
 
 interface Props {
 	nombreFormulario: string;
 	abrir: boolean;
 	esEdicion: boolean;
-	itemSeleccionado: UsuarioService;
+	itemSeleccionado: UsuarioEntity;
 	funcionCerrarModal: () => void;
 	funcionActualizarTabla: () => void;
-	funcionAsignarAlerta: (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => void;
-	funcionAbrirAlerta: () => void;
 	arrayPrivilegios: ComboboxProps[];
 }
 
@@ -38,10 +36,9 @@ export const UsuarioRegistro = ({
 	itemSeleccionado,
 	funcionCerrarModal,
 	funcionActualizarTabla,
-	funcionAsignarAlerta,
-	funcionAbrirAlerta,
 	arrayPrivilegios,
 }: Props) => {
+	const { mostrarNotificacion } = useContext(GamertecSesionContext);
 	const [usuarioId, setUsuarioId] = useState(0);
 	const [nombre, setNombre] = useState("");
 	const [apellido, setApellido] = useState("");
@@ -80,7 +77,7 @@ export const UsuarioRegistro = ({
 	) => {
 		event.preventDefault();
 
-		const data: UsuarioService = new UsuarioService(
+		const data: UsuarioEntity = new UsuarioEntity(
 			usuarioId,
 			nombre,
 			apellido,
@@ -90,49 +87,59 @@ export const UsuarioRegistro = ({
 			parseInt(dinero),
 			foto,
 			fecha_registro,
+			"",
+			"",
 			activo === "0",
 			parseInt(fk_privilegio)
 		);
 
 		if (esEdicion) {
-			await UsuarioService.Actualizar(usuarioId, data)
-				.then((response) => {
-					if (response.data.code === 200) {
-						funcionAsignarAlerta(
-							"success",
-							`${nombreFormulario} se actualizó correctamente`
-						);
+			const usuServ = new UsuarioService();
 
-						funcionAbrirAlerta();
-						funcionActualizarTabla();
-						funcionCerrarModal();
-						return;
-					}
-				})
-				.catch(() => {
-					funcionAsignarAlerta("error", "Hubo un error");
-
-					funcionAbrirAlerta();
+			await usuServ.actualizar(usuarioId, data)
+				.then(() => {
+					mostrarNotificacion({
+						tipo: "success",
+						titulo: "Éxito",
+						detalle: "Usuario se actualizó correctamente",
+						pegado: false,
+					});
+					funcionActualizarTabla();
+					funcionCerrarModal();
 					return;
+
+				})
+				.catch((error: Error) => {
+					mostrarNotificacion({
+						tipo: "error",
+						titulo: "Error",
+						detalle: `surgio un error: ${error.message}`,
+						pegado: true,
+					});
 				});
+
 		} else {
-			await UsuarioService.Registrar(data)
-				.then((response) => {
-					if (response.data.code === 200) {
-						funcionAsignarAlerta(
-							"success",
-							`${nombreFormulario} se registró correctamente`
-						);
-						funcionAbrirAlerta();
-						funcionActualizarTabla();
-						funcionCerrarModal();
-						return;
-					}
-				})
-				.catch(() => {
-					funcionAsignarAlerta("error", "Hubo un error");
-					funcionAbrirAlerta();
+			const usuServ = new UsuarioService();
+
+			await usuServ.registrar(data)
+				.then(() => {
+					mostrarNotificacion({
+						tipo: "success",
+						titulo: "Éxito",
+						detalle: "Usuario se actualizó correctamente",
+						pegado: false,
+					});
+					funcionActualizarTabla();
+					funcionCerrarModal();
 					return;
+				})
+				.catch((error: Error) => {
+					mostrarNotificacion({
+						tipo: "error",
+						titulo: "Error",
+						detalle: `surgio un error: ${error.message}`,
+						pegado: true,
+					});
 				});
 		}
 	};
@@ -218,7 +225,7 @@ export const UsuarioRegistro = ({
 										onChange={funcionCambiarPrivilegio}
 									>
 										<MenuItem value={"0"}>Selec. Privilegio</MenuItem>
-										{arrayPrivilegios.map((item: ComboboxProps,index) => {
+										{arrayPrivilegios.map((item: ComboboxProps, index) => {
 											return (
 												<MenuItem key={index} value={String(item.valor)}>{item.descripcion}</MenuItem>
 											);

@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
-import { InterfaceAlertControl } from "../../controls/AlertControl";
+import { useContext, useEffect, useState } from "react";
 import {
-	Alert,
 	Button,
 	DialogActions,
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-	Snackbar,
 	Typography,
 	Dialog,
 } from "@mui/material";
@@ -20,11 +17,14 @@ import {
 	TypeColumn,
 } from "../../controls/TableControl";
 
-import { UsuarioService } from "../../../entities/usuario.entities";
 import { UsuarioRegistro } from "./UsuarioRegistro";
 import { funcionObtenerPrivilegios } from "../privilegio/Privilegio";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
+import { UsuarioEntity } from "../../../entities/usuario.entities";
+import { UsuarioService } from "../../../services/usuario.service";
+import { RespuestaEntity } from "../../../entities/respuesta.entity";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
 
 const columnsUsuario2: ColumnProps[] = [
 	{
@@ -109,13 +109,15 @@ interface Props {
 let arrayPrivilegio: ComboboxProps[] = [];
 
 export const Usuario = ({ nombreFormulario }: Props) => {
+	const { mostrarNotificacion } = useContext(GamertecSesionContext);
+
 	const [abrirModal, setAbrirModal] = useState(false);
 	const [esEdicion, setEsEdicion] = useState(false);
-	const [abrirAlerta, setAbrirAlerta] = useState(false);
+
 	const [dialogo, setDialogo] = useState(false);
 	const [arrayUsuario, setArrayUsuario] = useState<ValuesUsuarioProps[]>([]);
 	const [usuarioSeleccionado, setUsuarioSeleccioando] =
-		useState<ValuesUsuarioProps >({} as ValuesUsuarioProps);
+		useState<ValuesUsuarioProps>({} as ValuesUsuarioProps);
 
 	const funcionCerrarDialogo = () => {
 		setDialogo(false);
@@ -127,76 +129,57 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 		);
 
 		if (itemEdicion === undefined) {
-			funcionAsignarAlerta(
-				"warning",
-				`Elija un ${nombreFormulario} para poder eliminar`
-			);
-			funcionAbrirAlerta();
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+				pegado: true,
+			});
 
 			return;
 		}
 		setDialogo(true);
 	};
 
-	const [itemSeleccionado, setItemSeleccionado] = useState<UsuarioService>(
-		new UsuarioService()
+	const [itemSeleccionado, setItemSeleccionado] = useState<UsuarioEntity>(
+		new UsuarioEntity()
 	);
-
-	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-		active: false,
-		type: "info",
-		text: "",
-	});
-
-	const funcionAsignarAlerta = (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => {
-		setAlerta({
-			active: true,
-			type: type,
-			text: text,
-		});
-	};
-
-	const funcionAbrirAlerta = () => {
-		setAbrirAlerta(true);
-	};
-
-	const funcionCerrarAlerta = () => {
-		setAbrirAlerta(false);
-	};
 
 	const funcionListar = async () => {
 		const arrayUsuario: ValuesUsuarioProps[] = [];
-		await UsuarioService.ListarTodos()
-			.then((response) => {
-				response.data.data.forEach((element: UsuarioService, index: number) => {
-					const newRow: ValuesUsuarioProps = {
-						id: element.usuario_id,
-						index: index + 1,
-						fecha_registro: element.fecha_registro,
-						privilegio_id: element.fk_privilegio,
-						privilegio_nombre: arrayPrivilegio.find(
-							(privilegio: ComboboxProps) => privilegio.valor === element.fk_privilegio
-						)?.descripcion,
-						usuario_nombre: element.nombre,
-						usuario_apellido: element.apellido,
-						correo: element.correo,
-						usuario: element.usuario,
-						dinero: element.dinero,
-						foto: {
-							img: element.foto,
-							alt: element.usuario,
-						},
-						estado: {
-							valor: element.activo,
-							estado: element.activo ? "Activo" : "Inactivo",
-						},
-					};
-					arrayUsuario.push(newRow);
-				});
+		const usuServ = new UsuarioService();
+		await usuServ.listarTodos()
+			.then((resp: RespuestaEntity<UsuarioEntity[]>) => {
+				if (resp.data) {
+					resp.data.forEach((element: UsuarioEntity, index: number) => {
+						const newRow: ValuesUsuarioProps = {
+							id: element.usuario_id,
+							index: index + 1,
+							fecha_registro: element.fecha_registro,
+							privilegio_id: element.fk_privilegio,
+							privilegio_nombre: arrayPrivilegio.find(
+								(privilegio: ComboboxProps) => privilegio.valor === element.fk_privilegio
+							)?.descripcion,
+							usuario_nombre: element.nombre,
+							usuario_apellido: element.apellido,
+							correo: element.correo,
+							usuario: element.usuario,
+							dinero: element.dinero,
+							foto: {
+								img: element.foto,
+								alt: element.usuario,
+							},
+							estado: {
+								valor: element.activo,
+								estado: element.activo ? "Activo" : "Inactivo",
+							},
+						};
+						arrayUsuario.push(newRow);
+					});
+
+				}
 				setArrayUsuario(arrayUsuario);
+
 			})
 			.catch((error: any) => {
 				console.log(error);
@@ -206,7 +189,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 
 	const funcionCrear = () => {
 		setItemSeleccionado(
-			new UsuarioService(0, "", "", "", "", "", 0, "", new Date(), false, 0)
+			new UsuarioEntity(0, "", "", "", "", "", 0, "", new Date(), "", "", false, 0)
 		);
 		setEsEdicion(false);
 		setAbrirModal(true);
@@ -218,14 +201,17 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 		);
 
 		if (itemEdicion === undefined) {
-			funcionAsignarAlerta("warning", "Elija un usuario para poder editar");
-			funcionAbrirAlerta();
-
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "Elija un usuario para poder editar",
+				pegado: true,
+			});
 			return;
 		}
 
 		setItemSeleccionado(
-			new UsuarioService(
+			new UsuarioEntity(
 				itemEdicion.id,
 				itemEdicion.usuario_nombre,
 				itemEdicion.usuario_apellido,
@@ -235,6 +221,8 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 				itemEdicion.dinero,
 				itemEdicion.foto.img,
 				itemEdicion.fecha_registro,
+				"",
+				"",
 				itemEdicion.estado.valor,
 				itemEdicion.privilegio_id
 			)
@@ -250,32 +238,38 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 		);
 
 		if (itemEdicion === undefined) {
-			funcionAsignarAlerta(
-				"warning",
-				`Elija un ${nombreFormulario} para poder eliminar`
-			);
-			funcionAbrirAlerta();
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+				pegado: true,
+			});
 			funcionCerrarDialogo();
 			return;
 		}
+		const usuServ = new UsuarioService();
+		await usuServ.eliminarUno(itemEdicion.id)
+			.then(() => {
 
-		await UsuarioService.EliminarUno(itemEdicion.id)
-			.then((response) => {
-				if (response.data.code === 200) {
-					funcionAsignarAlerta(
-						"success",
-						`${nombreFormulario} se eliminó correctamente`
-					);
-					funcionAbrirAlerta();
-					funcionCerrarDialogo();
-					funcionListar();
-					return;
-				}
+				mostrarNotificacion({
+					tipo: "success",
+					titulo: "Éxito",
+					detalle: `${nombreFormulario} se eliminó correctamente`,
+					pegado: false,
+				});
+				funcionCerrarDialogo();
+				funcionListar();
+				return;
+
 			})
-			.catch((error) => {
-				console.log(error);
-				funcionAsignarAlerta("error", "Hubo un error");
-				funcionAbrirAlerta();
+			.catch((error: Error) => {
+				mostrarNotificacion({
+					tipo: "error",
+					titulo: "Error",
+					detalle: `surgio un error: ${error.message}`,
+					pegado: true,
+				});
+
 				funcionCerrarDialogo();
 				return;
 			});
@@ -325,20 +319,8 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 				itemSeleccionado={itemSeleccionado}
 				funcionCerrarModal={funcionCerrarModal}
 				funcionActualizarTabla={funcionListar}
-				funcionAsignarAlerta={funcionAsignarAlerta}
-				funcionAbrirAlerta={funcionAbrirAlerta}
 				arrayPrivilegios={arrayPrivilegio}
 			/>
-			<Snackbar
-				open={abrirAlerta}
-				anchorOrigin={{ vertical: "top", horizontal: "center" }}
-				autoHideDuration={3000}
-				onClose={funcionCerrarAlerta}
-			>
-				<Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-					{alerta.text}
-				</Alert>
-			</Snackbar>
 			<Dialog
 				open={dialogo}
 				onClose={funcionCerrarDialogo}
@@ -348,12 +330,9 @@ export const Usuario = ({ nombreFormulario }: Props) => {
 				<DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
 				<DialogContent>
 					<DialogContentText id="alert-dialog-description">
-						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-							arrayUsuario.find(
-								(item) =>
-									item.id === (usuarioSeleccionado === null ? 0 : usuarioSeleccionado.id)
-							)?.usuario
-						}`}
+						{`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${arrayUsuario.find(
+							(item) => item.id === (usuarioSeleccionado === null ? 0 : usuarioSeleccionado.id)
+						)?.usuario}`}
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>

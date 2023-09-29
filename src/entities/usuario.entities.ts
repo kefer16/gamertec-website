@@ -1,8 +1,6 @@
-import axios, { AxiosResponse } from "axios";
-
 const API_URL = process.env.REACT_APP_API_URL;
 
-export class UsuarioService {
+export class UsuarioEntity {
 	constructor(
 		public usuario_id: number = 0,
 		public nombre: string = "",
@@ -13,6 +11,8 @@ export class UsuarioService {
 		public dinero: number = 0,
 		public foto: string = "",
 		public fecha_registro: Date = new Date(),
+		public direccion: string = "",
+		public telefono: string = "",
 		public activo: boolean = false,
 		public fk_privilegio: number = 0,
 		public fecha_inicial: string = "",
@@ -20,120 +20,6 @@ export class UsuarioService {
 		public cambia: string = ""
 	) {}
 	public index = 0;
-	private static url = `${API_URL}/usuario`;
+	public static url = `${API_URL}/usuario`;
 
-	static async Logearse(
-		usuario: string,
-		contrasenia: string
-	): Promise<AxiosResponse> {
-		try {
-			const config = {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-			const body = JSON.stringify({ usuario, contrasenia });
-			return await axios.post(`${this.url}/login`, body, config);
-		} catch (err: any) {
-			console.log(err);
-			return Promise.reject(err);
-		}
-	}
-
-	static async Registrar(data: UsuarioService): Promise<AxiosResponse> {
-		try {
-			const config = {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-			const body = JSON.stringify(data);
-
-			return await axios.post(`${this.url}/registrar`, body, config);
-		} catch (err: any) {
-			console.log(err);
-
-			return Promise.reject(err);
-		}
-	}
-
-	static async Actualizar(
-		ID: number,
-		data: UsuarioService
-	): Promise<AxiosResponse> {
-		try {
-			const config = {
-				params: {
-					usuario_id: ID,
-				},
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-			const body = JSON.stringify(data);
-
-			return await axios.put(`${this.url}/actualizar`, body, config);
-		} catch (err: any) {
-			console.log(err);
-
-			return Promise.reject(err);
-		}
-	}
-
-	static LeerSesionStorage(): UsuarioService {
-		const usuarioJSON = sessionStorage.getItem("gamertec-user");
-		let usuario: UsuarioService = new UsuarioService();
-		if (usuarioJSON !== null) {
-			usuario = JSON.parse(usuarioJSON);
-		}
-
-		return usuario;
-	}
-
-	static async ListarTodos(): Promise<AxiosResponse> {
-		try {
-			const config = {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-
-			return await axios.get(`${this.url}/todos`, config);
-		} catch (err: any) {
-			console.log(err);
-			return Promise.reject(err);
-		}
-	}
-
-	static async Historial(idUsuario: number): Promise<AxiosResponse> {
-		try {
-			const config = {
-				params: {
-					usuario_id: idUsuario,
-				},
-				headers: {
-					"Content-Type": "application/json",
-				},
-			};
-
-			return await axios.get(`${this.url}/historial`, config);
-		} catch (err: any) {
-			console.log(err);
-			return Promise.reject(err);
-		}
-	}
-
-	static async EliminarUno(ID: number): Promise<AxiosResponse> {
-		try {
-			const config = {
-				params: {
-					usuario_id: ID,
-				},
-			};
-			return await axios.delete(`${this.url}/eliminar`, config);
-		} catch (err: any) {
-			console.log(err);
-			return Promise.reject(err);
-		}
-	}
 }

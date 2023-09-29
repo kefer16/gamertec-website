@@ -2,12 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "./styles/Login.scss";
 
-import { useContext,  useState } from "react";
-import { InterfaceAlertControl } from "../controls/AlertControl";
-import { UsuarioService } from "../../entities/usuario.entities";
+import { useContext, useState } from "react";
 import { PrivilegioService } from "../../entities/privilegio.entities";
-import { Alert, Snackbar } from "@mui/material";
-
 import { GuadarSession } from "../../utils/sesion.utils";
 import {
 	SesionGamertec,
@@ -20,16 +16,13 @@ import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import NombreGamertec from "../../images/svg/name-gamertec.svg";
 import { IconLogout } from "@tabler/icons-react";
+import { UsuarioService } from "../../services/usuario.service";
+import { RespuestaEntity } from "../../entities/respuesta.entity";
+import { LogeoUsuario } from "../../interfaces/usuario.interface";
 
 export const Login = () => {
-	const { obtenerSesion,obtenerCantidadCarrito } = useContext(GamertecSesionContext);
+	const { obtenerSesion, obtenerCantidadCarrito, mostrarNotificacion } = useContext(GamertecSesionContext);
 	const navigate = useNavigate();
-
-	const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-		active: false,
-		type: "info",
-		text: "",
-	});
 
 	const [checked, setChecked] = useState<boolean>(false);
 
@@ -38,27 +31,7 @@ export const Login = () => {
 		password: "",
 	});
 
-	const [abrirAlerta, setAbrirAlerta] = useState(false);
-
-	const funcionAsignarAlerta = (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => {
-		setAlerta({
-			active: true,
-			type: type,
-			text: text,
-		});
-	};
 	const { user, password } = formData;
-
-	const funcionAbrirAlerta = () => {
-		setAbrirAlerta(true);
-	};
-
-	const funcionCerrarAlerta = () => {
-		setAbrirAlerta(false);
-	};
 
 	const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
@@ -75,15 +48,24 @@ export const Login = () => {
 		e.preventDefault();
 
 		if (!user) {
-			funcionAsignarAlerta("warning", "Ingrese un usuario");
-			funcionAbrirAlerta();
+
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "Ingrese un usuario",
+				pegado: true,
+			});
 
 			return;
 		}
 
 		if (!password) {
-			funcionAsignarAlerta("warning", "Ingrese una contraseña");
-			funcionAbrirAlerta();
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "Ingrese una contraseña",
+				pegado: true,
+			});
 
 			return;
 		}
@@ -98,50 +80,43 @@ export const Login = () => {
 			direccion: "",
 			telefono: "",
 		};
-		let id_privilegio = 0;
+		let id_privilegio: number | undefined;
 
-		await UsuarioService.Logearse(user, password)
-			.then((response) => {
-				const resp = response.data.data;
-				console.log(resp);
-
-				if (response.data.code === 200) {
+		const usuServ = new UsuarioService();
+		await usuServ.logearse(user, password)
+			.then((resp: RespuestaEntity<LogeoUsuario>) => {
+				if (resp.data) {
 					data_usuario = {
-						usuario_id: resp.usuario_id,
-						usuario: resp.usuario,
-						correo: resp.correo,
-						nombre: resp.nombre,
-						apellido: resp.apellido,
-						foto: resp.foto,
-						direccion: resp.direccion,
-						telefono: resp.telefono,
+						usuario_id: resp.data.usuario_id,
+						usuario: resp.data.usuario,
+						correo: resp.data.correo,
+						nombre: resp.data.nombre,
+						apellido: resp.data.apellido,
+						foto: resp.data.foto,
+						direccion: resp.data.direccion,
+						telefono: resp.data.telefono,
 					};
 				}
-
-				id_privilegio = resp.fk_privilegio;
-
+				id_privilegio = resp.data?.fk_privilegio;
 				handleReset();
-
-				if (response.data.code === 404) {
-					funcionAsignarAlerta("warning", "Usuario o contraseña incorrecta");
-					funcionAbrirAlerta();
-
-					return;
-				}
 			})
-			.catch(() => {
-				funcionAsignarAlerta(
-					"error",
-					"Hubo un error, contacte al administrador..."
-				);
-				funcionAbrirAlerta();
-
+			.catch((error: Error) => {
+				mostrarNotificacion({
+					tipo: "error",
+					titulo: "Error",
+					detalle: `surgio un error: ${error.message}`,
+					pegado: true,
+				});
 				return;
 			});
 
 		if (!id_privilegio) {
-			funcionAsignarAlerta("warning", "No se encontró privilegio para el usuario");
-			funcionAbrirAlerta();
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "No se encontró privilegio para el usuario",
+				pegado: true,
+			});
 			return;
 		}
 
@@ -170,24 +145,24 @@ export const Login = () => {
 					obtenerSesion();
 					obtenerCantidadCarrito();
 
-					funcionAsignarAlerta(
-						"success",
-						`Hola ${data_usuario.usuario}, Bienvenido...`
-					);
-					funcionAbrirAlerta();
+					mostrarNotificacion({
+						tipo: "success",
+						titulo: "Éxito",
+						detalle: `Hola ${data_usuario.usuario}, Bienvenido...`,
+						pegado: false,
+					});
 
 					navigate("/products/");
-
 					return;
 				}
 			})
-			.catch(() => {
-				funcionAsignarAlerta(
-					"error",
-					"Hubo un error, contacte al administrador..."
-				);
-				funcionAbrirAlerta();
-
+			.catch((error: Error) => {
+				mostrarNotificacion({
+					tipo: "error",
+					titulo: "Error",
+					detalle: `surgio un error: ${error.message}`,
+					pegado: true,
+				});
 				return;
 			});
 	};
@@ -272,17 +247,6 @@ export const Login = () => {
 					</div>
 				</form>
 			</div>
-
-			<Snackbar
-				open={abrirAlerta}
-				anchorOrigin={{ vertical: "top", horizontal: "center" }}
-				autoHideDuration={3000}
-				onClose={funcionCerrarAlerta}
-			>
-				<Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-					{alerta.text}
-				</Alert>
-			</Snackbar>
 		</>
 	);
 };

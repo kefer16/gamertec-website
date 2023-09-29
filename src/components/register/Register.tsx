@@ -1,20 +1,18 @@
 import "./styles/Register.scss";
 
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
-import { InterfaceAlertControl } from "../controls/AlertControl";
-import { UsuarioService } from "../../entities/usuario.entities";
+import React, { useContext, useState } from "react";
+import { UsuarioEntity } from "../../entities/usuario.entities";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { IconUserPlus } from "@tabler/icons-react";
+import { UsuarioService } from "../../services/usuario.service";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
 
 export const Register = () => {
-	const [alert, setAlert] = useState<InterfaceAlertControl>({
-		active: false,
-		type: "info",
-		text: "",
-	});
+
+	const { mostrarNotificacion } = useContext(GamertecSesionContext);
 
 	const [formData, setFormData] = useState({
 		name: "",
@@ -66,54 +64,61 @@ export const Register = () => {
 
 	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log(alert);
 
 		if (!name) {
-			setAlert({
-				active: true,
-				type: "warning",
-				text: "complete el campo nombre",
+
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "complete el campo nombre",
+				pegado: true,
 			});
 			return;
 		}
 		if (!lastname) {
-			setAlert({
-				active: true,
-				type: "warning",
-				text: "complete el campo apellido",
+
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "complete el campo apellido",
+				pegado: true,
 			});
 			return;
 		}
 
 		if (!validateEmail(email)) {
-			setAlert({
-				active: true,
-				type: "warning",
-				text: "se introdujo una direccion de correo inválida",
+
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "se introdujo una direccion de correo inválida",
+				pegado: true,
 			});
 			return;
 		}
 
 		if (!validateUserName(user)) {
-			setAlert({
-				active: true,
-				type: "warning",
-				text:
-					"nombre de usuario, solo caracteres: [ a-z, A-Z, _, 0-9] y longitud: [3-16]",
+
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "nombre de usuario, solo caracteres: [ a-z, A-Z, _, 0-9] y longitud: [3-16]",
+				pegado: true,
 			});
 			return;
 		}
 
 		if (password !== repeat_password) {
-			setAlert({
-				active: true,
-				type: "warning",
-				text: "las contraseñas tiene que ser las mismas",
+			mostrarNotificacion({
+				tipo: "warn",
+				titulo: "Alerta",
+				detalle: "Las contraseñas no coinciden",
+				pegado: true,
 			});
 			return;
 		}
 
-		const data_usuario: UsuarioService = new UsuarioService(
+		const data_usuario: UsuarioEntity = new UsuarioEntity(
 			0,
 			name,
 			lastname,
@@ -123,33 +128,30 @@ export const Register = () => {
 			0,
 			"",
 			new Date(),
+			"",
+			"",
 			true,
 			1
 		);
+		const usuServ = new UsuarioService();
 
-		await UsuarioService.Registrar(data_usuario)
-			.then((response) => {
-				if (response.data.code === 200) {
-					setAlert({
-						active: true,
-						type: "success",
-						text: "Se registró correctamente, ahora debe iniciar sesión",
-					});
-
-					handleReset();
-
-					return;
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-				setAlert({
-					active: true,
-					type: "error",
-					text: "Hubo un error en la Aplicación, avise al administrador",
+		await usuServ.registrar(data_usuario)
+			.then(() => {
+				mostrarNotificacion({
+					tipo: "success",
+					titulo: "Éxito",
+					detalle: "Usuario registrado correctamente",
+					pegado: false,
 				});
-
-				return;
+				handleReset();
+			})
+			.catch((error: Error) => {
+				mostrarNotificacion({
+					tipo: "error",
+					titulo: "Error",
+					detalle: `surgio un error: ${error.message}`,
+					pegado: true,
+				});
 			});
 	};
 

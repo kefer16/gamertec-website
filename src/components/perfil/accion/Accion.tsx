@@ -244,6 +244,3 @@ export const Accion = ({ nombre }: AccionPerfilProps) => {
 		</ContainerBodyStyled>
 	);
 };
-
-
-

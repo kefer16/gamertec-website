@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import {
 	Modal,
@@ -14,11 +14,14 @@ import {
 	TableFooter,
 	TablePagination,
 } from "@mui/material";
-import { UsuarioService } from "../../entities/usuario.entities";
+import { UsuarioEntity } from "../../entities/usuario.entities";
 import { convertirFecha } from "../../utils/funciones.utils";
+import { RespuestaEntity } from "../../entities/respuesta.entity";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { UsuarioService } from "../../services/usuario.service";
 
 interface Props {
-	itemSeleccionado: UsuarioService;
+	itemSeleccionado: UsuarioEntity;
 	modalHistoria: boolean;
 	funcionCerrarHistoria: () => void;
 }
@@ -44,7 +47,8 @@ export const ModalHistoria = ({
 	modalHistoria,
 	funcionCerrarHistoria,
 }: Props) => {
-	const [historiales, setHistoriales] = useState<UsuarioService[]>([]);
+	const { mostrarNotificacion } = useContext(GamertecSesionContext);
+	const [historiales, setHistoriales] = useState<UsuarioEntity[]>([]);
 
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -54,20 +58,27 @@ export const ModalHistoria = ({
 	}, [itemSeleccionado]);
 
 	const buscarUsuarioHistorial = async (idUsuario: number) => {
-		let historial: UsuarioService[] = [];
-		console.log(idUsuario);
+		const historial: UsuarioEntity[] = [];
 
-		await UsuarioService.Historial(idUsuario)
-			.then((response) => {
-				response.data.data.forEach((element: UsuarioService, index: number) => {
-					element.index = index + 1;
-					historial.push(element);
-				});
+		const usuServ = new UsuarioService();
 
-				setHistoriales(historial);
+		await usuServ.historial(idUsuario)
+			.then((resp: RespuestaEntity<UsuarioEntity[]>) => {
+				if (resp.data) {
+					resp.data.forEach((element: UsuarioEntity, index: number) => {
+						element.index = index + 1;
+						historial.push(element);
+					});
+					setHistoriales(historial);
+				}
 			})
-			.catch((err: any) => {
-				console.log(err);
+			.catch((error: Error) => {
+				mostrarNotificacion({
+					tipo: "error",
+					titulo: "Error",
+					detalle: `surgio un error: ${error.message}`,
+					pegado: true,
+				});
 			});
 	};
 
@@ -112,7 +123,7 @@ export const ModalHistoria = ({
 												historiales[historiales.length - historial.index]?.dinero;
 											const dineroActual = historial.dinero;
 
-											let activa: boolean = false;
+											let activa = false;
 
 											if (dineroAnterior !== dineroActual) {
 												activa = true;
