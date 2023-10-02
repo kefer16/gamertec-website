@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { UsuarioEntity } from "../entities/usuario.entities";
+import { ActualizaApellidoUsuario, ActualizaCorreoUsuario, ActualizaDireccionUsuario, ActualizaNombreUsuario } from "../interfaces/usuario.interface";
 
 export class UsuarioApi {
 	static async logearse(
@@ -117,5 +118,95 @@ export class UsuarioApi {
 		}
 	}
 
-	
+	static async actualizarNombre(
+		ID: number,
+		data: ActualizaNombreUsuario
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id: ID,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify(data);
+
+			return await axios.put(`${UsuarioEntity.url}/actualizar_nombre`, body, config);
+		} catch (err: any) {
+			console.log(err);
+
+			return Promise.reject(err);
+		}
+	}
+
+	static async actualizarApellido(
+		ID: number,
+		data: ActualizaApellidoUsuario
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id: ID,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify(data);
+
+			return await axios.put(`${UsuarioEntity.url}/actualizar_apellido`, body, config);
+		} catch (err: any) {
+			console.log(err);
+
+			return Promise.reject(err);
+		}
+	}
+
+	static async actualizarCorreo(
+		ID: number,
+		data: ActualizaCorreoUsuario
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id: ID,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify(data);
+
+			return await axios.put(`${UsuarioEntity.url}/actualizar_correo`, body, config);
+		} catch (err: any) {
+			console.log(err);
+
+			return Promise.reject(err);
+		}
+	}
+
+	static async actualizarDireccion(
+		ID: number,
+		data: ActualizaDireccionUsuario
+	): Promise<AxiosResponse> {
+		try {
+			const config = {
+				params: {
+					usuario_id: ID,
+				},
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+			const body = JSON.stringify(data);
+
+			return await axios.put(`${UsuarioEntity.url}/actualizar_direccion`, body, config);
+		} catch (err: any) {
+			console.log(err);
+
+			return Promise.reject(err);
+		}
+	}	
 }

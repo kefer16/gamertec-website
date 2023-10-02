@@ -5,7 +5,7 @@ export const AcccionIndex = () => {
 	const { action_name }: Readonly<Params<AccionNombreEnum | string>> = useParams();
 	return (
 		<>
-			<Accion nombre={action_name ?? AccionNombreEnum.UNDEFINED} />
+			<Accion nombreAccion={action_name ?? AccionNombreEnum.UNDEFINED} />
 		</>
 	);
 };

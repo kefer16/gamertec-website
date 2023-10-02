@@ -59,3 +59,15 @@ export interface IActualizaSerie {
 	numero_serie: string;
 	fk_producto: number;
 }
+
+export interface PedidoPreferencia{
+	cantidad: number;
+	precio: number;
+	cls_modelo: {
+		nombre: string;
+	};
+}
+
+export interface RespuestaPedidoPreferencia{
+	id: string
+}

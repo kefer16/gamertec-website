@@ -1,7 +1,7 @@
 import { UsuarioApi } from "../apis/usuario.api";
 import { RespuestaEntity } from "../entities/respuesta.entity";
 import { UsuarioEntity } from "../entities/usuario.entities";
-import { LogeoUsuario } from "../interfaces/usuario.interface";
+import { ActualizaApellidoUsuario, ActualizaCorreoUsuario, ActualizaDireccionUsuario, ActualizaNombreUsuario, LogeoUsuario } from "../interfaces/usuario.interface";
 
 export class UsuarioService {
 	private respLogearse = new RespuestaEntity<LogeoUsuario>();
@@ -10,6 +10,11 @@ export class UsuarioService {
 	private respListarTodo = new RespuestaEntity<UsuarioEntity[]>();
 	private respHistorial = new RespuestaEntity<UsuarioEntity[]>();
 	private respEliminarUno = new RespuestaEntity<boolean>();
+
+	private respActualizarNombre = new RespuestaEntity<ActualizaNombreUsuario>();
+	private respActualizarApellido = new RespuestaEntity<ActualizaApellidoUsuario>();
+	private respActualizarCorreo = new RespuestaEntity<ActualizaCorreoUsuario>();
+	private respActualizarDireccion = new RespuestaEntity<ActualizaDireccionUsuario>();
 
 	public async logearse(
 		usuario: string,
@@ -95,5 +100,64 @@ export class UsuarioService {
 		return this.respEliminarUno;
 	}
 
+	public async actualizarNombre(
+		usuario_id: number,
+		data: ActualizaNombreUsuario
+	): Promise<RespuestaEntity<ActualizaNombreUsuario>> {
+		await UsuarioApi.actualizarNombre(usuario_id, data).then((resp) => {
+			this.respActualizarNombre = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+		return this.respActualizarNombre;
+	}
+
+	public async actualizarApellido(
+		usuario_id: number,
+		data: ActualizaApellidoUsuario
+	): Promise<RespuestaEntity<ActualizaApellidoUsuario>> {
+		await UsuarioApi.actualizarApellido(usuario_id, data).then((resp) => {
+			this.respActualizarApellido = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+		return this.respActualizarApellido;
+	}
+
+	public async actualizarCorreo(
+		usuario_id: number,
+		data: ActualizaCorreoUsuario
+	): Promise<RespuestaEntity<ActualizaCorreoUsuario>> {
+		await UsuarioApi.actualizarCorreo(usuario_id, data).then((resp) => {
+			this.respActualizarCorreo = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+		return this.respActualizarCorreo;
+	}
+
+	public async actualizarDireccion(
+		usuario_id: number,
+		data: ActualizaDireccionUsuario
+	): Promise<RespuestaEntity<ActualizaDireccionUsuario>> {
+		await UsuarioApi.actualizarDireccion(usuario_id, data).then((resp) => {
+			this.respActualizarDireccion = {
+				correcto: true,
+				tipo: "success",
+				mensaje: "correcto",
+				data: resp.data.data,
+			};
+		});
+		return this.respActualizarDireccion;
+	}
 
 }

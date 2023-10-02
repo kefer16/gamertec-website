@@ -5,6 +5,7 @@
 	"dependencies": {
 		"@artsy/fresnel": "^6.1.0",
 		"@ionic/react": "^7.0.2",
+		"@mercadopago/sdk-react": "^0.0.14",
 		"@tabler/icons-react": "^2.32.0",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",

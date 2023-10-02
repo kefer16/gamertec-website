@@ -7,17 +7,34 @@ import {
 	IPedidoCabeceraInterface,
 	IPedidoCabeceraListarUno,
 	PedidoCabeceraUsuarioProsp,
+	PedidoPreferencia,
+	RespuestaPedidoPreferencia,
 } from "../interfaces/pedido.interface";
 
 export class PedidoService {
 	private respuestaPedidoCabecera = new RespuestaEntity<PedidoCabeceraEntity>();
-	private respuestaArrayPedidoCabecera = new RespuestaEntity<
-		PedidoCabeceraUsuarioProsp[]
-	>();
-	private respuestaPedidoListarUno =
-		new RespuestaEntity<IPedidoCabeceraListarUno>();
+	private respuestaArrayPedidoCabecera = new RespuestaEntity<PedidoCabeceraUsuarioProsp[]>();
+	private respuestaPedidoListarUno =	new RespuestaEntity<IPedidoCabeceraListarUno>();
 
 	private respuestaAgregarSeries = new RespuestaEntity<boolean>();
+	private respCrearPreferencia = new RespuestaEntity<RespuestaPedidoPreferencia>();
+
+
+	public async crearPreferencia(
+		data: PedidoPreferencia[]
+	): Promise<RespuestaEntity<RespuestaPedidoPreferencia>> {
+		await PedidoApi.crearPreferencia(data)
+			.then((resp) => {
+				this.respCrearPreferencia = {
+					correcto: true,
+					tipo: "success",
+					mensaje: "correcto",
+					data: resp.data.data,
+				};
+				
+			});
+		return this.respCrearPreferencia;
+	}
 
 	public async registrar(
 		data: IPedidoCabeceraInterface
