@@ -7,7 +7,6 @@ import {
 	IPedidoCabeceraInterface,
 	IPedidoCabeceraListarUno,
 	PedidoCabeceraUsuarioProsp,
-	PedidoPreferencia,
 	RespuestaPedidoPreferencia,
 } from "../interfaces/pedido.interface";
 
@@ -21,9 +20,9 @@ export class PedidoService {
 
 
 	public async crearPreferencia(
-		data: PedidoPreferencia[]
+		usuario_id: number
 	): Promise<RespuestaEntity<RespuestaPedidoPreferencia>> {
-		await PedidoApi.crearPreferencia(data)
+		await PedidoApi.crearPreferencia(usuario_id)
 			.then((resp) => {
 				this.respCrearPreferencia = {
 					correcto: true,

@@ -27,13 +27,13 @@ export enum opcionSerie {
 export class ProductoApi {
 	static async obtenerSeries(
 		detalle_id: number,
-		opcion: opcionSerie
+		usuario_id: number
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
 					detalle_id,
-					opcion,
+					usuario_id,
 				},
 				headers: {
 					"Content-Type": "application/json",

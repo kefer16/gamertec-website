@@ -14,7 +14,6 @@ import { convertirFormatoMoneda } from "../../utils/funciones.utils";
 import { SeriesRegistro } from "../admin/pedido/PedidoDetalleRegistro.component";
 import { IMultiSelectProps } from "../controls/primeUI/MultiSelectPrimeUI";
 import { ProductoService } from "../../services/producto.service";
-import { opcionSerie } from "../../apis/producto.api";
 import { IProductoSerie } from "../../interfaces/producto.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 
@@ -39,15 +38,16 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
 	const [modal, setModal] = useState<boolean>(false);
 
 	const [opciones, setOpciones] = useState<IMultiSelectProps[]>([]);
+	const [maximoOpciones, setMaximoOpciones] = useState<number>(0);
 	const funcionCerrarModal = () => {
 		setModal(false);
 	};
 
-	const funcionAbrirModal = async (compraDetalleId: number) => {
+	const funcionAbrirModal = async (compraDetalleId: number, cantidad: number) => {
 		const productoServ = new ProductoService();
 		let array: IMultiSelectProps[] = [];
 		await productoServ
-			.obtenerSeries(compraDetalleId, opcionSerie.COMPRA)
+			.obtenerSeries(compraDetalleId, sesionGamertec.usuario.usuario_id)
 			.then((resp: RespuestaEntity<IProductoSerie[]>) => {
 				if (resp.data) {
 					array = resp.data.map((item) => ({
@@ -59,6 +59,7 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
 			});
 		setOpciones(array);
 		setModal(true);
+		setMaximoOpciones(cantidad);
 		setCompraDetalleId(compraDetalleId);
 	};
 
@@ -139,7 +140,7 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
 								<th>PRECIO UNITARIO</th>
 								<th>VALOR DE VENTA</th>
 							</thead>
-							<tbody id="productos-comprar">
+							<tbody>
 								{compraDetalle.map((item: ICompraDetalleTable) => {
 									return (
 										<tr key={`PED-DET-${item.item}`}>
@@ -152,7 +153,7 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
 											<td>
 												<Button
 													label="Ver"
-													onClick={() => funcionAbrirModal(item.compra_detalle_id)}
+													onClick={() => funcionAbrirModal(item.compra_detalle_id, item.cantidad)}
 												/>
 											</td>
 											<td>{convertirFormatoMoneda(item.precio)}</td>
@@ -183,9 +184,10 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
 				<SeriesRegistro
 					pedidoDetalleId={compraDetalleId}
 					opciones={opciones}
+					maximoOpciones={maximoOpciones}
 					estadoModal={modal}
 					funcionCerrarModal={funcionCerrarModal}
-					disableButton={true}
+					disableButton={false}
 				/>
 			</ContainerBodyStyled>
 		</>

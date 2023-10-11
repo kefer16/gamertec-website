@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CompraCabeceraEntity } from "../entities/compra_cabecera.entity";
+import { CompraRegistra } from "../interfaces/compra.interface";
 
 export class CompraApi {
 	public async listarTodos(usuario_id: number): Promise<AxiosResponse> {
@@ -37,20 +38,18 @@ export class CompraApi {
 			return Promise.reject(err);
 		}
 	}
-	public async registrar(pedido_cabecera_id: number): Promise<AxiosResponse> {
+	public async registrar(data: CompraRegistra): Promise<AxiosResponse> {
 		try {
 			const config = {
-				params: {
-					pedido_cabecera_id,
-				},
 				headers: {
 					"Content-Type": "application/json",
 				},
+				
 			};
-			return await axios.post(`${CompraCabeceraEntity.url}/registrar`, {}, config);
+			const body = JSON.stringify(data);
+			return await axios.post(`${CompraCabeceraEntity.url}/registrar`, body, config);
 		} catch (err: any) {
-			console.log(err);
-
+		
 			return Promise.reject(err);
 		}
 	}

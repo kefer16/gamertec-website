@@ -14,6 +14,7 @@ export interface NotificacionProps {
 export interface SesionGamertecContextProps {
 	sesionGamertec: SesionGamertec;
 	cantidadCarrito: number;
+	privilegio: privilegio;
 	obtenerSesion: () => void;
 	cerrarSesion: () => void;
 	obtenerCantidadCarrito: () => void;
@@ -21,8 +22,10 @@ export interface SesionGamertecContextProps {
 }
 
 export const GamertecSesionContext = createContext<SesionGamertecContextProps>({} as SesionGamertecContextProps);
+export type privilegio = "ADM" | "USU" | "INV";
 
 export const SesionProvider = ({ children }: any) => {
+	const [privilegio, setPrivilegio] = useState<privilegio>("INV");
 	const [sesionGamertec, setSesionGamertec] = useState<SesionGamertec>({
 		usuario: {
 			usuario_id: 0,
@@ -37,7 +40,7 @@ export const SesionProvider = ({ children }: any) => {
 		privilegio: {
 			privilegio_id: 0,
 			nombre: "",
-			abreviatura: "",
+			abreviatura: "INV",
 		},
 	});
 	const [cantidadCarrito, setCantidadCarrito] = useState<number>(0);
@@ -74,9 +77,28 @@ export const SesionProvider = ({ children }: any) => {
 			: sesionGamertec;
 
 		setSesionGamertec(sesionGamertec);
+		setPrivilegio(sesionGamertec.privilegio.abreviatura);
 	};
 	const cerrarSesion = () => {
 		sessionStorage.removeItem("sesion_gamertec");
+		setSesionGamertec({
+			usuario: {
+				usuario_id: 0,
+				usuario: "",
+				correo: "",
+				nombre: "",
+				apellido: "",
+				foto: "",
+				direccion: "",
+				telefono: "",
+			},
+			privilegio: {
+				privilegio_id: 0,
+				nombre: "",
+				abreviatura: "INV",
+			},
+		});
+		setPrivilegio("INV");
 	};
 	const obtenerCantidadCarrito = async () => {
 		const servCarrito = new CarritoService();
@@ -98,6 +120,7 @@ export const SesionProvider = ({ children }: any) => {
 			value={{
 				sesionGamertec,
 				cantidadCarrito,
+				privilegio,
 				obtenerSesion,
 				cerrarSesion,
 				obtenerCantidadCarrito,

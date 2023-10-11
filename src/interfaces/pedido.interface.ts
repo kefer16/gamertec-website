@@ -12,6 +12,7 @@ export interface PedidoCabeceraSendInterface {
 export interface IPedidoCabeceraInterface {
 	usuario_id: number;
 	distrito_id: number;
+	preferencia_id: string;
 	fecha_registro: string;
 }
 

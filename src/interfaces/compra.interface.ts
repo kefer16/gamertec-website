@@ -51,3 +51,10 @@ export interface IModeloTable {
 	foto: string;
 	nombre: string;
 }
+
+export interface CompraRegistra {
+	preferencia_id: string;
+	estado: string;
+	pago_id: string;
+	usuario_id: number;
+}

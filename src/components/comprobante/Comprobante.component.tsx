@@ -3,28 +3,27 @@ import { useContext, useEffect, useState } from "react";
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import {
-	// convertirFechaSQL,
+	convertirFechaSQL,
 	convertirFechaVisual,
 	convertirFormatoMoneda,
 	crearFechaISO,
-	// fechaActualISO,
+	fechaActualISO,
 } from "../../utils/funciones.utils";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { PedidoService } from "../../services/pedido.service";
 
-// import { useNavigate } from "react-router-dom";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
-// import { PedidoCabeceraEntity } from "../../entities/pedido_cabecera.entities";
 
-import { PedidoPreferencia, RespuestaPedidoPreferencia } from "../../interfaces/pedido.interface";
+import { IPedidoCabeceraInterface, RespuestaPedidoPreferencia } from "../../interfaces/pedido.interface";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import { SesionGamertec } from "../../interfaces/sesion.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
 initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY || "");
 
 export const Comprobante = () => {
-	// const navegacion = useNavigate();
 	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 	const [preferenciaId, setPreferenciaId] = useState<string>("");
 	const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
@@ -33,17 +32,18 @@ export const Comprobante = () => {
 	const [precioTotal, setPrecioTotal] = useState<number>(0);
 	const [precioEnvio, setPrecioEnvio] = useState<number>(0);
 
+	const [visible, setVisible] = useState<boolean>(false);
+
 	useEffect(() => {
 		obtenerSesion();
 		obtenerDatosCarrito(sesionGamertec);
 	}, [obtenerSesion, sesionGamertec]);
 
 	const obtenerDatosCarrito = async (sesion: SesionGamertec) => {
-		let _arrayCarrito: CarritoUsuarioProps[] = [];
 		await CarritoService.listarCaracteristicas(sesion.usuario.usuario_id).
 			then((array) => {
-				_arrayCarrito = [...array];
-				setArrayCarrito(array);
+
+				setArrayCarrito([...array]);
 				const precioSubTotal: number = array.reduce(
 					(suma, item) => suma + item.cls_modelo.precio * item.cantidad,
 					0
@@ -54,42 +54,52 @@ export const Comprobante = () => {
 				const precioTotal: number = precioSubTotal + precioEnvio;
 				setPrecioTotal(precioTotal);
 			});
+	};
 
-		console.log(preferenciaId, !preferenciaId);
-
+	const generarPreferenciaYRegistrarPedido = () => {
 		if (!preferenciaId) {
-			funcionRegistrarPedido(_arrayCarrito);
+			funcionRegistrarPedido(sesionGamertec.usuario.usuario_id);
 		}
-
+		setVisible(true);
 	};
 
 
-	const funcionRegistrarPedido = async (arrayCarrito: CarritoUsuarioProps[]) => {
-		// const data: IPedidoCabeceraInterface = {
-		// 	distrito_id: 10102,
-		// 	usuario_id: usuarioId,
-		// 	fecha_registro: convertirFechaSQL(fechaActualISO().toISOString()),
-		// };
-
+	const funcionRegistrarPedido = async (usuarioId: number) => {
+		let preferencia_id = "";
 		const pedServ: PedidoService = new PedidoService();
 
-		const itemsPreferencia: PedidoPreferencia[] = [];
-
-		arrayCarrito.forEach((element: CarritoUsuarioProps) => {
-			itemsPreferencia.push({ cls_modelo: { nombre: element.cls_modelo.nombre }, cantidad: element.cantidad, precio: element.cls_modelo.precio });
-		});
-
-		await pedServ.crearPreferencia(itemsPreferencia)
+		await pedServ.crearPreferencia(usuarioId)
 			.then((resp: RespuestaEntity<RespuestaPedidoPreferencia>) => {
 				if (resp.data) {
-					setPreferenciaId(resp.data.id);
+					preferencia_id = resp.data.id;
+
+					setPreferenciaId(preferencia_id);
 				}
 			})
 			.catch((error: any) => {
 				console.log(error);
 			});
+
+		const data: IPedidoCabeceraInterface = {
+			distrito_id: 10102,
+			usuario_id: usuarioId,
+			preferencia_id: preferencia_id,
+			fecha_registro: convertirFechaSQL(fechaActualISO().toISOString()),
+		};
+		console.log(data);
+
+		await pedServ.registrar(data)
+			.catch((error: Error) => {
+				console.log(error);
+			});
 	};
 
+
+	const footerContent = (
+		<>
+			{preferenciaId && <Wallet locale="es-PE" initialization={{ preferenceId: preferenciaId, redirectMode: "self" }} />}
+		</>
+	);
 
 	return (
 		<>
@@ -107,7 +117,6 @@ export const Comprobante = () => {
 							<div className="form-dividido">
 
 								<InputText
-									// className="w-full mb-3"
 									value={`${sesionGamertec.usuario.nombre} ${sesionGamertec.usuario.apellido}`}
 									type="text"
 									autoComplete="none"
@@ -115,7 +124,6 @@ export const Comprobante = () => {
 								/>
 
 								<InputText
-									// className="w-full mb-3"
 									value={convertirFechaVisual(crearFechaISO())}
 									type="text"
 									autoComplete="none"
@@ -124,7 +132,6 @@ export const Comprobante = () => {
 							</div>
 							<div className="form-dividido">
 								<InputText
-									// className="w-full mb-3"
 									value={sesionGamertec.usuario.direccion}
 									type="text"
 									autoComplete="none"
@@ -132,7 +139,6 @@ export const Comprobante = () => {
 								/>
 
 								<InputText
-									// className="w-full mb-3"
 									value={sesionGamertec.usuario.telefono}
 									type="text"
 									autoComplete="none"
@@ -191,9 +197,12 @@ export const Comprobante = () => {
 							</tbody>
 						</table>
 					</div>
-					<div className="boton-comprar">
-						{preferenciaId && <Wallet locale="es-PE" initialization={{ preferenceId: preferenciaId }} />}
-					</div>
+
+
+					<Button label="Generar enlace de Compra" style={{ width: "100%" }} onClick={generarPreferenciaYRegistrarPedido} />
+					<Dialog header="Generación Enlace" visible={visible} style={{ width: "500px" }} onHide={() => setVisible(false)} footer={footerContent}>
+						La compra se realizará con la plataforma de Mercado Pago:
+					</Dialog>
 				</ComprobanteStyled>
 			</ContainerBodyStyled>
 

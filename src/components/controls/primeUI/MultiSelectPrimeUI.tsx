@@ -13,6 +13,7 @@ interface Props {
 	options: IMultiSelectProps[];
 	disabled: boolean;
 	selectedOptions: IMultiSelectProps[];
+	maxOptions: number,
 	fuctionSelectedOptions: (options: IMultiSelectProps[]) => void;
 }
 
@@ -22,8 +23,10 @@ export const MultiSelectPrimeUI = ({
 	options,
 	disabled,
 	selectedOptions,
+	maxOptions,
 	fuctionSelectedOptions,
 }: Props) => {
+
 	const obtenerData = async (
 		options: IMultiSelectProps[],
 		fuctionSelectedCities: (options: IMultiSelectProps[]) => void
@@ -49,7 +52,14 @@ export const MultiSelectPrimeUI = ({
 
 	const onChange = (e: MultiSelectChangeEvent) => {
 		if (!disabled) {
-			fuctionSelectedOptions(e.value);
+			if (selectedOptions.length < maxOptions) {
+				fuctionSelectedOptions(e.value);
+				return;
+			}
+			if (e.value.length === 0) {
+				fuctionSelectedOptions(e.value);
+				return;
+			}
 		}
 	};
 

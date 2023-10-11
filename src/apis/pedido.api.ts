@@ -3,25 +3,22 @@ import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
 import {
 	IActualizaSerie,
 	IPedidoCabeceraInterface,
-	PedidoPreferencia,
 } from "../interfaces/pedido.interface";
 
 export class PedidoApi {
-
-	static async crearPreferencia(
-		data: PedidoPreferencia[]
-	): Promise<AxiosResponse> {
+	static async crearPreferencia(usuario_id: number): Promise<AxiosResponse> {
 		try {
 			const config = {
+				params: {
+					usuario_id,
+				},
 				headers: {
 					"Content-Type": "application/json",
 				},
 			};
-			const body = JSON.stringify(data);
-
 			return await axios.post(
 				`${PedidoCabeceraEntity.url}/crear_preferencia`,
-				body,
+				{},
 				config
 			);
 		} catch (err: any) {

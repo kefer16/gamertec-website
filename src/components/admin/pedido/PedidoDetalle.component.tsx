@@ -11,11 +11,10 @@ import {
 } from "../../../interfaces/pedido.interface";
 import { convertirFormatoMoneda } from "../../../utils/funciones.utils";
 import { SeriesRegistro } from "./PedidoDetalleRegistro.component";
-import { CompraService } from "../../../services/compra.service";
+// import { CompraService } from "../../../services/compra.service";
 import { IMultiSelectProps } from "../../controls/primeUI/MultiSelectPrimeUI";
 import { ProductoService } from "../../../services/producto.service";
 import { IProductoSerie } from "../../../interfaces/producto.interface";
-import { opcionSerie } from "../../../apis/producto.api";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
 interface Props {
@@ -50,7 +49,7 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 		const productoServ = new ProductoService();
 		let array: IMultiSelectProps[] = [];
 		await productoServ
-			.obtenerSeries(pedidoDetalleId, opcionSerie.PEDIDO)
+			.obtenerSeries(pedidoDetalleId, 1)
 			.then((resp: RespuestaEntity<IProductoSerie[]>) => {
 				if (resp.data) {
 					array = resp.data.map((item) => ({
@@ -67,10 +66,10 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 	};
 
 	const completarPedido = async () => {
-		const compraServ = new CompraService();
-		await compraServ.registrar(pedido_id).then((resp) => {
-			console.log(resp);
-		});
+		// const compraServ = new CompraService();
+		// await compraServ.registrar(pedido_id).then((resp) => {
+		console.log("resp");
+		// });
 	};
 
 	useEffect(() => {
@@ -200,6 +199,7 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
 				<SeriesRegistro
 					pedidoDetalleId={pedidoDetalleId}
 					opciones={opciones}
+					maximoOpciones={1}
 					estadoModal={modal}
 					funcionCerrarModal={funcionCerrarModal}
 					disableButton={false}

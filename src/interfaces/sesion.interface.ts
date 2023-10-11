@@ -1,3 +1,5 @@
+import { privilegio } from "../components/sesion/Sesion.component";
+
 export interface SesionGamertec {
 	usuario: SesionUsuario;
 	privilegio: SesionPrivilegio;
@@ -17,5 +19,5 @@ export interface SesionUsuario {
 export interface SesionPrivilegio {
 	privilegio_id: number;
 	nombre: string;
-	abreviatura: "" | "ADM" | "USU" | "INV";
+	abreviatura: privilegio;
 }

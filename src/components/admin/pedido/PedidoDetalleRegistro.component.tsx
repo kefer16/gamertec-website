@@ -1,6 +1,5 @@
-import { Calendar, CalendarChangeEvent } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
 	IMultiSelectProps,
 	MultiSelectPrimeUI,
@@ -9,10 +8,13 @@ import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { IActualizaSerie } from "../../../interfaces/pedido.interface";
 import { PedidoService } from "../../../services/pedido.service";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { Chip } from "primereact/chip";
 // import { PedidoService } from "../../../services/pedido.service";
 interface Props {
 	pedidoDetalleId: number;
 	opciones: IMultiSelectProps[];
+	maximoOpciones: number;
 	estadoModal: boolean;
 	funcionCerrarModal: () => void;
 	disableButton: boolean;
@@ -21,11 +23,12 @@ interface Props {
 export const SeriesRegistro = ({
 	pedidoDetalleId,
 	opciones,
+	maximoOpciones,
 	estadoModal,
 	funcionCerrarModal,
 	disableButton,
 }: Props) => {
-	const [date, setDate] = useState<string | Date | Date[] | null>(new Date());
+	const { privilegio } = useContext(GamertecSesionContext);
 
 	const [options, setOptions] = useState<IMultiSelectProps[]>([]);
 
@@ -69,35 +72,38 @@ export const SeriesRegistro = ({
 
 	return (
 		<Dialog
-			header="Añadir Series"
+			header={privilegio ? "Series asignadas" : "Añadir Series"}
 			visible={estadoModal}
-			maximizable
-			// style={{ width: "50vw" }}
 			className="grid col-11 md:col-4"
 			onHide={() => funcionCerrarModal()}
 		>
-			<label htmlFor="locale-user" className="font-bold mb-2">
-				Fecha de Registro
-			</label>
-			<Calendar
-				style={{ width: "100%" }}
-				value={date}
-				dateFormat="dd/mm/yy"
-				onChange={(e: CalendarChangeEvent) => {
-					setDate(e.value ? e.value : null);
-				}}
-				disabled
-				showIcon
-			/>
+			{
+				privilegio === "USU" ?
+					<div className="card flex flex-wrap gap-2">
+						{options.length <= 0 ?
+							<p>Aún no se asigna niguna serie a su compra</p>
+							:
+							options.map((item: IMultiSelectProps) => { return (<Chip key={item.code} label={item.name} />); })
+						}
 
-			<MultiSelectPrimeUI
-				title="Series"
-				placeholder="Escoger Series"
-				options={options}
-				disabled={true}
-				selectedOptions={seriesSeleccionadas}
-				fuctionSelectedOptions={setSeriesSeleccionadas}
-			/>
+					</div> :
+					<>
+						{options.length <= 0 ?
+							<p>Producto sin stock, registre uno para asignar serie</p>
+							:
+							<MultiSelectPrimeUI
+								title="Series"
+								placeholder="Escoger Series"
+								options={options}
+								disabled={disableButton}
+								selectedOptions={seriesSeleccionadas}
+								maxOptions={maximoOpciones}
+								fuctionSelectedOptions={setSeriesSeleccionadas}
+							/>
+						}
+					</>
+			}
+
 			{disableButton ? (
 				<></>
 			) : (
@@ -107,7 +113,7 @@ export const SeriesRegistro = ({
 						icon="pi pi-plus"
 						raised
 						onClick={agregarSeries}
-					></Button>
+					/>
 				</Divider>
 			)}
 		</Dialog>

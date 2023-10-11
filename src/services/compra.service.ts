@@ -1,6 +1,6 @@
 import { CompraApi } from "../apis/compra.api";
 import { RespuestaEntity } from "../entities/respuesta.entity";
-import { ICompraCard, ICompraTable } from "../interfaces/compra.interface";
+import { CompraRegistra, ICompraCard, ICompraTable } from "../interfaces/compra.interface";
 
 export class CompraService {
 	private respuestaRegistrar = new RespuestaEntity<boolean>();
@@ -42,10 +42,10 @@ export class CompraService {
 	}
 
 	public async registrar(
-		pedidoCabeceraId: number
+		data: CompraRegistra
 	): Promise<RespuestaEntity<boolean>> {
 		const compraApi = new CompraApi();
-		await compraApi.registrar(pedidoCabeceraId).then((resp) => {
+		await compraApi.registrar(data).then((resp) => {
 			this.respuestaRegistrar = {
 				correcto: true,
 				tipo: "success",

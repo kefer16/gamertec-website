@@ -1,4 +1,4 @@
-import { ProductoApi, opcionSerie } from "../apis/producto.api";
+import { ProductoApi } from "../apis/producto.api";
 import { RespuestaEntity } from "../entities/respuesta.entity";
 import { IProductoSerie } from "../interfaces/producto.interface";
 
@@ -7,9 +7,9 @@ export class ProductoService {
 
 	public async obtenerSeries(
 		detalleId: number,
-		opcion: opcionSerie
+		usuario_id: number
 	): Promise<RespuestaEntity<IProductoSerie[]>> {
-		await ProductoApi.obtenerSeries(detalleId, opcion).then((resp) => {
+		await ProductoApi.obtenerSeries(detalleId, usuario_id).then((resp) => {
 			this.respProductoSeries = {
 				correcto: true,
 				tipo: "success",

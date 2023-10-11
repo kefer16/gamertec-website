@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
-import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { GamertecSesionContext, privilegio } from "../sesion/Sesion.component";
 
 import { Menubar } from "primereact/menubar";
 import { useNavigate } from "react-router-dom";
@@ -24,15 +24,18 @@ import { IconShoppingCart } from "@tabler/icons-react";
 import { Badge } from "primereact/badge";
 
 export const Header = () => {
-	const { sesionGamertec, cerrarSesion, obtenerSesion, cantidadCarrito, obtenerCantidadCarrito } = useContext(GamertecSesionContext);
+	const { sesionGamertec, cerrarSesion, obtenerSesion, cantidadCarrito, privilegio, obtenerCantidadCarrito } = useContext(GamertecSesionContext);
 	const [cantidadCarritoCabecera, setCantidadCarritoCabecera] = useState<number>(0);
 	interface MenuItemBar {
+		privilegio?: privilegio[];
 		label?: string;
 		icon?: JSX.Element;
 		command?: () => void;
 		separator?: boolean;
 	}
+
 	interface MenuItem {
+		privilegio?: privilegio[]
 		label?: string;
 		icon?: JSX.Element;
 		command?: () => void;
@@ -50,6 +53,7 @@ export const Header = () => {
 	const navigate = useNavigate();
 	const items: MenuItemBar[] = [
 		{
+			privilegio: ["INV", "ADM", "USU"],
 			label: "Inicio",
 			icon: <IconHome2 size={24} style={{ marginRight: "10px" }} />,
 			command: () => {
@@ -57,6 +61,7 @@ export const Header = () => {
 			},
 		},
 		{
+			privilegio: ["INV", "ADM", "USU"],
 			label: "Productos",
 			icon: <IconBuildingStore size={24} style={{ marginRight: "10px" }} />,
 			command: () => {
@@ -64,6 +69,7 @@ export const Header = () => {
 			},
 		},
 		{
+			privilegio: ["INV", "ADM", "USU"],
 			label: "Contacto",
 			icon: <IconAddressBook size={24} style={{ marginRight: "10px" }} />,
 			command: () => {
@@ -71,6 +77,7 @@ export const Header = () => {
 			},
 		},
 		{
+			privilegio: ["INV"],
 			label: "",
 			icon: (
 				<Button
@@ -98,23 +105,30 @@ export const Header = () => {
 	);
 	const end = (
 		<div className="flex align-items-center">
-			<Button
-				className="p-button-badge"
-				rounded
-				link
-				icon={<IconShoppingCart size={24} />}
-				onClick={irCarrito}
-			>
-				<Badge value={cantidadCarritoCabecera} severity="danger"></Badge>
-			</Button>
 
-			<Avatar
-				className="shadow-1 ml-2"
-				image={sesionGamertec.usuario.foto}
-				style={{ height: "48px", width: "48px" }}
-				shape="circle"
-				onClick={(event) => menuRight.current?.toggle(event)}
-			/>
+			{
+				privilegio === "USU" &&
+				<Button
+					className="p-button-badge"
+					rounded
+					link
+					icon={<IconShoppingCart size={24} />}
+					onClick={irCarrito}
+				>
+					<Badge value={cantidadCarritoCabecera} severity="danger"></Badge>
+				</Button>
+			}
+
+			{
+				["USU", "ADM"].includes(privilegio) &&
+				<Avatar
+					className="shadow-1 ml-2"
+					image={sesionGamertec.usuario.foto}
+					style={{ height: "48px", width: "48px" }}
+					shape="circle"
+					onClick={(event) => menuRight.current?.toggle(event)}
+				/>
+			}
 		</div>
 	);
 
@@ -123,6 +137,7 @@ export const Header = () => {
 
 	const itemsAcount: MenuItem[] = [
 		{
+			privilegio: ["ADM", "USU"],
 			icon: (
 				<button className="w-full p-link flex align-items-center">
 					<Avatar
@@ -142,6 +157,7 @@ export const Header = () => {
 		},
 		{ separator: true },
 		{
+			privilegio: ["ADM"],
 			label: "Administrador",
 			icon: <IconUserUp size={24} style={{ marginRight: "10px" }} />,
 			command: () => {
@@ -149,10 +165,12 @@ export const Header = () => {
 			},
 		},
 		{
+			privilegio: ["ADM"],
 			label: "Dashboard",
 			icon: <IconLayoutDashboard size={24} style={{ marginRight: "10px" }} />,
 		},
 		{
+			privilegio: ["USU", "ADM"],
 			label: "Compras",
 			icon: <IconShoppingBag size={24} style={{ marginRight: "10px" }} />,
 			command: () => {
@@ -160,6 +178,7 @@ export const Header = () => {
 			},
 		},
 		{
+			privilegio: ["ADM", "USU"],
 			label: "Cerrar Sesión",
 			icon: <IconLogout2 size={24} style={{ marginRight: "10px" }} />,
 			command: () => {
@@ -184,12 +203,12 @@ export const Header = () => {
 			<Menubar
 				className="mx-auto bg-white border-0 "
 				style={{ maxWidth: "1240px" }}
-				model={items}
+				model={items.filter(item => item.privilegio?.includes(privilegio))}
 				start={start}
 				end={end}
 			/>
 			<Menu
-				model={itemsAcount}
+				model={itemsAcount.filter(item => item.privilegio?.includes(privilegio))}
 				popup
 				ref={menuRight}
 				id="popup_menu_right"

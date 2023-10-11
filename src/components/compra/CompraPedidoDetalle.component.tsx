@@ -10,7 +10,6 @@ import {
 	IPedidoDetalleListarUno,
 } from "../../interfaces/pedido.interface";
 import { ProductoService } from "../../services/producto.service";
-import { opcionSerie } from "../../apis/producto.api";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
 import { IProductoSerie } from "../../interfaces/producto.interface";
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
@@ -51,7 +50,7 @@ export const CompraPedidoDetalle = ({ pedido_id }: Props) => {
 		const productoServ = new ProductoService();
 		let array: IMultiSelectProps[] = [];
 		await productoServ
-			.obtenerSeries(pedidoDetalleId, opcionSerie.PEDIDO)
+			.obtenerSeries(pedidoDetalleId, 1)
 			.then((resp: RespuestaEntity<IProductoSerie[]>) => {
 				if (resp.data) {
 					array = resp.data.map((item) => ({
@@ -190,6 +189,7 @@ export const CompraPedidoDetalle = ({ pedido_id }: Props) => {
 			<SeriesRegistro
 				pedidoDetalleId={pedidoDetalleId}
 				opciones={opciones}
+				maximoOpciones={1}
 				estadoModal={modal}
 				funcionCerrarModal={funcionCerrarModal}
 				disableButton={true}
