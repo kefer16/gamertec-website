@@ -27,7 +27,8 @@ interface Props {
 }
 
 export const CompraDetalle = ({ compraCabeceraId }: Props) => {
-   const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
+   const { sesionGamertec, obtenerSesion, mostrarNotificacion, privilegio } =
+      useContext(GamertecSesionContext);
    // const [pedido, setPedido] = useState<IPedidoCabeceraListarUno>(
    // 	{} as IPedidoCabeceraListarUno
    // );
@@ -145,6 +146,33 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
       }
    };
 
+   const actualizarCompraEstado = async (
+      compra_id: number,
+      compra_estado: string
+   ) => {
+      const servCompra = new CompraService();
+      await servCompra
+         .actualizarCompraEstado(compra_id, compra_estado)
+         .then(() => {
+            mostrarNotificacion({
+               tipo: "success",
+               titulo: "Éxito",
+               detalle: "Se actualizó estado de compra",
+               pegado: false,
+            });
+         })
+         .catch((error: RespuestaEntity<null>) => {
+            console.log(error);
+
+            mostrarNotificacion({
+               tipo: "error",
+               titulo: "Error",
+               detalle: `surgió un error: ${error.error.message}`,
+               pegado: true,
+            });
+         });
+   };
+
    const countryOptionTemplate = (option: IMultiSelectProps) => {
       return (
          <Tag
@@ -194,6 +222,7 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
                            placeholder="Selecciona un Estado"
                            valueTemplate={selectedCountryTemplate}
                            itemTemplate={countryOptionTemplate}
+                           disabled={privilegio === "ADM" ? false : true}
                         />
                      </div>
                      <div className="input">
@@ -268,6 +297,18 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
                         </tr>
                      </tbody>
                   </table>
+
+                  {privilegio === "ADM" && (
+                     <Button
+                        label="Actualizar Estado"
+                        onClick={() =>
+                           actualizarCompraEstado(
+                              compraCabeceraId,
+                              compraEstadoSeleccionado?.code ?? ""
+                           )
+                        }
+                     />
+                  )}
                </div>
             </ComprobanteStyled>
             <SeriesRegistro
