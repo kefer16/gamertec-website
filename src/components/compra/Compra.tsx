@@ -1,136 +1,121 @@
 import { CompraStyled } from "./styles/CompraStyles";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
 
 import {
-	ICompraCard,
-	ICompraDetalleCard,
+   ICompraCard,
+   ICompraDetalleCard,
 } from "../../interfaces/compra.interface";
 import { CompraService } from "../../services/compra.service";
 import { CardPedido } from "../controls/CardPedido";
-import { PedidoService } from "../../services/pedido.service";
-import { PedidoCabeceraUsuarioProsp } from "../../interfaces/pedido.interface";
-import { CardPedidoDetalleProps } from "../../interfaces/card_pedido.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
+import { CompraEstadoService } from "../../services/compra_estado.service";
+import { CompraEstadoListaTodos } from "../../interfaces/compra_estado.interface";
 
 export const Compra = () => {
-	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
+   const { sesionGamertec, obtenerSesion, mostrarNotificacion } = useContext(
+      GamertecSesionContext
+   );
+   const [arrayCompra, setArrayCompra] = useState<ICompraCard[]>([]);
+   const [arrayCompraEstado, setArrayCompraEstado] = useState<
+      CompraEstadoListaTodos[]
+   >([]);
 
-	const [arrayCompra, setArrayCompra] = useState<ICompraCard[]>([]);
-	const [arrayPedido, setArrayPedido] = useState<PedidoCabeceraUsuarioProsp[]>(
-		[]
-	);
+   const listarTodosCompraEstado = useCallback(async () => {
+      const servCompraEstado = new CompraEstadoService();
 
-	useEffect(() => {
-		const obtenerData = async () => {
-			obtenerSesion();
-			const usuarioId = sesionGamertec.usuario.usuario_id;
-			const compraServ = new CompraService();
+      await servCompraEstado
+         .listarTodos()
+         .then((resp: RespuestaEntity<CompraEstadoListaTodos[]>) => {
+            if (resp.data) {
+               setArrayCompraEstado([...resp.data]);
+            }
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               titulo: "Error",
+               detalle: `Surgió un error al obtener estados de compra: ${error.message}`,
+               pegado: true,
+            });
+         });
+   }, [mostrarNotificacion]);
 
-			compraServ
-				.listarTodos(usuarioId)
-				.then((resp: RespuestaEntity<ICompraCard[]>) => {
-					if (resp.data) {
-						setArrayCompra(resp.data);
-					}
-				})
-				.catch((error) => {
-					console.log(error);
-				});
+   useEffect(() => {
+      listarTodosCompraEstado(); // Llamada a la función aquí
 
-			const pedidoServ = new PedidoService();
+      const obtenerData = async () => {
+         obtenerSesion();
+         const usuarioId = sesionGamertec.usuario.usuario_id;
+         const compraServ = new CompraService();
 
-			pedidoServ
-				.listarPedidoUsuario(usuarioId)
-				.then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
-					if (resp.data) {
-						setArrayPedido(resp.data);
-					}
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		};
+         compraServ
+            .listarTodos(usuarioId)
+            .then((resp: RespuestaEntity<ICompraCard[]>) => {
+               if (resp.data) {
+                  setArrayCompra(resp.data);
+               }
+            })
+            .catch((error) => {
+               console.log(error);
+            });
+      };
 
-		obtenerData();
-	}, [obtenerSesion, sesionGamertec]);
-	return (
-		<>
-			<ContainerBodyStyled>
-				<CompraStyled>
-					<div className="titulo">
-						<h2>Tus compras</h2>
-					</div>
+      obtenerData();
+   }, [obtenerSesion, sesionGamertec, listarTodosCompraEstado]);
 
-					<div id="contenedor_compras" className="contenedor_compras">
-						<h3>Pedidos</h3>
-						{arrayPedido.map((item: PedidoCabeceraUsuarioProsp) => {
-							let sumaCantidad = 0;
-							let sumaPrecio = 0;
+   return (
+      <>
+         <ContainerBodyStyled>
+            <CompraStyled>
+               <div className="titulo">
+                  <h2>Tus compras</h2>
+               </div>
+               <div className="contenedor_compras">
+                  {arrayCompra.map((item: ICompraCard) => {
+                     let sumaCantidad = 0;
+                     let sumaPrecio = 0;
 
-							const arrayImagenes: string[][] = [];
-							item.lst_pedido_detalle.forEach((element: CardPedidoDetalleProps) => {
-								sumaCantidad = sumaCantidad + element.cantidad;
-								sumaPrecio = sumaPrecio + element.precio;
-								if (element.cls_modelo !== undefined) {
-									arrayImagenes.push([
-										element.cls_modelo.foto,
-										element.cls_modelo.nombre,
-									]);
-								}
-							});
+                     const arrayImagenes: string[][] = [];
+                     item.lst_compra_detalle.forEach(
+                        (element: ICompraDetalleCard) => {
+                           sumaCantidad = sumaCantidad + element.cantidad;
+                           sumaPrecio =
+                              sumaPrecio + element.cantidad * element.precio;
+                           if (element.cls_modelo !== undefined) {
+                              arrayImagenes.push([
+                                 element.cls_modelo.foto,
+                                 element.cls_modelo.nombre,
+                              ]);
+                           }
+                        }
+                     );
 
-							return (
-								<CardPedido
-									key={item.pedido_cabecera_id}
-									id={item.pedido_cabecera_id}
-									link="/buy/order/detail"
-									codigo={item.codigo}
-									fechaRegistro={item.fecha_registro.toString()}
-									cantidadTotal={sumaCantidad}
-									precioTotal={sumaPrecio}
-									arrayImagenes={arrayImagenes}
-								/>
-							);
-						})}
-					</div>
-
-					<div id="contenedor_compras" className="contenedor_compras">
-						<h3>Compras</h3>
-						{arrayCompra.map((item: ICompraCard) => {
-							let sumaCantidad = 0;
-							let sumaPrecio = 0;
-
-							const arrayImagenes: string[][] = [];
-							item.lst_compra_detalle.forEach((element: ICompraDetalleCard) => {
-								sumaCantidad = sumaCantidad + element.cantidad;
-								sumaPrecio = sumaPrecio + element.precio;
-								if (element.cls_modelo !== undefined) {
-									arrayImagenes.push([
-										element.cls_modelo.foto,
-										element.cls_modelo.nombre,
-									]);
-								}
-							});
-
-							return (
-								<CardPedido
-									key={item.compra_cabecera_id}
-									id={item.compra_cabecera_id}
-									link="/buy/detail"
-									codigo={item.codigo}
-									fechaRegistro={item.fecha_registro.toString()}
-									cantidadTotal={sumaCantidad}
-									precioTotal={sumaPrecio}
-									arrayImagenes={arrayImagenes}
-								/>
-							);
-						})}
-					</div>
-				</CompraStyled>
-			</ContainerBodyStyled>
-		</>
-	);
+                     return (
+                        <CardPedido
+                           key={item.compra_cabecera_id}
+                           id={item.compra_cabecera_id}
+                           link="/buy/detail"
+                           codigo={item.codigo}
+                           estado={
+                              arrayCompraEstado.find(
+                                 (compraEstado) =>
+                                    compraEstado.compra_estado_id ===
+                                    item.fk_compra_estado
+                              )?.abreviatura ?? ""
+                           }
+                           fechaRegistro={item.fecha_registro.toString()}
+                           cantidadTotal={sumaCantidad}
+                           precioTotal={sumaPrecio}
+                           arrayImagenes={arrayImagenes}
+                        />
+                     );
+                  })}
+               </div>
+            </CompraStyled>
+         </ContainerBodyStyled>
+      </>
+   );
 };

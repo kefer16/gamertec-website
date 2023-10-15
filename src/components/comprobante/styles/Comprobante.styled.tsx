@@ -2,9 +2,7 @@ import styled from "styled-components";
 
 export const ComprobanteStyled = styled.div`
 	.titulo {
-		width: 100%;
-		h2 {
-		}
+		display: flex;
 	}
 
 	.tabla {
@@ -19,23 +17,13 @@ export const ComprobanteStyled = styled.div`
 		}
 
 		.formulario {
-			margin: 10px 0;
 			width: 100%;
-			display: flex;
-			justify-content: start;
-
-			.form-dividido {
-				width: 40%;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 1rem;
+			.input {
 				display: flex;
-				margin-right: 20px;
-
 				flex-direction: column;
-				/* label {
-						@include labels;
-					}
-					input {
-						@include inputs;
-					} */
 			}
 		}
 		table {

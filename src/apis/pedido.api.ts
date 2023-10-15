@@ -171,13 +171,13 @@ export class PedidoApi {
 	}
 
 	static async agregarSeries(
-		pedido_detalle_id: number,
+		compra_detalle_id: number,
 		data: IActualizaSerie[]
 	): Promise<AxiosResponse> {
 		try {
 			const config = {
 				params: {
-					pedido_detalle_id,
+					compra_detalle_id,
 				},
 				headers: {
 					"Content-Type": "application/json",

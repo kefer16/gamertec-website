@@ -187,7 +187,7 @@ export const CompraPedidoDetalle = ({ pedido_id }: Props) => {
 				</ComprobanteStyled>
 			</ContainerBodyStyled>
 			<SeriesRegistro
-				pedidoDetalleId={pedidoDetalleId}
+				compraDetalleId={pedidoDetalleId}
 				opciones={opciones}
 				maximoOpciones={1}
 				estadoModal={modal}

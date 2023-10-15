@@ -112,10 +112,10 @@ export class PedidoService {
 	}
 
 	public async agregarSeries(
-		pedidoDetalleId: number,
+		compra_detalle_id: number,
 		data: IActualizaSerie[]
 	): Promise<RespuestaEntity<boolean>> {
-		await PedidoApi.agregarSeries(pedidoDetalleId, data).then((resp) => {
+		await PedidoApi.agregarSeries(compra_detalle_id, data).then((resp) => {
 			this.respuestaPedidoListarUno = {
 				correcto: true,
 				tipo: "success",

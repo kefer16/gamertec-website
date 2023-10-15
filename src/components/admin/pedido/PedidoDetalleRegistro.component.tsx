@@ -12,7 +12,7 @@ import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { Chip } from "primereact/chip";
 // import { PedidoService } from "../../../services/pedido.service";
 interface Props {
-	pedidoDetalleId: number;
+	compraDetalleId: number;
 	opciones: IMultiSelectProps[];
 	maximoOpciones: number;
 	estadoModal: boolean;
@@ -21,14 +21,14 @@ interface Props {
 }
 
 export const SeriesRegistro = ({
-	pedidoDetalleId,
+	compraDetalleId,
 	opciones,
 	maximoOpciones,
 	estadoModal,
 	funcionCerrarModal,
 	disableButton,
 }: Props) => {
-	const { privilegio } = useContext(GamertecSesionContext);
+	const { privilegio, mostrarNotificacion } = useContext(GamertecSesionContext);
 
 	const [options, setOptions] = useState<IMultiSelectProps[]>([]);
 
@@ -61,9 +61,13 @@ export const SeriesRegistro = ({
 		});
 
 		const pedidoServ = new PedidoService();
-		await pedidoServ.agregarSeries(pedidoDetalleId, series).then((resp) => {
-			console.log(resp);
-		});
+		await pedidoServ.agregarSeries(compraDetalleId, series)
+			.then(() => {
+				mostrarNotificacion({ tipo: "success", titulo: "Éxito", detalle: "Se agregó la(s) serie(s) correctamente ", pegado: false });
+			}).catch((error: Error) => {
+				mostrarNotificacion({ tipo: "error", titulo: "Error", detalle: `surgió un error: ${error.message}`, pegado: true });
+
+			});
 	};
 
 	useEffect(() => {
@@ -77,6 +81,7 @@ export const SeriesRegistro = ({
 			className="grid col-11 md:col-4"
 			onHide={() => funcionCerrarModal()}
 		>
+			<p> {privilegio === "USU" ? `Numero de series en total: ${maximoOpciones}` : `Cantidad de series a escoger: ${maximoOpciones}`}</p>
 			{
 				privilegio === "USU" ?
 					<div className="card flex flex-wrap gap-2">
@@ -104,18 +109,22 @@ export const SeriesRegistro = ({
 					</>
 			}
 
-			{disableButton ? (
+			{privilegio === "USU" ?
 				<></>
-			) : (
-				<Divider align="center">
-					<Button
-						label="Añadir"
-						icon="pi pi-plus"
-						raised
-						onClick={agregarSeries}
-					/>
-				</Divider>
-			)}
-		</Dialog>
+				:
+				(disableButton ?
+					<></>
+					:
+					<Divider align="center">
+						<Button
+							label="Añadir"
+							icon="pi pi-plus"
+							raised
+							onClick={agregarSeries}
+						/>
+					</Divider>
+				)
+			}
+		</Dialog >
 	);
 };

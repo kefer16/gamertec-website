@@ -12,9 +12,13 @@ export const CardPedidoStyle = styled(Link)`
 	color: #000;
 	box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
 	.codigo {
+		display: flex;
+		justify-content: space-between;
 		font-weight: 800;
 		margin-bottom: 10px;
+
 	}
+	
 	.detalles_generales {
 		width: 100%;
 		display: flex;

@@ -1,3 +1,4 @@
+import { Tag } from "primereact/tag";
 import {
 	convertirFechaVisual,
 	convertirFormatoMoneda,
@@ -8,16 +9,29 @@ interface Props {
 	id: number;
 	link: string;
 	codigo: string;
+	estado: string;
 	fechaRegistro: string;
 	cantidadTotal: number;
 	precioTotal: number;
 	arrayImagenes: string[][];
 }
 
+interface CompraEstadosProps {
+	estado: "PRE" | "CAM" | "ENT" | "";
+	tipo: "danger" | "success" | "info" | "warning"
+}
+
+export const CompraEstados: CompraEstadosProps[] = [
+	{ estado: "PRE", tipo: "danger" },
+	{ estado: "CAM", tipo: "warning" },
+	{ estado: "ENT", tipo: "success" }
+];
+
 export const CardPedido = ({
 	id,
 	link,
 	codigo,
+	estado,
 	fechaRegistro,
 	cantidadTotal,
 	precioTotal,
@@ -25,7 +39,7 @@ export const CardPedido = ({
 }: Props) => {
 	return (
 		<CardPedidoStyle to={`${link}/${id}`} key={id}>
-			<div className="codigo">{codigo}</div>
+			<div className="codigo">{codigo}  <Tag severity={CompraEstados.find(item => item.estado === estado)?.tipo} value={estado} /></div>
 			<div className="detalles_generales">
 				<div className="detalles">
 					<p>

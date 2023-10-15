@@ -58,6 +58,7 @@ export const Pedido = () => {
 						id={item.pedido_cabecera_id}
 						link="/admin/order/detail"
 						codigo={item.codigo}
+						estado=""
 						fechaRegistro={item.fecha_registro}
 						cantidadTotal={sumaCantidad}
 						precioTotal={sumaPrecio}

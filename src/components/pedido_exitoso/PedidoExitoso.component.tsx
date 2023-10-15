@@ -30,7 +30,6 @@ export const PedidoExitoso = ({ id, estado, preferenciaId }: Props) => {
 				pago_id: String(id),
 				usuario_id: usuario_id,
 			};
-			console.log(data);
 
 			await servCompra.registrar(data)
 				.then(() => {

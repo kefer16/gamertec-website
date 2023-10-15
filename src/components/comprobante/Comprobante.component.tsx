@@ -106,7 +106,7 @@ export const Comprobante = () => {
 			<ContainerBodyStyled>
 				<ComprobanteStyled className="boleta">
 					<div className="titulo">
-						<h2>BOLETA DE COMPRA</h2>
+						<h2>Previsualización Voucher</h2>
 						<hr />
 					</div>
 					<div className="tabla">
@@ -201,7 +201,7 @@ export const Comprobante = () => {
 
 					<Button label="Generar enlace de Compra" style={{ width: "100%" }} onClick={generarPreferenciaYRegistrarPedido} />
 					<Dialog header="Generación Enlace" visible={visible} style={{ width: "500px" }} onHide={() => setVisible(false)} footer={footerContent}>
-						La compra se realizará con la plataforma de Mercado Pago:
+						Estas a un paso de acreditar tu compra
 					</Dialog>
 				</ComprobanteStyled>
 			</ContainerBodyStyled>
