@@ -204,10 +204,8 @@ export const Header = () => {
    useEffect(() => {
       obtenerSesion();
       obtenerCantidadCarrito();
-      console.log("cantidadCarrito", cantidadCarrito);
-
       setCantidadCarritoCabecera(cantidadCarrito);
-   }, [obtenerSesion, obtenerCantidadCarrito, sesionGamertec, cantidadCarrito]);
+   }, [obtenerSesion, obtenerCantidadCarrito, cantidadCarrito]);
 
    return (
       <div className="fixed top-0 left-0 w-full z-5 bg-white shadow-1">

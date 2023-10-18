@@ -1,9 +1,17 @@
 import { useEffect, useContext, useState } from "react";
 import { GamertecSesionContext } from "../../../sesion/Sesion.component";
+import { Button } from "primereact/button";
 
 interface Props {
    titulo: string;
-   dato: string;
+   dato:
+      | "usuario"
+      | "correo"
+      | "nombre"
+      | "apellido"
+      | "foto"
+      | "direccion"
+      | "telefono";
 }
 export const PlantillaAccion = ({ titulo, dato }: Props) => {
    const { obtenerSesion, sesionGamertec } = useContext(GamertecSesionContext);
@@ -35,7 +43,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
       obtenerSesion();
       console.log("titulo", titulo);
 
-      setDatoCambio(dato);
+      setDatoCambio(sesionGamertec.usuario[dato]);
    }, [dato, obtenerSesion, titulo, sesionGamertec]);
 
    return (
@@ -50,7 +58,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
             </div>
 
             <div className="boton">
-               <input type="submit" value="Actualizar" />
+               <Button label="Actualizar" type="submit" />
             </div>
          </form>
       </div>

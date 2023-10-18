@@ -7,9 +7,10 @@ import { ActualizaFotoUsuario } from "../../../../interfaces/usuario.interface";
 import { GamertecSesionContext } from "../../../sesion/Sesion.component";
 import { RespuestaEntity } from "../../../../entities/respuesta.entity";
 import { Button } from "primereact/button";
+import { SesionGamertec } from "../../../../interfaces/sesion.interface";
 
 interface Props {
-   dato: string;
+   dato: "foto";
 }
 export const PlantillaFoto = ({ dato }: Props) => {
    const { obtenerSesion, sesionGamertec, mostrarNotificacion } = useContext(
@@ -20,8 +21,8 @@ export const PlantillaFoto = ({ dato }: Props) => {
 
    useEffect(() => {
       obtenerSesion();
-      setFoto(dato);
-   }, [obtenerSesion, dato]);
+      setFoto(sesionGamertec.usuario[dato]);
+   }, [obtenerSesion, sesionGamertec, dato]);
 
    const actualizarFoto = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -33,8 +34,11 @@ export const PlantillaFoto = ({ dato }: Props) => {
       servUsuario
          .actualizarFoto(sesionGamertec.usuario.usuario_id, data)
          .then((resp: RespuestaEntity<ActualizaFotoUsuario>) => {
-            console.log(resp);
-
+            if (resp.data) {
+               guardarFotoLocalStorage(resp.data.foto);
+               setFoto(resp.data.foto);
+               obtenerSesion();
+            }
             mostrarNotificacion({
                tipo: "success",
                titulo: "Éxito",
@@ -52,10 +56,16 @@ export const PlantillaFoto = ({ dato }: Props) => {
          });
    };
 
+   const guardarFotoLocalStorage = (foto: string) => {
+      const jsonData = sessionStorage.getItem("sesion_gamertec");
+      const objeto: SesionGamertec = JSON.parse(jsonData ?? "");
+      objeto.usuario.foto = foto;
+      const nuevoJsonData = JSON.stringify(objeto);
+      sessionStorage.setItem("sesion_gamertec", nuevoJsonData);
+   };
+
    const seleccionarFoto = (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
-
-      console.log("file", file);
 
       if (file) {
          if (file.size > 2000000) {
@@ -72,13 +82,10 @@ export const PlantillaFoto = ({ dato }: Props) => {
 
                reader.onload = () => {
                   const compressedImage = reader.result as string;
-                  console.log("compresor", compressedImage.length);
                   setFotoSeleccionada(compressedImage);
                };
             },
-            error(erorr: Error) {
-               console.log(this.error);
-
+            error(error: Error) {
                return;
             },
          });
