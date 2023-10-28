@@ -51,8 +51,8 @@ export class CompraApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         return Promise.reject(error.response.data);
       }
    }
 

@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { PedidoExitosoStyled } from "./styles/PedidoExitoso.styled";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { CompraService } from "../../services/compra.service";
 import { CompraRegistra } from "../../interfaces/compra.interface";
+import { RespuestaEntity } from "../../entities/respuesta.entity";
 interface Props {
    id: string | null;
    estado: string | null;
@@ -18,39 +19,44 @@ export const PedidoExitoso = ({ id, estado, preferenciaId }: Props) => {
       obtenerCantidadCarrito,
    } = useContext(GamertecSesionContext);
 
+   const [comprado, setComprado] = useState<boolean>(false);
+
    const registrarCompra = useCallback(
       async (usuario_id: number) => {
-         if (preferenciaId) {
-            const servCompra = new CompraService();
+         if (!comprado) {
+            if (preferenciaId) {
+               const servCompra = new CompraService();
 
-            const data: CompraRegistra = {
-               preferencia_id: String(preferenciaId),
-               estado: String(estado),
-               pago_id: String(id),
-               usuario_id: usuario_id,
-            };
+               const data: CompraRegistra = {
+                  preferencia_id: String(preferenciaId),
+                  estado: String(estado),
+                  pago_id: String(id),
+                  usuario_id: usuario_id,
+               };
 
-            await servCompra
-               .registrar(data)
-               .then(() => {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     titulo: "Éxito",
-                     detalle: "Se registró la compra exitosamente",
-                     pegado: false,
+               await servCompra
+                  .registrar(data)
+                  .then(() => {
+                     setComprado(true);
+                     mostrarNotificacion({
+                        tipo: "success",
+                        titulo: "Éxito",
+                        detalle: "Se registró la compra exitosamente",
+                        pegado: false,
+                     });
+                  })
+                  .catch((error: RespuestaEntity<null>) => {
+                     mostrarNotificacion({
+                        tipo: "error",
+                        titulo: "Error",
+                        detalle: `surgió un error: ${error.error.message}`,
+                        pegado: true,
+                     });
                   });
-               })
-               .catch((error: Error) => {
-                  mostrarNotificacion({
-                     tipo: "error",
-                     titulo: "Error",
-                     detalle: `surgió un error: ${error.message}`,
-                     pegado: true,
-                  });
-               });
+            }
          }
       },
-      [mostrarNotificacion, estado, id, preferenciaId]
+      [mostrarNotificacion, estado, id, preferenciaId, comprado]
    );
    useEffect(() => {
       obtenerSesion();
