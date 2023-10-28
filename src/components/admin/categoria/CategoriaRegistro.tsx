@@ -52,7 +52,7 @@ export const CategoryRegister = ({
       setCategoriaId(itemSeleccionado.categoria_id);
       setNombre(itemSeleccionado.nombre);
       setActivo(itemSeleccionado.activo ? "1" : "0");
-      setFecha_registro(itemSeleccionado.fecha_registro.toISOString());
+      setFecha_registro(itemSeleccionado.fecha_registro.toString());
    }, [itemSeleccionado]);
 
    const funcionCambiarEstado = (event: SelectChangeEvent) => {

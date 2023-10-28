@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { UsuarioEntity } from "../entities/usuario.entities";
 import {
    ActualizaApellidoUsuario,
+   ActualizaContraseniaUsuario,
    ActualizaCorreoUsuario,
    ActualizaDireccionUsuario,
    ActualizaFotoUsuario,
@@ -261,6 +262,32 @@ export class UsuarioApi {
          );
       } catch (error: any) {
          return Promise.reject(error.response.data);
+      }
+   }
+
+   async actualizarContrasenia(
+      ID: number,
+      data: ActualizaContraseniaUsuario
+   ): Promise<AxiosResponse> {
+      try {
+         const config = {
+            params: {
+               usuario_id: ID,
+            },
+            headers: {
+               "Content-Type": "application/json",
+            },
+         };
+         const body = JSON.stringify(data);
+
+         return await axios.put(
+            `${UsuarioEntity.url}/actualizar_contrasenia`,
+            body,
+            config
+         );
+      } catch (error: any) {
+         error.message = error.response.data.error.message;
+         return Promise.reject(error);
       }
    }
 }

@@ -16,7 +16,7 @@ export interface ICompraDetalleCard {
    total: number;
    fecha_registro: Date;
    activo: boolean;
-   cls_modelo: IModeloCard;
+   cls_modelo: IModeloCard[];
 }
 
 interface IModeloCard {

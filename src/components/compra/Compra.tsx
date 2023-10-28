@@ -44,7 +44,7 @@ export const Compra = () => {
    }, [mostrarNotificacion]);
 
    useEffect(() => {
-      listarTodosCompraEstado(); // Llamada a la función aquí
+      listarTodosCompraEstado();
 
       const obtenerData = async () => {
          obtenerSesion();
@@ -55,6 +55,8 @@ export const Compra = () => {
             .listarTodos(usuarioId)
             .then((resp: RespuestaEntity<ICompraCard[]>) => {
                if (resp.data) {
+                  console.log(resp.data);
+
                   setArrayCompra(resp.data);
                }
             })
@@ -86,8 +88,8 @@ export const Compra = () => {
                               sumaPrecio + element.cantidad * element.precio;
                            if (element.cls_modelo !== undefined) {
                               arrayImagenes.push([
-                                 element.cls_modelo.foto,
-                                 element.cls_modelo.nombre,
+                                 element.cls_modelo[0].foto,
+                                 element.cls_modelo[0].nombre,
                               ]);
                            }
                         }

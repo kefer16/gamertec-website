@@ -29,3 +29,8 @@ export interface ActualizaDireccionUsuario {
 export interface ActualizaFotoUsuario {
    foto: string;
 }
+
+export interface ActualizaContraseniaUsuario {
+   contrasenia_actual: string;
+   contrasenia_nueva: string;
+}

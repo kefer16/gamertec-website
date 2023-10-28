@@ -1,6 +1,15 @@
 import { useEffect, useContext, useState } from "react";
 import { GamertecSesionContext } from "../../../sesion/Sesion.component";
 import { Button } from "primereact/button";
+import { UsuarioService } from "../../../../services/usuario.service";
+import { RespuestaEntity } from "../../../../entities/respuesta.entity";
+import {
+   ActualizaApellidoUsuario,
+   ActualizaCorreoUsuario,
+   ActualizaDireccionUsuario,
+   ActualizaNombreUsuario,
+} from "../../../../interfaces/usuario.interface";
+import { InputText } from "primereact/inputtext";
 
 interface Props {
    titulo: string;
@@ -14,47 +23,166 @@ interface Props {
       | "telefono";
 }
 export const PlantillaAccion = ({ titulo, dato }: Props) => {
-   const { obtenerSesion, sesionGamertec } = useContext(GamertecSesionContext);
-   const [datoCambio, setDatoCambio] = useState<string>("");
+   const { obtenerSesion, sesionGamertec, mostrarNotificacion } = useContext(
+      GamertecSesionContext
+   );
+   const [datoAnterior, setDatoAnterior] = useState<string>("");
 
-   // const actualizarNombre = async (
-   //    usuario_id: number,
-   //    data: ActualizaNombreUsuario
-   // ) => {
-   //    const usuServ = new UsuarioService();
-   //    await usuServ
-   //       .actualizarNombre(usuario_id, data)
-   //       .then((resp: RespuestaEntity<ActualizaNombreUsuario>) => {
-   //          if (resp.data) {
-   //             setNombre(resp.data.nombre);
-   //          }
-   //       })
-   //       .catch((error: Error) => {
-   //          mostrarNotificacion({
-   //             tipo: "error",
-   //             titulo: "Error",
-   //             detalle: `surgio un error: ${error.message}`,
-   //             pegado: true,
-   //          });
-   //       });
-   // };
+   const [datoACambiar, setDatoACambiar] = useState<string>("");
+
+   const actualizarDato = async (
+      e: React.FormEvent<HTMLFormElement>,
+      dato: string,
+      usuario_id: number,
+      dato_cambio: string
+   ) => {
+      e.preventDefault();
+      const usuServ = new UsuarioService();
+      if (dato === "nombre") {
+         const data: ActualizaNombreUsuario = {
+            nombre: dato_cambio,
+         };
+         await usuServ
+            .actualizarNombre(usuario_id, data)
+            .then((resp: RespuestaEntity<ActualizaNombreUsuario>) => {
+               if (resp.data) {
+                  mostrarNotificacion({
+                     tipo: "success",
+                     titulo: "Éxito",
+                     detalle: `Se cambio el ${dato} correctamente`,
+                     pegado: false,
+                  });
+
+                  setDatoAnterior(resp.data.nombre);
+               }
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      }
+
+      if (dato === "apellido") {
+         const data: ActualizaApellidoUsuario = {
+            apellido: dato_cambio,
+         };
+         await usuServ
+            .actualizarApellido(usuario_id, data)
+            .then((resp: RespuestaEntity<ActualizaApellidoUsuario>) => {
+               if (resp.data) {
+                  mostrarNotificacion({
+                     tipo: "success",
+                     titulo: "Éxito",
+                     detalle: `Se cambio el ${dato} correctamente`,
+                     pegado: false,
+                  });
+
+                  setDatoAnterior(resp.data.apellido);
+               }
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      }
+
+      if (dato === "correo") {
+         const data: ActualizaCorreoUsuario = {
+            correo: dato_cambio,
+         };
+         await usuServ
+            .actualizarCorreo(usuario_id, data)
+            .then((resp: RespuestaEntity<ActualizaCorreoUsuario>) => {
+               if (resp.data) {
+                  mostrarNotificacion({
+                     tipo: "success",
+                     titulo: "Éxito",
+                     detalle: `Se cambio el ${dato} correctamente`,
+                     pegado: false,
+                  });
+
+                  setDatoAnterior(resp.data.correo);
+               }
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      }
+
+      if (dato === "direccion") {
+         const data: ActualizaDireccionUsuario = {
+            direccion: dato_cambio,
+         };
+         await usuServ
+            .actualizarDireccion(usuario_id, data)
+            .then((resp: RespuestaEntity<ActualizaDireccionUsuario>) => {
+               if (resp.data) {
+                  mostrarNotificacion({
+                     tipo: "success",
+                     titulo: "Éxito",
+                     detalle: `Se cambio el ${dato} correctamente`,
+                     pegado: false,
+                  });
+
+                  setDatoAnterior(resp.data.direccion);
+               }
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      }
+   };
 
    useEffect(() => {
       obtenerSesion();
-      console.log("titulo", titulo);
 
-      setDatoCambio(sesionGamertec.usuario[dato]);
+      setDatoAnterior(sesionGamertec.usuario[dato]);
    }, [dato, obtenerSesion, titulo, sesionGamertec]);
 
    return (
       <div className="cajas-form">
-         <form action="" method="POST">
+         <form
+            action=""
+            method="POST"
+            onSubmit={(e) =>
+               actualizarDato(
+                  e,
+                  dato,
+                  sesionGamertec.usuario.usuario_id,
+                  datoACambiar
+               )
+            }
+         >
             <div className="texto">
-               <p>{`${titulo} actual: ${datoCambio}`}</p>
+               <p>{`${titulo} actual: ${datoAnterior}`}</p>
             </div>
             <div className="inputs">
                <label> {`Ingrese el nuevo ${titulo}:`}</label>
-               <input type="email" placeholder="Nombre" />
+
+               <InputText
+                  type="text"
+                  placeholder={`Ingrese ${dato}`}
+                  value={datoACambiar}
+                  onChange={(e) => setDatoACambiar(e.target.value)}
+               />
             </div>
 
             <div className="boton">

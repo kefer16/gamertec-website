@@ -3,6 +3,7 @@ import { RespuestaEntity } from "../entities/respuesta.entity";
 import { UsuarioEntity } from "../entities/usuario.entities";
 import {
    ActualizaApellidoUsuario,
+   ActualizaContraseniaUsuario,
    ActualizaCorreoUsuario,
    ActualizaDireccionUsuario,
    ActualizaFotoUsuario,
@@ -25,6 +26,7 @@ export class UsuarioService {
    private respActualizarDireccion =
       new RespuestaEntity<ActualizaDireccionUsuario>();
    private respActualizarFoto = new RespuestaEntity<ActualizaFotoUsuario>();
+   private respActualizarContrasenia = new RespuestaEntity<boolean>();
 
    private _apiUsuario = new UsuarioApi();
 
@@ -174,5 +176,21 @@ export class UsuarioService {
          };
       });
       return this.respActualizarFoto;
+   }
+
+   public async actualizarContrasenia(
+      usuario_id: number,
+      data: ActualizaContraseniaUsuario
+   ): Promise<RespuestaEntity<boolean>> {
+      await this._apiUsuario
+         .actualizarContrasenia(usuario_id, data)
+         .then((resp) => {
+            this.respActualizarContrasenia = {
+               code: resp.data.code,
+               data: resp.data.data,
+               error: resp.data.error,
+            };
+         });
+      return this.respActualizarContrasenia;
    }
 }
