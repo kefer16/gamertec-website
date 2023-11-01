@@ -75,9 +75,7 @@ export const funcionObtenerCategorias = async (): Promise<ComboboxProps[]> => {
             });
          });
       })
-      .catch((error: any) => {
-         console.log(error);
-      });
+      .catch((error: any) => {});
    return array;
 };
 
@@ -152,7 +150,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
                      id: element.categoria_id,
                      index: index + 1,
                      categoria_nombre: element.nombre,
-                     fecha_registro: element.fecha_registro,
+                     fecha_registro: new Date(element.fecha_registro),
                      fecha_actualizacion: element.fecha_actualizacion,
                      estado: {
                         valor: element.activo,
@@ -165,7 +163,6 @@ export const Categoria = ({ nombreFormulario }: Props) => {
             setArrayCategoria(arrayCategorias);
          })
          .catch((error: any) => {
-            console.log(error);
             return;
          });
    };
@@ -233,7 +230,6 @@ export const Categoria = ({ nombreFormulario }: Props) => {
             }
          })
          .catch((error) => {
-            console.log(error);
             funcionAsignarAlerta("error", "Hubo un error");
             funcionAbrirAlerta();
             funcionCerrarDialogo();

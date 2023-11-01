@@ -21,9 +21,7 @@ export class CarritoService {
          .then((respuesta) => {
             arrayCarrito = respuesta.data.data;
          })
-         .catch((error) => {
-            console.log(error);
-         });
+         .catch((error) => {});
 
       return arrayCarrito;
    };

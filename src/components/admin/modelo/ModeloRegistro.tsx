@@ -125,7 +125,6 @@ export const ModeloRegistro = ({
          parseInt(fkMarca),
          parseInt(fkCategoria)
       );
-      console.log(data, esEdicion);
 
       if (esEdicion) {
          await ModeloEntity.Actualizar(modeloId, data)
@@ -143,7 +142,6 @@ export const ModeloRegistro = ({
                }
             })
             .catch((error) => {
-               console.log(error);
                funcionAsignarAlerta("error", "Hubo un error");
 
                funcionAbrirAlerta();
@@ -173,7 +171,6 @@ export const ModeloRegistro = ({
 
    const funcionCargarImagen = (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
-      console.log("file", file);
       if (file) {
          if (file.size > 2000000) {
             funcionAsignarAlerta("warning", "Archivo demasiado grande");
@@ -192,7 +189,6 @@ export const ModeloRegistro = ({
 
                reader.onload = () => {
                   const compressedImage = reader.result as string;
-                  console.log(compressedImage.length);
                   setFoto(compressedImage);
                };
             },

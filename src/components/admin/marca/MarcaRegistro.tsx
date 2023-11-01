@@ -86,7 +86,6 @@ export const MarcaRegistro = ({
                }
             })
             .catch((error) => {
-               console.log(error);
                funcionAsignarAlerta("error", "Hubo un error");
 
                funcionAbrirAlerta();

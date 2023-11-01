@@ -9,63 +9,64 @@ import { CardPedidoDetalleProps } from "../../../interfaces/card_pedido.interfac
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
 export const Pedido = () => {
-	const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
+   const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
 
-	const [arrayPedidoCabecera, setArrayPedidoCabecera] = useState<
-		PedidoCabeceraUsuarioProsp[]
-	>([]);
+   const [arrayPedidoCabecera, setArrayPedidoCabecera] = useState<
+      PedidoCabeceraUsuarioProsp[]
+   >([]);
 
-	useEffect(() => {
-		const obtenerData = async () => {
-			obtenerSesion();
-			const pedido: PedidoService = new PedidoService();
+   useEffect(() => {
+      const obtenerData = async () => {
+         obtenerSesion();
+         const pedido: PedidoService = new PedidoService();
 
-			await pedido
-				.listarPedidoUsuario(sesionGamertec.usuario.usuario_id)
-				.then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
-					console.log(resp);
+         await pedido
+            .listarPedidoUsuario(sesionGamertec.usuario.usuario_id)
+            .then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
+               if (resp.data) {
+                  setArrayPedidoCabecera(resp.data);
+               }
+            })
+            .catch((error) => {});
+      };
 
-					if (resp.data) {
-						setArrayPedidoCabecera(resp.data);
-					}
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		};
+      obtenerData();
+   }, [sesionGamertec, obtenerSesion]);
 
-		obtenerData();
-	}, [sesionGamertec, obtenerSesion]);
+   return (
+      <ContainerBodyStyled className="grid gap-3">
+         {arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
+            let sumaCantidad = 0;
+            let sumaPrecio = 0;
 
-	return (
-		<ContainerBodyStyled className="grid gap-3">
-			{arrayPedidoCabecera.map((item: PedidoCabeceraUsuarioProsp) => {
-				let sumaCantidad = 0;
-				let sumaPrecio = 0;
+            const arrayImagenes: string[][] = [];
+            item.lst_pedido_detalle.forEach(
+               (element: CardPedidoDetalleProps) => {
+                  sumaCantidad = sumaCantidad + element.cantidad;
+                  sumaPrecio = sumaPrecio + element.precio;
+                  if (element.cls_modelo !== undefined) {
+                     arrayImagenes.push([
+                        element.cls_modelo.foto,
+                        element.cls_modelo.nombre,
+                     ]);
+                  }
+               }
+            );
 
-				const arrayImagenes: string[][] = [];
-				item.lst_pedido_detalle.forEach((element: CardPedidoDetalleProps) => {
-					sumaCantidad = sumaCantidad + element.cantidad;
-					sumaPrecio = sumaPrecio + element.precio;
-					if (element.cls_modelo !== undefined) {
-						arrayImagenes.push([element.cls_modelo.foto, element.cls_modelo.nombre]);
-					}
-				});
-
-				return (
-					<CardPedido
-						key={item.pedido_cabecera_id}
-						id={item.pedido_cabecera_id}
-						link="/admin/order/detail"
-						codigo={item.codigo}
-						estado=""
-						fechaRegistro={item.fecha_registro}
-						cantidadTotal={sumaCantidad}
-						precioTotal={sumaPrecio}
-						arrayImagenes={arrayImagenes}
-					/>
-				);
-			})}
-		</ContainerBodyStyled>
-	);
+            return (
+               <CardPedido
+                  key={item.pedido_cabecera_id}
+                  id={item.pedido_cabecera_id}
+                  link="/admin/order/detail"
+                  codigo={item.codigo}
+                  estado=""
+                  fechaRegistro={item.fecha_registro}
+                  cantidadTotal={sumaCantidad}
+                  precioTotal={sumaPrecio}
+                  arrayImagenes={arrayImagenes}
+               />
+            );
+         })}
+      </ContainerBodyStyled>
+   );
 };
