@@ -22,9 +22,9 @@ export class UsuarioApi {
          };
          const body = JSON.stringify({ usuario, contrasenia });
          return await axios.post(`${UsuarioEntity.url}/login`, body, config);
-      } catch (err: any) {
-         console.log(err);
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = error.response.data.error.message;
+         return Promise.reject(error);
       }
    }
 

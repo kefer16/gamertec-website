@@ -19,11 +19,6 @@ interface Props {
    itemSeleccionado: CategoryService;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   funcionAsignarAlerta: (
-      type: "error" | "warning" | "info" | "success",
-      text: string
-   ) => void;
-   funcionAbrirAlerta: () => void;
 }
 
 const estadoCategoria: DropdownProps[] = [
@@ -43,8 +38,6 @@ export const CategoryRegister = ({
    itemSeleccionado,
    funcionCerrarModal,
    funcionActualizarTabla,
-   funcionAsignarAlerta,
-   funcionAbrirAlerta,
 }: Props) => {
    const [categoriaId, setCategoriaId] = useState(0);
    const [nombre, setNombre] = useState("");
@@ -82,41 +75,35 @@ export const CategoryRegister = ({
          await CategoryService.Actualizar(categoriaId, dataCategoria)
             .then((response) => {
                if (response.data.code === 200) {
-                  funcionAsignarAlerta(
-                     "success",
-                     `${nombreFormulario} se actualizó correctamente`
-                  );
+                  // funcionAsignarAlerta(
+                  //    "success",
+                  //    `${nombreFormulario} se actualizó correctamente`
+                  // );
 
-                  funcionAbrirAlerta();
                   funcionActualizarTabla();
                   funcionCerrarModal();
                   return;
                }
             })
             .catch(() => {
-               funcionAsignarAlerta("error", "Hubo un error");
-
-               funcionAbrirAlerta();
+               // funcionAsignarAlerta("error", "Hubo un error");
                return;
             });
       } else {
          await CategoryService.Registrar(dataCategoria)
             .then((response) => {
                if (response.data.code === 200) {
-                  funcionAsignarAlerta(
-                     "success",
-                     `${nombreFormulario} se registró correctamente`
-                  );
-
-                  funcionAbrirAlerta();
+                  // funcionAsignarAlerta(
+                  //    "success",
+                  //    `${nombreFormulario} se registró correctamente`
+                  // );
                   funcionActualizarTabla();
                   funcionCerrarModal();
                   return;
                }
             })
             .catch(() => {
-               funcionAsignarAlerta("error", "Hubo un error");
-               funcionAbrirAlerta();
+               // funcionAsignarAlerta("error", "Hubo un error");
                return;
             });
       }

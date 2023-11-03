@@ -1,3 +1,5 @@
+import { privilegio } from "../components/sesion/Sesion.component";
+
 export interface LogeoUsuario {
    usuario_id: number;
    nombre: string;
@@ -10,6 +12,12 @@ export interface LogeoUsuario {
    fk_privilegio: number;
    direccion: string;
    telefono: string;
+   cls_privilegio: PrivilegioLogin;
+}
+export interface PrivilegioLogin {
+   privilegio_id: number;
+   abreviatura: privilegio;
+   tipo: string;
 }
 
 export interface ActualizaNombreUsuario {

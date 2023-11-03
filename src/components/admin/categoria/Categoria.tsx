@@ -1,7 +1,5 @@
 import {
    Typography,
-   Snackbar,
-   Alert,
    Dialog,
    DialogTitle,
    DialogContent,
@@ -17,12 +15,13 @@ import {
 } from "../../controls/TableControl";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { CategoryService } from "../../../entities/categoria.entities";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CategoryRegister } from "./CategoriaRegistro";
-import { InterfaceAlertControl } from "../../controls/AlertControl";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { ConfirmDialog } from "primereact/confirmdialog";
 
 const columnsCategorias2: ColumnProps[] = [
    {
@@ -80,12 +79,12 @@ export const funcionObtenerCategorias = async (): Promise<ComboboxProps[]> => {
 };
 
 export const Categoria = ({ nombreFormulario }: Props) => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [arrayCategoria, setArrayCategoria] = useState<ValuesCategoriaProps[]>(
       []
    );
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
-   const [abrirAlerta, setAbrirAlerta] = useState(false);
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
       useState<ValuesCategoriaProps>({} as ValuesCategoriaProps);
    const [dialogo, setDialogo] = useState(false);
@@ -94,51 +93,9 @@ export const Categoria = ({ nombreFormulario }: Props) => {
       setDialogo(false);
    };
 
-   const funcionAbrirDialogo = () => {
-      const itemEdicion = arrayCategoria.find((item) =>
-         item.id === categoriaSeleccionada?.id ? item : undefined
-      );
-
-      if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
-
-         return;
-      }
-      setDialogo(true);
-   };
-
    const [itemSeleccionado, setItemSeleccionado] = useState<CategoryService>(
       new CategoryService()
    );
-
-   const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-      active: false,
-      type: "info",
-      text: "",
-   });
-
-   const funcionAsignarAlerta = (
-      type: "error" | "warning" | "info" | "success",
-      text: string
-   ) => {
-      setAlerta({
-         active: true,
-         type: type,
-         text: text,
-      });
-   };
-
-   const funcionAbrirAlerta = () => {
-      setAbrirAlerta(true);
-   };
-
-   const funcionCerrarAlerta = () => {
-      setAbrirAlerta(false);
-   };
 
    const funcionListar = async () => {
       const arrayCategorias: ValuesCategoriaProps[] = [];
@@ -181,9 +138,12 @@ export const Categoria = ({ nombreFormulario }: Props) => {
       );
 
       if (editarItem === undefined) {
-         funcionAsignarAlerta("warning", "Elija un usuario para poder editar");
-         funcionAbrirAlerta();
-
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: "Elija un usuario para poder editar",
+            pegado: false,
+         });
          return;
       }
 
@@ -201,40 +161,48 @@ export const Categoria = ({ nombreFormulario }: Props) => {
       setAbrirModal(true);
    };
 
+   const funcionEliminarUno = async (id: number) => {
+      await CategoryService.EliminarUno(id)
+         .then((response) => {
+            if (response.data.code === 200) {
+               mostrarNotificacion({
+                  tipo: "warn",
+                  titulo: "Alerta",
+                  detalle: `${nombreFormulario} se eliminó correctamente`,
+                  pegado: false,
+               });
+               funcionCerrarDialogo();
+               funcionListar();
+               return;
+            }
+         })
+         .catch((error: any) => {
+            mostrarNotificacion({
+               tipo: "error",
+               titulo: "Error",
+               detalle: error.message,
+               pegado: true,
+            });
+            funcionCerrarDialogo();
+            return;
+         });
+   };
+
    const funcionEliminar = async () => {
       const eliminarItem = arrayCategoria.find((item) =>
          item.id === categoriaSeleccionada?.id ? item : undefined
       );
 
       if (eliminarItem === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+            pegado: false,
+         });
          funcionCerrarDialogo();
          return;
       }
-
-      await CategoryService.EliminarUno(eliminarItem.id)
-         .then((response) => {
-            if (response.data.code === 200) {
-               funcionAsignarAlerta(
-                  "success",
-                  `${nombreFormulario} se eliminó correctamente`
-               );
-               funcionAbrirAlerta();
-               funcionCerrarDialogo();
-               funcionListar();
-               return;
-            }
-         })
-         .catch((error) => {
-            funcionAsignarAlerta("error", "Hubo un error");
-            funcionAbrirAlerta();
-            funcionCerrarDialogo();
-            return;
-         });
    };
 
    const funcionCerrarModal = () => {
@@ -247,6 +215,16 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 
    return (
       <ContainerBodyStyled>
+         <ConfirmDialog
+            visible={dialogo}
+            onHide={() => setDialogo(false)}
+            message="Are you sure you want to proceed?"
+            header="Confirmation"
+            icon="pi pi-exclamation-triangle"
+            accept={() => funcionEliminarUno(1)}
+            reject={funcionCerrarDialogo}
+         />
+
          <Typography
             variant="h5"
             component={"h2"}
@@ -257,7 +235,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
          <ToolbarControl
             functionCrear={funcionCrearCategoria}
             functionActualizar={funcionEditarCategoria}
-            functionEliminar={funcionAbrirDialogo}
+            functionEliminar={funcionEliminar}
          />
          <TableControl<ValuesCategoriaProps>
             ancho={{ minWidth: "50rem" }}
@@ -274,19 +252,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
             itemSeleccionado={itemSeleccionado}
             funcionCerrarModal={funcionCerrarModal}
             funcionActualizarTabla={funcionListar}
-            funcionAsignarAlerta={funcionAsignarAlerta}
-            funcionAbrirAlerta={funcionAbrirAlerta}
          />
-         <Snackbar
-            open={abrirAlerta}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            autoHideDuration={3000}
-            onClose={funcionCerrarAlerta}
-         >
-            <Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-               {alerta.text}
-            </Alert>
-         </Snackbar>
          <Dialog
             open={dialogo}
             onClose={funcionCerrarDialogo}
