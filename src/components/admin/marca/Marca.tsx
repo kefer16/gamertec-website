@@ -1,17 +1,5 @@
-import { useEffect, useState } from "react";
-import { InterfaceAlertControl } from "../../controls/AlertControl";
+import { useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import {
-   Alert,
-   Button,
-   Dialog,
-   DialogActions,
-   DialogContent,
-   DialogContentText,
-   DialogTitle,
-   Snackbar,
-   Typography,
-} from "@mui/material";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
@@ -27,6 +15,9 @@ import {
    ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 export interface ValuesMarcaProps {
    id: number;
@@ -94,9 +85,9 @@ export const funcionObtenerMarcas = async (): Promise<
 };
 
 export const Marca = ({ nombreFormulario }: Props) => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
-   const [abrirAlerta, setAbrirAlerta] = useState(false);
    const [marcaSeleccionada, setMarcaSeleccionada] = useState<ValuesMarcaProps>(
       {} as ValuesMarcaProps
    );
@@ -107,51 +98,9 @@ export const Marca = ({ nombreFormulario }: Props) => {
       setDialogo(false);
    };
 
-   const funcionAbrirDialogo = () => {
-      const itemEdicion = arrayMarca.find((item) =>
-         item.id === marcaSeleccionada?.id ? item : undefined
-      );
-
-      if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
-
-         return;
-      }
-      setDialogo(true);
-   };
-
    const [itemSeleccionado, setItemSeleccionado] = useState<MarcaService>(
       new MarcaService()
    );
-
-   const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-      active: false,
-      type: "info",
-      text: "",
-   });
-
-   const funcionAsignarAlerta = (
-      type: "error" | "warning" | "info" | "success",
-      text: string
-   ) => {
-      setAlerta({
-         active: true,
-         type: type,
-         text: text,
-      });
-   };
-
-   const funcionAbrirAlerta = () => {
-      setAbrirAlerta(true);
-   };
-
-   const funcionCerrarAlerta = () => {
-      setAbrirAlerta(false);
-   };
 
    const funcionListar = async () => {
       const arrayMarca: ValuesMarcaProps[] = [];
@@ -196,11 +145,12 @@ export const Marca = ({ nombreFormulario }: Props) => {
       );
 
       if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder editar`
-         );
-         funcionAbrirAlerta();
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder editar`,
+            pegado: false,
+         });
 
          return;
       }
@@ -220,39 +170,47 @@ export const Marca = ({ nombreFormulario }: Props) => {
    };
 
    const funcionEliminar = async () => {
+      await MarcaService.EliminarUno(marcaSeleccionada.id)
+         .then((response) => {
+            mostrarNotificacion({
+               tipo: "success",
+               titulo: "Correcto",
+               detalle: `${nombreFormulario} se eliminó correctamente`,
+               pegado: false,
+            });
+            funcionCerrarDialogo();
+            funcionListar();
+            return;
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               titulo: "Error",
+               detalle: error.message,
+               pegado: false,
+            });
+            funcionCerrarDialogo();
+            return;
+         });
+   };
+
+   const funcionValidarEliminar = () => {
       const itemEdicion = arrayMarca.find((item) =>
          item.id === marcaSeleccionada?.id ? item : undefined
       );
 
       if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+            pegado: false,
+         });
          funcionCerrarDialogo();
          return;
       }
 
-      await MarcaService.EliminarUno(itemEdicion.id)
-         .then((response) => {
-            if (response.data.code === 200) {
-               funcionAsignarAlerta(
-                  "success",
-                  `${nombreFormulario} se eliminó correctamente`
-               );
-               funcionAbrirAlerta();
-               funcionCerrarDialogo();
-               funcionListar();
-               return;
-            }
-         })
-         .catch((error) => {
-            funcionAsignarAlerta("error", "Hubo un error");
-            funcionAbrirAlerta();
-            funcionCerrarDialogo();
-            return;
-         });
+      setDialogo(true);
    };
 
    const funcionCerrarModal = () => {
@@ -271,17 +229,22 @@ export const Marca = ({ nombreFormulario }: Props) => {
 
    return (
       <ContainerBodyStyled>
-         <Typography
-            variant="h5"
-            component={"h2"}
-            style={{ textAlign: "center", margin: "50px 0 20px 0" }}
-         >
+         <ConfirmDialog
+            visible={dialogo}
+            onHide={() => setDialogo(false)}
+            message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${marcaSeleccionada.marca_nombre}?`}
+            header="Confirmación"
+            icon={<IconAlertTriangle size={24} />}
+            accept={funcionEliminar}
+            reject={funcionCerrarDialogo}
+         />
+         <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
-         </Typography>
+         </h2>
          <ToolbarControl
             functionCrear={funcionCrear}
             functionActualizar={funcionEditar}
-            functionEliminar={funcionAbrirDialogo}
+            functionEliminar={funcionValidarEliminar}
          />
          <TableControl<ValuesMarcaProps>
             ancho={{ minWidth: "70rem" }}
@@ -298,47 +261,8 @@ export const Marca = ({ nombreFormulario }: Props) => {
             itemSeleccionado={itemSeleccionado}
             funcionCerrarModal={funcionCerrarModal}
             funcionActualizarTabla={funcionListar}
-            funcionAsignarAlerta={funcionAsignarAlerta}
-            funcionAbrirAlerta={funcionAbrirAlerta}
             arrayCategorias={arrayCategoria}
          />
-         <Snackbar
-            open={abrirAlerta}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            autoHideDuration={3000}
-            onClose={funcionCerrarAlerta}
-         >
-            <Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-               {alerta.text}
-            </Alert>
-         </Snackbar>
-         <Dialog
-            open={dialogo}
-            onClose={funcionCerrarDialogo}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-         >
-            <DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
-            <DialogContent>
-               <DialogContentText id="alert-dialog-description">
-                  {`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-                     arrayMarca.find(
-                        (item) =>
-                           item.id ===
-                           (marcaSeleccionada ? marcaSeleccionada.id : 0)
-                     )?.marca_nombre
-                  }`}
-               </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-               <Button onClick={funcionCerrarDialogo} autoFocus>
-                  Cancelar
-               </Button>
-               <Button color="error" onClick={funcionEliminar}>
-                  Eliminar
-               </Button>
-            </DialogActions>
-         </Dialog>
       </ContainerBodyStyled>
    );
 };

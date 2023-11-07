@@ -1,13 +1,4 @@
 import {
-   Typography,
-   Dialog,
-   DialogTitle,
-   DialogContent,
-   DialogContentText,
-   DialogActions,
-   Button,
-} from "@mui/material";
-import {
    ColumnProps,
    EstadoProps,
    TableControl,
@@ -107,7 +98,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
                      id: element.categoria_id,
                      index: index + 1,
                      categoria_nombre: element.nombre,
-                     fecha_registro: new Date(element.fecha_registro),
+                     fecha_registro: element.fecha_registro,
                      fecha_actualizacion: element.fecha_actualizacion,
                      estado: {
                         valor: element.activo,
@@ -225,13 +216,9 @@ export const Categoria = ({ nombreFormulario }: Props) => {
             reject={funcionCerrarDialogo}
          />
 
-         <Typography
-            variant="h5"
-            component={"h2"}
-            style={{ textAlign: "center", margin: "50px 0 20px 0" }}
-         >
+         <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
-         </Typography>
+         </h2>
          <ToolbarControl
             functionCrear={funcionCrearCategoria}
             functionActualizar={funcionEditarCategoria}
@@ -253,35 +240,6 @@ export const Categoria = ({ nombreFormulario }: Props) => {
             funcionCerrarModal={funcionCerrarModal}
             funcionActualizarTabla={funcionListar}
          />
-         <Dialog
-            open={dialogo}
-            onClose={funcionCerrarDialogo}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-         >
-            <DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
-            <DialogContent>
-               <DialogContentText id="alert-dialog-description">
-                  {`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-                     arrayCategoria.find(
-                        (item: ValuesCategoriaProps) =>
-                           item.id ===
-                           (categoriaSeleccionada
-                              ? categoriaSeleccionada.id
-                              : 0)
-                     )?.categoria_nombre
-                  }`}
-               </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-               <Button onClick={funcionCerrarDialogo} autoFocus>
-                  Cancelar
-               </Button>
-               <Button color="error" onClick={funcionEliminar}>
-                  Eliminar
-               </Button>
-            </DialogActions>
-         </Dialog>
       </ContainerBodyStyled>
    );
 };

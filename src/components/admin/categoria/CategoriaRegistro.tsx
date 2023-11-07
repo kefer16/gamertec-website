@@ -8,7 +8,7 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
 // import { ScrollPanel } from "primereact/scrollpanel";
 
-interface DropdownProps {
+export interface DropdownProps {
    name: string;
    code: string;
 }
@@ -21,7 +21,7 @@ interface Props {
    funcionActualizarTabla: () => void;
 }
 
-const estadoCategoria: DropdownProps[] = [
+export const estadoCategoria: DropdownProps[] = [
    {
       code: "1",
       name: "Activo",
