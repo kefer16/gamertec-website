@@ -1,252 +1,198 @@
-import {
-	Box,
-	Button,
-	FormControl,
-	Grid,
-	InputLabel,
-	MenuItem,
-	Modal,
-	Select,
-	SelectChangeEvent,
-	TextField,
-	Typography,
-} from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 
-import { useEffect, useState } from "react";
-
-import { fechaVisualDateToString } from "../../../utils/funciones.utils";
+import { fechaActualISO } from "../../../utils/funciones.utils";
 import { PrivilegioService } from "../../../entities/privilegio.entities";
+import { Dialog } from "primereact/dialog";
+import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { Button } from "primereact/button";
+import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
 
 interface Props {
-	nombreFormulario: string;
-	abrir: boolean;
-	esEdicion: boolean;
-	itemSeleccionado: PrivilegioService;
-	funcionCerrarModal: () => void;
-	funcionActualizarTabla: () => void;
-	funcionAsignarAlerta: (
-		type: "error" | "warning" | "info" | "success",
-		text: string
-	) => void;
-	funcionAbrirAlerta: () => void;
+   nombreFormulario: string;
+   abrir: boolean;
+   esEdicion: boolean;
+   itemSeleccionado: PrivilegioService;
+   funcionCerrarModal: () => void;
+   funcionActualizarTabla: () => void;
 }
 
 export const PrivilegioRegistro = ({
-	nombreFormulario,
-	abrir,
-	esEdicion,
-	itemSeleccionado,
-	funcionCerrarModal,
-	funcionActualizarTabla,
-	funcionAsignarAlerta,
-	funcionAbrirAlerta,
+   nombreFormulario,
+   abrir,
+   esEdicion,
+   itemSeleccionado,
+   funcionCerrarModal,
+   funcionActualizarTabla,
 }: Props) => {
-	const [privilegioId, setPrivilegioId] = useState(0);
-	const [tipo, setTipo] = useState("");
-	const [activo, setActivo] = useState("");
-	const [fecha_registro, setFecha_registro] = useState(new Date());
-	const [abreviatura, setAbreviatura] = useState("");
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
+   const [privilegioId, setPrivilegioId] = useState(0);
+   const [tipo, setTipo] = useState("");
+   const [activo, setActivo] = useState("");
+   const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
+      new Date()
+   );
+   const [abreviatura, setAbreviatura] = useState("");
+   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
 
-	useEffect(() => {
-		setPrivilegioId(itemSeleccionado.privilegio_id);
-		setTipo(itemSeleccionado.tipo);
-		setActivo(itemSeleccionado.activo ? "1" : "0");
-		setAbreviatura(itemSeleccionado.abreviatura);
-		setFecha_registro(itemSeleccionado.fecha_registro);
-	}, [itemSeleccionado]);
+   useEffect(() => {
+      setPrivilegioId(itemSeleccionado.privilegio_id);
+      setTipo(itemSeleccionado.tipo);
+      setActivo(itemSeleccionado.activo ? "1" : "0");
+      setAbreviatura(itemSeleccionado.abreviatura);
+      setFechaRegistro(itemSeleccionado.fecha_registro);
+   }, [itemSeleccionado]);
 
-	const funcionCambiarEstado = (event: SelectChangeEvent) => {
-		setActivo(event.target.value as string);
-	};
+   const funcionEnviarCategoria = async (
+      event: React.FormEvent<HTMLFormElement>
+   ) => {
+      event.preventDefault();
 
-	const funcionEnviarCategoria = async (
-		event: React.FormEvent<HTMLFormElement>
-	) => {
-		event.preventDefault();
+      const data: PrivilegioService = new PrivilegioService(
+         privilegioId,
+         tipo,
+         activo === "1",
+         abreviatura,
+         fechaActualISO()
+      );
 
-		const data: PrivilegioService = new PrivilegioService(
-			privilegioId,
-			tipo,
-			activo === "1",
-			abreviatura,
-			fecha_registro
-		);
+      if (esEdicion) {
+         await PrivilegioService.Actualizar(privilegioId, data)
+            .then((response) => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Exito",
+                  detalle: `${nombreFormulario} se actualizó correctamente`,
+                  pegado: false,
+               });
 
-		if (esEdicion) {
-			await PrivilegioService.Actualizar(privilegioId, data)
-				.then((response) => {
-					if (response.data.code === 200) {
-						funcionAsignarAlerta(
-							"success",
-							`${nombreFormulario} se actualizó correctamente`
-						);
+               funcionActualizarTabla();
+               funcionCerrarModal();
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
+            });
+      } else {
+         await PrivilegioService.Registrar(data)
+            .then((response) => {
+               if (response.data.code === 200) {
+                  mostrarNotificacion({
+                     tipo: "success",
+                     titulo: "Exito",
+                     detalle: `${nombreFormulario} se registró correctamente`,
+                     pegado: false,
+                  });
 
-						funcionAbrirAlerta();
-						funcionActualizarTabla();
-						funcionCerrarModal();
-						return;
-					}
-				})
-				.catch(() => {
-					funcionAsignarAlerta("error", "Hubo un error");
+                  funcionActualizarTabla();
+                  funcionCerrarModal();
+                  return;
+               }
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
+               return;
+            });
+      }
+   };
+   return (
+      <>
+         <Dialog
+            header={`Registrar ${nombreFormulario}`}
+            visible={abrir}
+            onHide={funcionCerrarModal}
+            headerStyle={{ background: "#f8f9fa" }}
+            contentStyle={{ padding: "0px" }}
+         >
+            <form
+               onSubmit={(e) => funcionEnviarCategoria(e)}
+               style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "0 24px 24px 24px",
+                  background: "#f8f9fa",
+               }}
+            >
+               <div
+                  style={{
+                     width: "100%",
+                     padding: "24px",
+                     height: "300px",
+                     overflowY: "auto",
+                     background: "#fff",
+                     border: "1px solid #cccccc75",
+                  }}
+               >
+                  <div>
+                     <label htmlFor="calendar">Fecha Registro</label>
+                     <Calendar
+                        id="calendar"
+                        dateFormat="dd/mm/yy"
+                        showTime
+                        hourFormat="24"
+                        style={{ width: "100%" }}
+                        value={fechaRegistro}
+                        onChange={(e) => setFechaRegistro(e.value ?? "")}
+                        showIcon
+                        disabled
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-nombre">Nombre</label>
+                     <InputText
+                        id="input-nombre"
+                        style={{ width: "100%" }}
+                        name="name"
+                        value={tipo}
+                        onChange={(event) => setTipo(event.target.value)}
+                     />
+                  </div>
 
-					funcionAbrirAlerta();
-					return;
-				});
-		} else {
-			await PrivilegioService.Registrar(data)
-				.then((response) => {
-					if (response.data.code === 200) {
-						funcionAsignarAlerta(
-							"success",
-							`${nombreFormulario} se registró correctamente`
-						);
+                  <div>
+                     <label htmlFor="input-nombre">Abreviatura</label>
+                     <InputText
+                        id="input-nombre"
+                        style={{ width: "100%" }}
+                        name="name"
+                        value={abreviatura}
+                        onChange={(event) => setAbreviatura(event.target.value)}
+                     />
+                  </div>
 
-						funcionAbrirAlerta();
-						funcionActualizarTabla();
-						funcionCerrarModal();
-						return;
-					}
-				})
-				.catch(() => {
-					funcionAsignarAlerta("error", "Hubo un error");
-					funcionAbrirAlerta();
-					return;
-				});
-		}
-	};
-	return (
-		<>
-			<Modal open={abrir} onClose={funcionCerrarModal}>
-				<Box
-					sx={{
-						flexGrow: 1,
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						width: "90%",
-						maxWidth: "500px",
-						overflow: "hidden",
-						border: "1px solid #ccc",
-						borderRadius: "10px",
-						background: "#fff",
-					}}
-				>
-					<Typography
-						sx={[
-							{
-								position: "fixed",
-								zIndex: "99",
-								width: "100%",
-								height: "60px",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								color: "#ffffff",
-								
-							},
-							esEdicion
-								? { backgroundColor: "#448aff" }
-								: { backgroundColor: "#00c853" },
-						]}
-						variant="h5"
-						component={"h2"}
-					>
-						{`${esEdicion ? "Edición" : "Registro"} de ${nombreFormulario}`}
-					</Typography>
-					<Box
-						sx={{
-							position: "relative",
-							flexGrow: 1,
-							background: "#fff",
-							overflow: "hidden",
-							overflowY: "scroll",
-							height: "auto",
-							maxHeight: "500px",
-							padding: "20px",
-						}}
-						component={"form"}
-						onSubmit={funcionEnviarCategoria}
-					>
-						<Grid
-							sx={{ marginTop: "50px" }}
-							container
-							direction={"column"}
-							rowSpacing={2}
-							columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-						>
-							<Grid item xs={1}>
-								<TextField
-									fullWidth
-									label="Fecha Registro"
-									variant="outlined"
-									value={fechaVisualDateToString(fecha_registro)}
-									name="fecha_registro"
-									disabled
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Nombre"
-									variant="outlined"
-									value={tipo}
-									name="name"
-									onChange={(event) => setTipo(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Abreviatura"
-									variant="outlined"
-									value={abreviatura}
-									name="name"
-									onChange={(event) => setAbreviatura(event.target.value)}
-									inputProps={{
-										maxLength: 3,
-									}}
-									helperText="solo 3 caracteres"
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<FormControl fullWidth>
-									<InputLabel id="estado-select-label">Estado</InputLabel>
-									<Select
-										labelId="estado-select-label"
-										id="estado-select"
-										value={activo}
-										label="Estado"
-										onChange={funcionCambiarEstado}
-									>
-										<MenuItem value={"1"}>ACTIVO</MenuItem>
-										<MenuItem value={"0"}>INACTIVO</MenuItem>
-									</Select>
-								</FormControl>
-							</Grid>
-
-							<Grid item xs={1}>
-								<Button
-									fullWidth
-									variant="contained"
-									style={
-										esEdicion
-											? { backgroundColor: "#448aff" }
-											: { backgroundColor: "#00c853" }
-									}
-									type="submit"
-								>
-									{" "}
-									{esEdicion ? "Editar" : "Registrarse"}
-								</Button>
-							</Grid>
-						</Grid>
-					</Box>
-				</Box>
-			</Modal>
-		</>
-	);
+                  <div>
+                     <label htmlFor="select-estado">Estado</label>
+                     <Dropdown
+                        id="select-estado"
+                        style={{ width: "100%" }}
+                        value={activo}
+                        onChange={(e: DropdownChangeEvent) =>
+                           setActivo(e.value)
+                        }
+                        options={arrayEstado}
+                        optionLabel="name"
+                        placeholder="Todas las Categorias"
+                     />
+                  </div>
+               </div>
+               <Button
+                  style={{ marginTop: "24px" }}
+                  severity={esEdicion ? "warning" : "success"}
+                  type="submit"
+                  label={esEdicion ? "Editar" : "Registrarse"}
+               />
+            </form>
+         </Dialog>
+      </>
+   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CategoryService } from "../../../entities/categoria.entities";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import { Dialog } from "primereact/dialog";
@@ -6,7 +6,7 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
-// import { ScrollPanel } from "primereact/scrollpanel";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
 
 export interface DropdownProps {
    name: string;
@@ -39,23 +39,20 @@ export const CategoryRegister = ({
    funcionCerrarModal,
    funcionActualizarTabla,
 }: Props) => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [categoriaId, setCategoriaId] = useState(0);
    const [nombre, setNombre] = useState("");
    const [activo, setActivo] = useState("");
-   const [fecha_registro, setFecha_registro] = useState<string | Date | Date[]>(
-      ""
+   const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
+      new Date()
    );
    const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
-   const [estado, setEstado] = useState<DropdownProps>({
-      code: "0",
-      name: "Todas las Categorias",
-   });
 
    useEffect(() => {
       setCategoriaId(itemSeleccionado.categoria_id);
       setNombre(itemSeleccionado.nombre);
+      setFechaRegistro(itemSeleccionado.fecha_registro);
       setActivo(itemSeleccionado.activo ? "1" : "0");
-      setFecha_registro(itemSeleccionado.fecha_registro);
    }, [itemSeleccionado]);
 
    const funcionEnviarCategoria = async (
@@ -74,37 +71,43 @@ export const CategoryRegister = ({
       if (esEdicion) {
          await CategoryService.Actualizar(categoriaId, dataCategoria)
             .then((response) => {
-               if (response.data.code === 200) {
-                  // funcionAsignarAlerta(
-                  //    "success",
-                  //    `${nombreFormulario} se actualizó correctamente`
-                  // );
-
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-                  return;
-               }
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Exito",
+                  detalle: `${nombreFormulario} se actualizó correctamente`,
+                  pegado: false,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
-            .catch(() => {
-               // funcionAsignarAlerta("error", "Hubo un error");
-               return;
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
             });
       } else {
          await CategoryService.Registrar(dataCategoria)
             .then((response) => {
-               if (response.data.code === 200) {
-                  // funcionAsignarAlerta(
-                  //    "success",
-                  //    `${nombreFormulario} se registró correctamente`
-                  // );
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-                  return;
-               }
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Exito",
+                  detalle: `${nombreFormulario} se registró correctamente`,
+                  pegado: false,
+               });
+
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
-            .catch(() => {
-               // funcionAsignarAlerta("error", "Hubo un error");
-               return;
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
             });
       }
    };
@@ -131,7 +134,6 @@ export const CategoryRegister = ({
                      width: "100%",
                      padding: "24px",
                      height: "200px",
-                     // borderRadius: "10px",
                      overflowY: "auto",
                      background: "#fff",
                      border: "1px solid #cccccc75",
@@ -145,16 +147,16 @@ export const CategoryRegister = ({
                         showTime
                         hourFormat="24"
                         style={{ width: "100%" }}
-                        value={fecha_registro}
-                        onChange={(e) => setFecha_registro(e.value ?? "")}
+                        value={fechaRegistro}
                         showIcon
                         disabled
                      />
                   </div>
                   <div>
-                     <label htmlFor="input-nombre">Nombre Categoria</label>
+                     <label htmlFor="input-nombre">Nombre Categoría</label>
                      <InputText
                         id="input-nombre"
+                        type="text"
                         style={{ width: "100%" }}
                         name="name"
                         value={nombre}
@@ -166,9 +168,9 @@ export const CategoryRegister = ({
                      <Dropdown
                         id="select-estado"
                         style={{ width: "100%" }}
-                        value={estado}
+                        value={activo}
                         onChange={(e: DropdownChangeEvent) =>
-                           setEstado(e.value)
+                           setActivo(e.value)
                         }
                         options={arrayEstado}
                         optionLabel="name"

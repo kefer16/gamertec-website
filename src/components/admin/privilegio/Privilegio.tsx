@@ -1,19 +1,8 @@
-import { useEffect, useState } from "react";
-import { InterfaceAlertControl } from "../../controls/AlertControl";
-import {
-   Alert,
-   Button,
-   Dialog,
-   DialogActions,
-   DialogContent,
-   DialogContentText,
-   DialogTitle,
-   Snackbar,
-   Typography,
-} from "@mui/material";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
+   EstadoProps,
    TableControl,
    TypeColumn,
 } from "../../controls/TableControl";
@@ -21,6 +10,9 @@ import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 const columnsPrivilegio2: ColumnProps[] = [
    {
@@ -49,7 +41,7 @@ const columnsPrivilegio2: ColumnProps[] = [
    },
    {
       type: TypeColumn.STATUS,
-      field: "activo_nombre",
+      field: "estado",
       header: "Estado",
       style: { width: "10%" },
    },
@@ -61,8 +53,7 @@ export interface ValuesPrivilegioProps {
    fecha_registro: Date;
    tipo: string;
    abreviatura: string;
-   activo: boolean;
-   activo_nombre: string;
+   estado: EstadoProps;
 }
 interface Props {
    nombreFormulario: string;
@@ -79,16 +70,14 @@ export const funcionObtenerPrivilegios = async (): Promise<ComboboxProps[]> => {
             });
          });
       })
-      .catch((error: any) => {
-         console.log(error);
-      });
+      .catch((error: any) => {});
    return array;
 };
 
 export const Privilegio = ({ nombreFormulario }: Props) => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
-   const [abrirAlerta, setAbrirAlerta] = useState(false);
 
    const [dialogo, setDialogo] = useState(false);
    const [arrayPrivilegio, setArrayPrivilegio] = useState<
@@ -100,54 +89,11 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
    const funcionCerrarDialogo = () => {
       setDialogo(false);
    };
-
-   const funcionAbrirDialogo = () => {
-      const itemEdicion = arrayPrivilegio.find((item) =>
-         item.id === privilegioSeleccionado?.id ? item : undefined
-      );
-
-      if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
-
-         return;
-      }
-      setDialogo(true);
-   };
-
    const [itemSeleccionado, setItemSeleccionado] = useState<PrivilegioService>(
       new PrivilegioService()
    );
 
-   const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-      active: false,
-      type: "info",
-      text: "",
-   });
-
-   const funcionAsignarAlerta = (
-      type: "error" | "warning" | "info" | "success",
-      text: string
-   ) => {
-      setAlerta({
-         active: true,
-         type: type,
-         text: text,
-      });
-   };
-
-   const funcionAbrirAlerta = () => {
-      setAbrirAlerta(true);
-   };
-
-   const funcionCerrarAlerta = () => {
-      setAbrirAlerta(false);
-   };
-
-   const funcionListar = async () => {
+   const funcionListar = useCallback(async () => {
       const arrayPrivilegio: ValuesPrivilegioProps[] = [];
       await PrivilegioService.ListarTodos()
          .then((response) => {
@@ -159,18 +105,25 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
                      fecha_registro: element.fecha_registro,
                      tipo: element.tipo,
                      abreviatura: element.abreviatura,
-                     activo: element.activo,
-                     activo_nombre: element.activo ? "Activo" : "Inactivo",
+                     estado: {
+                        valor: element.activo,
+                        estado: element.activo ? "Activo" : "Inactivo",
+                     },
                   };
                   arrayPrivilegio.push(newRow);
                }
             );
             setArrayPrivilegio(arrayPrivilegio);
          })
-         .catch((error: any) => {
-            return;
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               titulo: "Error",
+               detalle: error.message,
+               pegado: false,
+            });
          });
-   };
+   }, [mostrarNotificacion]);
 
    const funcionCrear = () => {
       setItemSeleccionado(new PrivilegioService(0, "", false, "", new Date()));
@@ -184,9 +137,12 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
       );
 
       if (itemEdicion === undefined) {
-         funcionAsignarAlerta("warning", "Elija un usuario para poder editar");
-         funcionAbrirAlerta();
-
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: "Elija un usuario para poder editar",
+            pegado: false,
+         });
          return;
       }
 
@@ -194,7 +150,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
          new PrivilegioService(
             itemEdicion.id,
             itemEdicion.tipo,
-            itemEdicion.activo,
+            itemEdicion.estado.valor,
             itemEdicion.abreviatura,
             itemEdicion.fecha_registro
          )
@@ -204,37 +160,44 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
       setAbrirModal(true);
    };
 
-   const funcionEliminar = async () => {
+   const funcionValidarEliminar = () => {
       const itemEdicion = arrayPrivilegio.find((item) =>
          item.id === privilegioSeleccionado?.id ? item : undefined
       );
 
       if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
-         funcionCerrarDialogo();
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+            pegado: false,
+         });
          return;
       }
+      setDialogo(true);
+   };
 
-      await PrivilegioService.EliminarUno(itemEdicion.id)
+   const funcionEliminar = async () => {
+      await PrivilegioService.EliminarUno(privilegioSeleccionado.id)
          .then((response) => {
-            if (response.data.code === 200) {
-               funcionAsignarAlerta(
-                  "success",
-                  `${nombreFormulario} se eliminó correctamente`
-               );
-               funcionAbrirAlerta();
-               funcionCerrarDialogo();
-               funcionListar();
-               return;
-            }
+            mostrarNotificacion({
+               tipo: "success",
+               titulo: "Exito",
+               detalle: `${nombreFormulario} se eliminó correctamente`,
+               pegado: false,
+            });
+
+            funcionCerrarDialogo();
+            funcionListar();
+            return;
          })
-         .catch(() => {
-            funcionAsignarAlerta("error", "Hubo un error");
-            funcionAbrirAlerta();
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               titulo: "Error",
+               detalle: error.message,
+               pegado: false,
+            });
             funcionCerrarDialogo();
             return;
          });
@@ -246,21 +209,26 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 
    useEffect(() => {
       funcionListar();
-   }, []);
+   }, [funcionListar]);
 
    return (
       <ContainerBodyStyled>
-         <Typography
-            variant="h5"
-            component={"h2"}
-            style={{ textAlign: "center", margin: "50px 0 20px 0" }}
-         >
+         <ConfirmDialog
+            visible={dialogo}
+            onHide={() => setDialogo(false)}
+            message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${privilegioSeleccionado.tipo}?`}
+            header="Confirmación"
+            icon={<IconAlertTriangle size={24} />}
+            accept={funcionEliminar}
+            reject={funcionCerrarDialogo}
+         />
+         <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
-         </Typography>
+         </h2>
          <ToolbarControl
             functionCrear={funcionCrear}
             functionActualizar={funcionEditar}
-            functionEliminar={funcionAbrirDialogo}
+            functionEliminar={funcionValidarEliminar}
          />
          <TableControl<ValuesPrivilegioProps>
             ancho={{ minWidth: "70rem" }}
@@ -277,48 +245,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
             itemSeleccionado={itemSeleccionado}
             funcionCerrarModal={funcionCerrarModal}
             funcionActualizarTabla={funcionListar}
-            funcionAsignarAlerta={funcionAsignarAlerta}
-            funcionAbrirAlerta={funcionAbrirAlerta}
          />
-         <Snackbar
-            open={abrirAlerta}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            autoHideDuration={3000}
-            onClose={funcionCerrarAlerta}
-         >
-            <Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-               {alerta.text}
-            </Alert>
-         </Snackbar>
-         <Dialog
-            open={dialogo}
-            onClose={funcionCerrarDialogo}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-         >
-            <DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
-            <DialogContent>
-               <DialogContentText id="alert-dialog-description">
-                  {`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-                     arrayPrivilegio.find(
-                        (item) =>
-                           item.id ===
-                           (privilegioSeleccionado === null
-                              ? 0
-                              : privilegioSeleccionado.id)
-                     )?.tipo
-                  }`}
-               </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-               <Button onClick={funcionCerrarDialogo} autoFocus>
-                  Cancelar
-               </Button>
-               <Button color="error" onClick={funcionEliminar}>
-                  Eliminar
-               </Button>
-            </DialogActions>
-         </Dialog>
       </ContainerBodyStyled>
    );
 };

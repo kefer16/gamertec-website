@@ -68,7 +68,6 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
    const completarPedido = async () => {
       // const compraServ = new CompraService();
       // await compraServ.registrar(pedido_id).then((resp) => {
-      console.log("resp");
       // });
    };
 

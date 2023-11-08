@@ -99,8 +99,6 @@ export const Carrito = () => {
       if (tipo === "aumentar") {
          cantidad = cantidad + 1;
       }
-      console.log("cantidad: ", cantidad);
-
       const servCarrito = new CarritoService();
       await servCarrito
          .actualizarCantidadCarrito(carrito_id, cantidad, usuario_id)

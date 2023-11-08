@@ -79,9 +79,7 @@ export const Comprobante = () => {
                setPreferenciaId(preferencia_id);
             }
          })
-         .catch((error: any) => {
-            console.log(error);
-         });
+         .catch((error: any) => {});
 
       const data: IPedidoCabeceraInterface = {
          distrito_id: 10102,
@@ -89,11 +87,8 @@ export const Comprobante = () => {
          preferencia_id: preferencia_id,
          fecha_registro: convertirFechaSQL(fechaActualISO().toISOString()),
       };
-      console.log(data);
 
-      await pedServ.registrar(data).catch((error: Error) => {
-         console.log(error);
-      });
+      await pedServ.registrar(data).catch((error: Error) => {});
    };
 
    const footerContent = (

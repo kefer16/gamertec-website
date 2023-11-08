@@ -57,8 +57,6 @@ export class PedidoService {
    public async ultimo(): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
       await PedidoApi.listarUltimo()
          .then((resp) => {
-            console.log("ultimo", resp);
-
             this.respuestaPedidoCabecera = {
                code: resp.data.code,
                data: resp.data.data,

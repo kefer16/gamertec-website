@@ -1,25 +1,24 @@
 import Compressor from "compressorjs";
-import {
-   Box,
-   Button,
-   FormControl,
-   Grid,
-   InputLabel,
-   MenuItem,
-   Modal,
-   Select,
-   SelectChangeEvent,
-   TextField,
-   Typography,
-} from "@mui/material";
-
-import { ChangeEvent, useEffect, useState } from "react";
-import { fechaVisualDateToString } from "../../../utils/funciones.utils";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import {
    ComboboxProps,
    ComboboxAnidadoProps,
 } from "../../../interfaces/combobox.interface";
 import { ModeloEntity } from "../../../entities/modelo.entity";
+import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { Dialog } from "primereact/dialog";
+import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
+import { fechaActualISO } from "../../../utils/funciones.utils";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import {
+   ColorPicker,
+   ColorPickerChangeEvent,
+   ColorPickerHSBType,
+   ColorPickerRGBType,
+} from "primereact/colorpicker";
 
 interface Props {
    nombreFormulario: string;
@@ -28,19 +27,14 @@ interface Props {
    itemSeleccionado: ModeloEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   funcionAsignarAlerta: (
-      type: "error" | "warning" | "info" | "success",
-      text: string
-   ) => void;
-   funcionAbrirAlerta: () => void;
    arrayCategorias: ComboboxProps[];
    arrayMarcas: ComboboxAnidadoProps[];
 }
 
-interface ChangeValueSelect {
-   valorCategoria: string;
-   valorMarca: string;
-}
+// interface ChangeValueSelect {
+//    valorCategoria: string;
+//    valorMarca: string;
+// }
 export const ModeloRegistro = ({
    nombreFormulario,
    abrir,
@@ -48,19 +42,22 @@ export const ModeloRegistro = ({
    itemSeleccionado,
    funcionCerrarModal,
    funcionActualizarTabla,
-   funcionAsignarAlerta,
-   funcionAbrirAlerta,
    arrayCategorias,
    arrayMarcas,
 }: Props) => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [modeloId, setModeloId] = useState(0);
    const [nombre, setNombre] = useState("");
    const [descripcion, setDescripcion] = useState("");
    const [foto, setFoto] = useState<string | null>(null);
    const [caracteristicas, setCaracteristicas] = useState("");
-   const [color, setColor] = useState("");
+   const [color, setColor] = useState<
+      string | ColorPickerRGBType | ColorPickerHSBType
+   >("");
    const [precio, setPrecio] = useState("0");
-   const [fechaRegistro, seFechaRegistro] = useState(new Date());
+   const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
+      new Date()
+   );
    const [stock, setStock] = useState("0");
    const [numeroSeries, setNumeroSeries] = useState("0");
    const [activo, setActivo] = useState("0");
@@ -74,6 +71,8 @@ export const ModeloRegistro = ({
       null
    );
 
+   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+
    useEffect(() => {
       setModeloId(itemSeleccionado.modelo_id);
       setNombre(itemSeleccionado.nombre);
@@ -84,7 +83,7 @@ export const ModeloRegistro = ({
       setCaracteristicas(itemSeleccionado.caracteristicas);
       setColor(itemSeleccionado.color);
       setPrecio(String(itemSeleccionado.precio));
-      seFechaRegistro(itemSeleccionado.fecha_registro);
+      setFechaRegistro(itemSeleccionado.fecha_registro);
       setStock(String(itemSeleccionado.stock));
       setActivo(itemSeleccionado.activo ? "1" : "0");
       setFkCategoria(String(itemSeleccionado.fk_categoria));
@@ -95,18 +94,18 @@ export const ModeloRegistro = ({
       setFkMarca(String(itemSeleccionado.fk_marca));
    }, [itemSeleccionado, arrayMarcas]);
 
-   const funcionObtenerMarcaPorCategoria = ({
-      valorCategoria,
-      valorMarca,
-   }: ChangeValueSelect) => {
-      setFkCategoria(valorCategoria);
-      const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
-         (item) => item.valor === parseInt(valorCategoria)
-      );
+   // const funcionObtenerMarcaPorCategoria = ({
+   //    valorCategoria,
+   //    valorMarca,
+   // }: ChangeValueSelect) => {
+   //    setFkCategoria(valorCategoria);
+   //    const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
+   //       (item) => item.valor === parseInt(valorCategoria)
+   //    );
 
-      setArrayAnidadoMarca(arrayNuevo);
-      setFkMarca(valorMarca);
-   };
+   //    setArrayAnidadoMarca(arrayNuevo);
+   //    setFkMarca(valorMarca);
+   // };
 
    const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -117,9 +116,9 @@ export const ModeloRegistro = ({
          descripcion,
          foto ? foto : "",
          caracteristicas,
-         color,
+         color.toString(),
          parseInt(precio),
-         fechaRegistro,
+         fechaActualISO(),
          parseInt(stock),
          activo === "1",
          parseInt(fkMarca),
@@ -129,42 +128,44 @@ export const ModeloRegistro = ({
       if (esEdicion) {
          await ModeloEntity.Actualizar(modeloId, data)
             .then((response) => {
-               if (response.data.code === 200) {
-                  funcionAsignarAlerta(
-                     "success",
-                     `${nombreFormulario} se actualizó correctamente`
-                  );
-
-                  funcionAbrirAlerta();
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-                  return;
-               }
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Exito",
+                  detalle: `${nombreFormulario} se actualizó correctamente`,
+                  pegado: false,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
-            .catch((error) => {
-               funcionAsignarAlerta("error", "Hubo un error");
-
-               funcionAbrirAlerta();
-               return;
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
             });
       } else {
          await ModeloEntity.Registrar(data)
             .then((response) => {
                if (response.data.code === 200) {
-                  funcionAsignarAlerta(
-                     "success",
-                     `${nombreFormulario} se registró correctamente`
-                  );
-                  funcionAbrirAlerta();
+                  mostrarNotificacion({
+                     tipo: "success",
+                     titulo: "Exito",
+                     detalle: `${nombreFormulario} se registró correctamente`,
+                     pegado: false,
+                  });
                   funcionActualizarTabla();
                   funcionCerrarModal();
-                  return;
                }
             })
-            .catch(() => {
-               funcionAsignarAlerta("error", "Hubo un error");
-               funcionAbrirAlerta();
-               return;
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
             });
       }
    };
@@ -173,8 +174,13 @@ export const ModeloRegistro = ({
       const file = event.target.files?.[0];
       if (file) {
          if (file.size > 2000000) {
-            funcionAsignarAlerta("warning", "Archivo demasiado grande");
-            funcionAbrirAlerta();
+            mostrarNotificacion({
+               tipo: "warn",
+               titulo: "Alerta",
+               detalle: "Archivo demasiado grande",
+               pegado: false,
+            });
+
             return;
          }
          setSeleccionaImagen(URL.createObjectURL(file));
@@ -192,10 +198,13 @@ export const ModeloRegistro = ({
                   setFoto(compressedImage);
                };
             },
-            error() {
-               funcionAsignarAlerta("error", "Error al comprimir la imagen");
-               funcionAbrirAlerta();
-               return;
+            error(error: Error) {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: error.message,
+                  pegado: true,
+               });
             },
          });
       }
@@ -203,315 +212,234 @@ export const ModeloRegistro = ({
 
    return (
       <>
-         <Modal open={abrir} onClose={funcionCerrarModal}>
-            <Box
-               sx={{
-                  flexGrow: 1,
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: "90%",
-                  maxWidth: "500px",
-                  overflow: "hidden",
-                  border: "1px solid #ccc",
-                  borderRadius: "10px",
-                  background: "#fff",
+         <Dialog
+            header={`Registrar ${nombreFormulario}`}
+            visible={abrir}
+            onHide={funcionCerrarModal}
+            headerStyle={{ background: "#f8f9fa" }}
+            contentStyle={{ padding: "0px" }}
+         >
+            <form
+               onSubmit={(e) => funcionGuardar(e)}
+               style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "0 24px 24px 24px",
+                  background: "#f8f9fa",
                }}
             >
-               <Typography
-                  sx={[
-                     {
-                        position: "fixed",
-                        zIndex: "99",
-                        width: "100%",
-                        height: "60px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        color: "#ffffff",
-                        // border: "1px solid red",
-                     },
-                     esEdicion
-                        ? { backgroundColor: "#448aff" }
-                        : { backgroundColor: "#00c853" },
-                  ]}
-                  variant="h5"
-                  component={"h2"}
-               >
-                  {`${
-                     esEdicion ? "Edición" : "Registro"
-                  } de ${nombreFormulario}`}
-               </Typography>
-               <Box
-                  sx={{
-                     position: "relative",
-                     flexGrow: 1,
+               <div
+                  style={{
+                     width: "100%",
+                     padding: "24px",
+                     height: "300px",
+                     overflowY: "auto",
                      background: "#fff",
-                     overflow: "hidden",
-                     overflowY: "scroll",
-                     height: "auto",
-                     maxHeight: "500px",
-                     padding: "20px",
+                     border: "1px solid #cccccc75",
                   }}
-                  component={"form"}
-                  onSubmit={funcionGuardar}
                >
-                  <Grid
-                     sx={{ marginTop: "50px" }}
-                     container
-                     direction={"column"}
-                     rowSpacing={2}
-                     columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-                  >
-                     <Grid item xs={1}>
-                        <TextField
-                           fullWidth
-                           label="Fecha Registro"
-                           variant="outlined"
-                           value={fechaVisualDateToString(fechaRegistro)}
-                           name="date"
-                           disabled
-                        />
-                     </Grid>
-                     <Grid item xs={1}>
-                        <FormControl fullWidth>
-                           <InputLabel id="categoria-select-label">
-                              Categoria
-                           </InputLabel>
-                           <Select
-                              labelId="categoria-select-label"
-                              id="categoria-select"
-                              value={fkCategoria}
-                              label="Categoria"
-                              onChange={(event: SelectChangeEvent) =>
-                                 funcionObtenerMarcaPorCategoria({
-                                    valorCategoria: event.target.value,
-                                    valorMarca: "0",
-                                 })
-                              }
-                           >
-                              <MenuItem value={"0"}>Selec. Categoria</MenuItem>
-                              {arrayCategorias.map(
-                                 (categoria: ComboboxProps) => {
-                                    return (
-                                       <MenuItem
-                                          key={categoria.valor}
-                                          value={String(categoria.valor)}
-                                       >
-                                          {categoria.descripcion}
-                                       </MenuItem>
-                                    );
-                                 }
-                              )}
-                           </Select>
-                        </FormControl>
-                     </Grid>
-                     <Grid item xs={1}>
-                        <FormControl fullWidth>
-                           <InputLabel id="marca-select-label">
-                              Marca
-                           </InputLabel>
-                           <Select
-                              labelId="marca-select-label"
-                              id="marca-select"
-                              value={fkMarca}
-                              label="Marca"
-                              defaultValue={"0"}
-                              onChange={(event: SelectChangeEvent) =>
-                                 setFkMarca(event.target.value as string)
-                              }
-                           >
-                              <MenuItem value={"0"}>Selec. Marca</MenuItem>
-                              {arrayAnidadoMarca.map(
-                                 (marca: ComboboxAnidadoProps) => {
-                                    return (
-                                       <MenuItem
-                                          key={marca.valorAnidado}
-                                          value={String(marca.valorAnidado)}
-                                       >
-                                          {marca.descripcion}
-                                       </MenuItem>
-                                    );
-                                 }
-                              )}
-                           </Select>
-                        </FormControl>
-                     </Grid>
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Modelo"
-                           variant="outlined"
-                           value={nombre}
-                           name="model"
-                           onChange={(event) => setNombre(event.target.value)}
-                        />
-                     </Grid>
+                  <div>
+                     <label htmlFor="calendar">Fecha Registro</label>
+                     <Calendar
+                        id="calendar"
+                        dateFormat="dd/mm/yy"
+                        showTime
+                        hourFormat="24"
+                        style={{ width: "100%" }}
+                        value={fechaRegistro}
+                        onChange={(e) => setFechaRegistro(e.value ?? "")}
+                        showIcon
+                        disabled
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="select-categoria">Categoria</label>
+                     <Dropdown
+                        id="select-categoria"
+                        style={{ width: "100%" }}
+                        value={fkCategoria}
+                        onChange={(e: DropdownChangeEvent) =>
+                           setFkCategoria(e.value)
+                        }
+                        options={arrayCategorias}
+                        optionLabel="name"
+                        placeholder="Selec. Categoria"
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="select-marca">Marca</label>
+                     <Dropdown
+                        id="select-marca"
+                        style={{ width: "100%" }}
+                        value={fkMarca}
+                        onChange={(e: DropdownChangeEvent) =>
+                           setFkMarca(e.value)
+                        }
+                        options={arrayAnidadoMarca}
+                        optionLabel="name"
+                        placeholder="Selec. Marca"
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-nombre-modelo">Nombre Modelo</label>
+                     <InputText
+                        id="input-nombre-modelo"
+                        type="text"
+                        name="nombre"
+                        style={{ width: "100%" }}
+                        value={nombre}
+                        onChange={(event) => setNombre(event.target.value)}
+                     />
+                  </div>
 
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Nombre Producto"
-                           variant="outlined"
-                           value={descripcion}
-                           name="description"
-                           multiline
-                           onChange={(event) =>
-                              setDescripcion(event.target.value)
-                           }
-                        />
-                     </Grid>
-                     <Grid item xs={1}>
-                        <p style={{ color: "#666", fontSize: "1em" }}>Imagen</p>
-
-                        <div
-                           style={{
-                              display: "flex",
-                              padding: "10px",
-                              flexDirection: "column",
-                              border: "1px solid #ccc",
-                              borderRadius: "7px",
-                           }}
-                        >
-                           <p style={{ color: "#666", fontSize: "0.8em" }}>
-                              Previsualización
-                           </p>
-                           {seleccionaImagen ? (
-                              <img
-                                 src={seleccionaImagen}
-                                 style={{
-                                    width: "100%",
-                                    height: "200px",
-                                    objectFit: "scale-down",
-                                    border: "1px solid #ccc",
-                                    borderRadius: "7px",
-                                 }}
-                                 alt="Selected"
-                              />
-                           ) : (
-                              <img
-                                 src="https://placehold.co/300"
-                                 style={{
-                                    width: "100%",
-                                    height: "200px",
-                                    objectFit: "scale-down",
-                                    border: "1px solid #ccc",
-                                    borderRadius: "7px",
-                                 }}
-                                 alt="Selected"
-                              />
-                           )}
-                           <input
-                              style={{ marginTop: "10px" }}
-                              type="file"
-                              accept="image/*"
-                              // value={foto ? foto : ""}
-                              onChange={funcionCargarImagen}
+                  <div>
+                     <label htmlFor="input-nombre-producto">
+                        Nombre Producto
+                     </label>
+                     <InputText
+                        id="input-nombre-producto"
+                        type="text"
+                        name="nombre_producto"
+                        style={{ width: "100%" }}
+                        value={descripcion}
+                        onChange={(event) => setDescripcion(event.target.value)}
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-nombre-producto">Imagen</label>
+                     <div
+                        style={{
+                           display: "flex",
+                           padding: "10px",
+                           flexDirection: "column",
+                           border: "1px solid #ccc",
+                           borderRadius: "7px",
+                        }}
+                     >
+                        <p style={{ color: "#666", fontSize: "0.8em" }}>
+                           Previsualización
+                        </p>
+                        {seleccionaImagen ? (
+                           <img
+                              src={seleccionaImagen}
+                              style={{
+                                 width: "100%",
+                                 height: "200px",
+                                 objectFit: "scale-down",
+                                 border: "1px solid #ccc",
+                                 borderRadius: "7px",
+                              }}
+                              alt="Selected"
                            />
-                        </div>
-                     </Grid>
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Caracteristicas"
-                           variant="outlined"
-                           value={caracteristicas}
-                           name="features"
-                           multiline
-                           onChange={(event) =>
-                              setCaracteristicas(event.target.value)
-                           }
+                        ) : (
+                           <img
+                              src="https://placehold.co/300"
+                              style={{
+                                 width: "100%",
+                                 height: "200px",
+                                 objectFit: "scale-down",
+                                 border: "1px solid #ccc",
+                                 borderRadius: "7px",
+                              }}
+                              alt="Selected"
+                           />
+                        )}
+                        <input
+                           style={{ marginTop: "10px" }}
+                           type="file"
+                           accept="image/*"
+                           onChange={funcionCargarImagen}
                         />
-                     </Grid>
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Color"
-                           variant="outlined"
-                           value={color}
-                           name="color"
-                           onChange={(event) => setColor(event.target.value)}
-                        />
-                     </Grid>
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Precio"
-                           variant="outlined"
-                           value={precio}
-                           name="price"
-                           onChange={(event) => setPrecio(event.target.value)}
-                        />
-                     </Grid>
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Stock"
-                           variant="outlined"
-                           value={stock}
-                           name="stock"
-                           onChange={(event) => setStock(event.target.value)}
-                        />
-                     </Grid>
-                     <Grid item xs={1}>
-                        <TextField
-                           required
-                           fullWidth
-                           label="Numeros de Serie"
-                           variant="outlined"
-                           value={numeroSeries}
-                           name="serial numbers"
-                           onChange={(event) =>
-                              setNumeroSeries(event.target.value)
-                           }
-                        />
-                     </Grid>
+                     </div>
+                  </div>
+                  <div>
+                     <label htmlFor="input-caracteristicas">
+                        Caracteristicas
+                     </label>
+                     <InputText
+                        id="input-caracteristicas"
+                        type="text"
+                        name="caracteristicas"
+                        style={{ width: "100%" }}
+                        value={caracteristicas}
+                        onChange={(event) =>
+                           setCaracteristicas(event.target.value)
+                        }
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-color">Color</label>
+                     <ColorPicker
+                        style={{ width: "100%" }}
+                        inputId="input-color"
+                        format="hex"
+                        value={color}
+                        onChange={(e: ColorPickerChangeEvent) =>
+                           setColor(e.value ?? "")
+                        }
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-precio">Precio</label>
+                     <InputText
+                        id="input-precio"
+                        type="number"
+                        name="precio"
+                        style={{ width: "100%" }}
+                        value={precio}
+                        onChange={(event) => setPrecio(event.target.value)}
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-stock">Stock</label>
+                     <InputText
+                        id="input-stock"
+                        type="number"
+                        name="stock"
+                        style={{ width: "100%" }}
+                        value={stock}
+                        onChange={(event) => setStock(event.target.value)}
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-numero-serie">
+                        Numeros de Serie
+                     </label>
+                     <InputText
+                        id="input-numero-serie"
+                        type="text"
+                        name="numero_serie"
+                        style={{ width: "100%" }}
+                        value={numeroSeries}
+                        onChange={(event) =>
+                           setNumeroSeries(event.target.value)
+                        }
+                     />
+                  </div>
 
-                     <Grid item xs={1}>
-                        <FormControl fullWidth>
-                           <InputLabel id="estado-select-label">
-                              Estado
-                           </InputLabel>
-                           <Select
-                              labelId="estado-select-label"
-                              id="estado-select"
-                              value={activo}
-                              label="Estado"
-                              onChange={(event: SelectChangeEvent) =>
-                                 setActivo(event.target.value as string)
-                              }
-                           >
-                              <MenuItem value={"1"}>ACTIVO</MenuItem>
-                              <MenuItem value={"0"}>INACTIVO</MenuItem>
-                           </Select>
-                        </FormControl>
-                     </Grid>
-
-                     <Grid item xs={1}>
-                        <Button
-                           fullWidth
-                           variant="contained"
-                           sx={
-                              esEdicion
-                                 ? { backgroundColor: "#448aff" }
-                                 : { backgroundColor: "#00c853" }
-                           }
-                           type="submit"
-                        >
-                           {esEdicion ? "Editar" : "Registrarse"}
-                        </Button>
-                     </Grid>
-                  </Grid>
-               </Box>
-            </Box>
-         </Modal>
+                  <div>
+                     <label htmlFor="select-estado">Estado</label>
+                     <Dropdown
+                        id="select-estado"
+                        style={{ width: "100%" }}
+                        value={activo}
+                        onChange={(e: DropdownChangeEvent) =>
+                           setActivo(e.value)
+                        }
+                        options={arrayEstado}
+                        optionLabel="name"
+                        placeholder="Todas las Categorias"
+                     />
+                  </div>
+               </div>
+               <Button
+                  style={{ marginTop: "24px" }}
+                  severity={esEdicion ? "warning" : "success"}
+                  type="submit"
+                  label={esEdicion ? "Editar" : "Registrarse"}
+               />
+            </form>
+         </Dialog>
       </>
    );
 };

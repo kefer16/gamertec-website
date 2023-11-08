@@ -1,364 +1,311 @@
-import {
-	Box,
-	Button,
-	FormControl,
-	Grid,
-	InputLabel,
-	MenuItem,
-	Modal,
-	Select,
-	SelectChangeEvent,
-	TextField,
-	Typography,
-} from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { fechaVisualDateToString } from "../../../utils/funciones.utils";
+import { fechaActualISO } from "../../../utils/funciones.utils";
 
 import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { UsuarioService } from "../../../services/usuario.service";
 import { UsuarioEntity } from "../../../entities/usuario.entities";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
+import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
 
 interface Props {
-	nombreFormulario: string;
-	abrir: boolean;
-	esEdicion: boolean;
-	itemSeleccionado: UsuarioEntity;
-	funcionCerrarModal: () => void;
-	funcionActualizarTabla: () => void;
-	arrayPrivilegios: ComboboxProps[];
+   nombreFormulario: string;
+   abrir: boolean;
+   esEdicion: boolean;
+   itemSeleccionado: UsuarioEntity;
+   funcionCerrarModal: () => void;
+   funcionActualizarTabla: () => void;
+   arrayPrivilegios: ComboboxProps[];
 }
 
 export const UsuarioRegistro = ({
-	nombreFormulario,
-	abrir,
-	esEdicion,
-	itemSeleccionado,
-	funcionCerrarModal,
-	funcionActualizarTabla,
-	arrayPrivilegios,
+   nombreFormulario,
+   abrir,
+   esEdicion,
+   itemSeleccionado,
+   funcionCerrarModal,
+   funcionActualizarTabla,
+   arrayPrivilegios,
 }: Props) => {
-	const { mostrarNotificacion } = useContext(GamertecSesionContext);
-	const [usuarioId, setUsuarioId] = useState(0);
-	const [nombre, setNombre] = useState("");
-	const [apellido, setApellido] = useState("");
-	const [correo, setCorreo] = useState("");
-	const [usuario, setUsuario] = useState("");
-	const [contrasenia, setContrasenia] = useState("");
-	const [dinero, setDinero] = useState("0");
-	const [foto, setFoto] = useState("");
-	const [fecha_registro, setFecha_registro] = useState(new Date());
-	const [activo, setActivo] = useState("0");
-	const [fk_privilegio, setFk_privilegio] = useState("0");
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
+   const [usuarioId, setUsuarioId] = useState(0);
+   const [nombre, setNombre] = useState("");
+   const [apellido, setApellido] = useState("");
+   const [correo, setCorreo] = useState("");
+   const [usuario, setUsuario] = useState("");
+   const [contrasenia, setContrasenia] = useState("");
+   const [dinero, setDinero] = useState("0");
+   const [foto, setFoto] = useState("");
+   const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
+      new Date()
+   );
+   const [activo, setActivo] = useState("0");
+   const [fk_privilegio, setFk_privilegio] = useState("0");
+   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
 
-	useEffect(() => {
-		setUsuarioId(itemSeleccionado.usuario_id);
-		setNombre(itemSeleccionado.nombre);
-		setApellido(itemSeleccionado.apellido);
-		setCorreo(itemSeleccionado.correo);
-		setUsuario(itemSeleccionado.usuario);
-		setContrasenia(itemSeleccionado.contrasenia);
-		setDinero(String(itemSeleccionado.dinero));
-		setFoto(itemSeleccionado.foto);
-		setFecha_registro(itemSeleccionado.fecha_registro);
-		setActivo(itemSeleccionado.activo ? "1" : "0");
-		setFk_privilegio(String(itemSeleccionado.fk_privilegio));
-	}, [itemSeleccionado]);
+   useEffect(() => {
+      setUsuarioId(itemSeleccionado.usuario_id);
+      setNombre(itemSeleccionado.nombre);
+      setApellido(itemSeleccionado.apellido);
+      setCorreo(itemSeleccionado.correo);
+      setUsuario(itemSeleccionado.usuario);
+      setContrasenia(itemSeleccionado.contrasenia);
+      setDinero(String(itemSeleccionado.dinero));
+      setFoto(itemSeleccionado.foto);
+      setFechaRegistro(itemSeleccionado.fecha_registro);
+      setActivo(itemSeleccionado.activo ? "1" : "0");
+      setFk_privilegio(String(itemSeleccionado.fk_privilegio));
+   }, [itemSeleccionado]);
 
-	const funcionCambiarPrivilegio = (event: SelectChangeEvent) => {
-		setFk_privilegio(event.target.value as string);
-	};
-	const funcionCambiarEstado = (event: SelectChangeEvent) => {
-		setActivo(event.target.value as string);
-	};
+   const funcionEnviarCategoria = async (
+      event: React.FormEvent<HTMLFormElement>
+   ) => {
+      event.preventDefault();
 
-	const funcionEnviarCategoria = async (
-		event: React.FormEvent<HTMLFormElement>
-	) => {
-		event.preventDefault();
+      const data: UsuarioEntity = new UsuarioEntity(
+         usuarioId,
+         nombre,
+         apellido,
+         correo,
+         usuario,
+         contrasenia,
+         parseInt(dinero),
+         foto,
+         fechaActualISO(),
+         "",
+         "",
+         activo === "0",
+         parseInt(fk_privilegio)
+      );
 
-		const data: UsuarioEntity = new UsuarioEntity(
-			usuarioId,
-			nombre,
-			apellido,
-			correo,
-			usuario,
-			contrasenia,
-			parseInt(dinero),
-			foto,
-			fecha_registro,
-			"",
-			"",
-			activo === "0",
-			parseInt(fk_privilegio)
-		);
+      if (esEdicion) {
+         const usuServ = new UsuarioService();
 
-		if (esEdicion) {
-			const usuServ = new UsuarioService();
+         await usuServ
+            .actualizar(usuarioId, data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Éxito",
+                  detalle: "Usuario se actualizó correctamente",
+                  pegado: false,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
+               return;
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      } else {
+         const usuServ = new UsuarioService();
 
-			await usuServ.actualizar(usuarioId, data)
-				.then(() => {
-					mostrarNotificacion({
-						tipo: "success",
-						titulo: "Éxito",
-						detalle: "Usuario se actualizó correctamente",
-						pegado: false,
-					});
-					funcionActualizarTabla();
-					funcionCerrarModal();
-					return;
+         await usuServ
+            .registrar(data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Éxito",
+                  detalle: "Usuario se actualizó correctamente",
+                  pegado: false,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
+               return;
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      }
+   };
+   return (
+      <>
+         <Dialog
+            header={`Registrar ${nombreFormulario}`}
+            visible={abrir}
+            onHide={funcionCerrarModal}
+            headerStyle={{ background: "#f8f9fa" }}
+            contentStyle={{ padding: "0px" }}
+         >
+            <form
+               onSubmit={(e) => funcionEnviarCategoria(e)}
+               style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "0 24px 24px 24px",
+                  background: "#f8f9fa",
+               }}
+            >
+               <div
+                  style={{
+                     width: "100%",
+                     padding: "24px",
+                     height: "300px",
+                     overflowY: "auto",
+                     background: "#fff",
+                     border: "1px solid #cccccc75",
+                  }}
+               >
+                  <div>
+                     <label htmlFor="calendar">Fecha Registro</label>
+                     <Calendar
+                        id="calendar"
+                        dateFormat="dd/mm/yy"
+                        showTime
+                        hourFormat="24"
+                        style={{ width: "100%" }}
+                        value={fechaRegistro}
+                        onChange={(e) => setFechaRegistro(e.value ?? "")}
+                        showIcon
+                        disabled
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="select-privilegio">Privilegio</label>
+                     <Dropdown
+                        id="select-privilegio"
+                        style={{ width: "100%" }}
+                        value={fk_privilegio}
+                        onChange={(e: DropdownChangeEvent) =>
+                           setFk_privilegio(e.value)
+                        }
+                        options={arrayPrivilegios}
+                        optionLabel="name"
+                        placeholder="Selec. Privilegio"
+                     />
+                  </div>
 
-				})
-				.catch((error: Error) => {
-					mostrarNotificacion({
-						tipo: "error",
-						titulo: "Error",
-						detalle: `surgio un error: ${error.message}`,
-						pegado: true,
-					});
-				});
+                  <div>
+                     <label htmlFor="input-nombre">Nombre</label>
+                     <InputText
+                        id="input-nombre"
+                        type="text"
+                        name="nombre"
+                        style={{ width: "100%" }}
+                        value={nombre}
+                        onChange={(event) => setNombre(event.target.value)}
+                     />
+                  </div>
 
-		} else {
-			const usuServ = new UsuarioService();
+                  <div>
+                     <label htmlFor="input-apellido">Apellido</label>
+                     <InputText
+                        id="input-apellido"
+                        type="text"
+                        name="apellido"
+                        style={{ width: "100%" }}
+                        value={apellido}
+                        onChange={(event) => setApellido(event.target.value)}
+                     />
+                  </div>
 
-			await usuServ.registrar(data)
-				.then(() => {
-					mostrarNotificacion({
-						tipo: "success",
-						titulo: "Éxito",
-						detalle: "Usuario se actualizó correctamente",
-						pegado: false,
-					});
-					funcionActualizarTabla();
-					funcionCerrarModal();
-					return;
-				})
-				.catch((error: Error) => {
-					mostrarNotificacion({
-						tipo: "error",
-						titulo: "Error",
-						detalle: `surgio un error: ${error.message}`,
-						pegado: true,
-					});
-				});
-		}
-	};
-	return (
-		<>
-			<Modal open={abrir} onClose={funcionCerrarModal}>
-				<Box
-					sx={{
-						flexGrow: 1,
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						width: "90%",
-						maxWidth: "500px",
-						overflow: "hidden",
-						border: "1px solid #ccc",
-						borderRadius: "10px",
-						background: "#fff",
-					}}
-				>
-					<Typography
-						sx={[
-							{
-								position: "fixed",
-								zIndex: "99",
-								width: "100%",
-								height: "60px",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								color: "#ffffff",
-								// border: "1px solid red",
-							},
-							esEdicion
-								? { backgroundColor: "#448aff" }
-								: { backgroundColor: "#00c853" },
-						]}
-						variant="h5"
-						component={"h2"}
-					>
-						{`${esEdicion ? "Edición" : "Registro"} de ${nombreFormulario}`}
-					</Typography>
-					<Box
-						sx={{
-							position: "relative",
-							flexGrow: 1,
-							background: "#fff",
-							overflow: "hidden",
-							overflowY: "scroll",
-							height: "auto",
-							maxHeight: "500px",
-							padding: "20px",
-						}}
-						component={"form"}
-						onSubmit={funcionEnviarCategoria}
-					>
-						<Grid
-							sx={{ marginTop: "50px" }}
-							container
-							direction={"column"}
-							rowSpacing={2}
-							columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-						>
-							<Grid item xs={1}>
-								<TextField
-									fullWidth
-									label="Fecha Registro"
-									variant="outlined"
-									value={fechaVisualDateToString(fecha_registro)}
-									name="date"
-									disabled
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<FormControl fullWidth>
-									<InputLabel id="estado-select-label">Privilegio</InputLabel>
-									<Select
-										labelId="estado-select-label"
-										id="estado-select"
-										value={fk_privilegio}
-										label="Privilegio"
-										onChange={funcionCambiarPrivilegio}
-									>
-										<MenuItem value={"0"}>Selec. Privilegio</MenuItem>
-										{arrayPrivilegios.map((item: ComboboxProps, index) => {
-											return (
-												<MenuItem key={index} value={String(item.valor)}>{item.descripcion}</MenuItem>
-											);
-										})}
-									</Select>
-								</FormControl>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Nombre"
-									variant="outlined"
-									value={nombre}
-									name="name"
-									onChange={(event) => setNombre(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Apellido"
-									variant="outlined"
-									value={apellido}
-									name="lastname"
-									onChange={(event) => setApellido(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Correo"
-									variant="outlined"
-									value={correo}
-									name="email"
-									onChange={(event) => setCorreo(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Usuario"
-									variant="outlined"
-									value={usuario}
-									name="user"
-									onChange={(event) => setUsuario(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Contraseña"
-									variant="outlined"
-									type="password"
-									value={contrasenia}
-									name="password"
-									onChange={(event) => setContrasenia(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Confirmación"
-									variant="outlined"
-									value={contrasenia}
-									name="password"
-									type="password"
-									onChange={(event) => setContrasenia(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Dinero"
-									variant="outlined"
-									value={dinero}
-									name="diner"
-									onChange={(event) => setDinero(event.target.value)}
-								/>
-							</Grid>
-							<Grid item xs={1}>
-								<TextField
-									required
-									fullWidth
-									label="Foto"
-									variant="outlined"
-									value={foto}
-									name="photo"
-									onChange={(event) => setFoto(event.target.value)}
-								/>
-							</Grid>
+                  <div>
+                     <label htmlFor="input-nombre">Correo</label>
+                     <InputText
+                        id="input-nombre"
+                        type="email"
+                        name="correo"
+                        style={{ width: "100%" }}
+                        value={correo}
+                        onChange={(event) => setCorreo(event.target.value)}
+                     />
+                  </div>
 
-							<Grid item xs={1}>
-								<FormControl fullWidth>
-									<InputLabel id="estado-select-label">Estado</InputLabel>
-									<Select
-										labelId="estado-select-label"
-										id="estado-select"
-										value={activo}
-										label="Estado"
-										onChange={funcionCambiarEstado}
-									>
-										<MenuItem value={"1"}>ACTIVO</MenuItem>
-										<MenuItem value={"0"}>INACTIVO</MenuItem>
-									</Select>
-								</FormControl>
-							</Grid>
+                  <div>
+                     <label htmlFor="input-usuario">Usuario</label>
+                     <InputText
+                        id="input-usuario"
+                        type="text"
+                        name="usuario"
+                        style={{ width: "100%" }}
+                        value={usuario}
+                        onChange={(event) => setUsuario(event.target.value)}
+                     />
+                  </div>
 
-							<Grid item xs={1}>
-								<Button
-									fullWidth
-									variant="contained"
-									style={
-										esEdicion
-											? { backgroundColor: "#448aff" }
-											: { backgroundColor: "#00c853" }
-									}
-									type="submit"
-								>
-									{" "}
-									{esEdicion ? "Editar" : "Registrarse"}
-								</Button>
-							</Grid>
-						</Grid>
-					</Box>
-				</Box>
-			</Modal>
-		</>
-	);
+                  <div>
+                     <label htmlFor="input-contrasenia">Contraseña</label>
+                     <InputText
+                        id="input-contrasenia"
+                        type="password"
+                        name="contrasenia"
+                        style={{ width: "100%" }}
+                        value={contrasenia}
+                        onChange={(event) => setContrasenia(event.target.value)}
+                     />
+                  </div>
+
+                  <div>
+                     <label htmlFor="input-confirmacion">Confirmación</label>
+                     <InputText
+                        id="input-confirmacion"
+                        type="password"
+                        name="confirmacion"
+                        style={{ width: "100%" }}
+                        value={contrasenia}
+                        onChange={(event) => setContrasenia(event.target.value)}
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="input-dinero">Dinero</label>
+                     <InputText
+                        id="input-dinero"
+                        type="number"
+                        name="dinero"
+                        style={{ width: "100%" }}
+                        value={dinero}
+                        onChange={(event) => setDinero(event.target.value)}
+                     />
+                  </div>
+
+                  <div>
+                     <label htmlFor="input-foto">Foto</label>
+                     <InputText
+                        id="input-foto"
+                        type="text"
+                        name="foto"
+                        style={{ width: "100%" }}
+                        value={foto}
+                        onChange={(event) => setFoto(event.target.value)}
+                     />
+                  </div>
+                  <div>
+                     <label htmlFor="select-estado">Estado</label>
+                     <Dropdown
+                        id="select-estado"
+                        style={{ width: "100%" }}
+                        value={activo}
+                        onChange={(e: DropdownChangeEvent) =>
+                           setActivo(e.value)
+                        }
+                        options={arrayEstado}
+                        optionLabel="name"
+                        placeholder="Todas las Categorias"
+                     />
+                  </div>
+               </div>
+               <Button
+                  style={{ marginTop: "24px" }}
+                  severity={esEdicion ? "warning" : "success"}
+                  type="submit"
+                  label={esEdicion ? "Editar" : "Registrarse"}
+               />
+            </form>
+         </Dialog>
+      </>
+   );
 };

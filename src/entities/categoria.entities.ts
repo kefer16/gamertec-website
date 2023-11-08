@@ -25,8 +25,6 @@ export class CategoryService {
 
          return await axios.post(`${this.url}/registrar`, body, config);
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -35,8 +33,6 @@ export class CategoryService {
       categoria_id: number,
       data_categoria: CategoryService
    ): Promise<AxiosResponse> {
-      console.log(data_categoria);
-
       try {
          const config = {
             params: {
@@ -50,8 +46,6 @@ export class CategoryService {
 
          return await axios.put(`${this.url}/actualizar`, body, config);
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -66,7 +60,6 @@ export class CategoryService {
 
          return await axios.get(`${this.url}/todos`, config);
       } catch (err: any) {
-         console.log(err);
          return Promise.reject(err);
       }
    }
@@ -84,7 +77,6 @@ export class CategoryService {
 
          return await axios.get(`${this.url}/historial`, config);
       } catch (err: any) {
-         console.log(err);
          return Promise.reject(err);
       }
    }
@@ -98,7 +90,6 @@ export class CategoryService {
          };
          return await axios.delete(`${this.url}/eliminar`, config);
       } catch (err: any) {
-         console.log(err);
          return Promise.reject(err);
       }
    }

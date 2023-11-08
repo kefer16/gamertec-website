@@ -15,8 +15,6 @@ export class CompraApi {
          };
          return await axios.get(`${CompraCabeceraEntity.url}/todos`, config);
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -33,8 +31,6 @@ export class CompraApi {
          };
          return await axios.get(`${CompraCabeceraEntity.url}/uno`, config);
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }

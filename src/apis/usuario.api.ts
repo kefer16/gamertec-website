@@ -43,8 +43,6 @@ export class UsuarioApi {
             config
          );
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -70,8 +68,6 @@ export class UsuarioApi {
             config
          );
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -96,7 +92,6 @@ export class UsuarioApi {
 
          return await axios.get(`${UsuarioEntity.url}/todos`, config);
       } catch (err: any) {
-         console.log(err);
          return Promise.reject(err);
       }
    }
@@ -114,7 +109,6 @@ export class UsuarioApi {
 
          return await axios.get(`${UsuarioEntity.url}/historial`, config);
       } catch (err: any) {
-         console.log(err);
          return Promise.reject(err);
       }
    }
@@ -128,7 +122,6 @@ export class UsuarioApi {
          };
          return await axios.delete(`${UsuarioEntity.url}/eliminar`, config);
       } catch (err: any) {
-         console.log(err);
          return Promise.reject(err);
       }
    }
@@ -154,8 +147,6 @@ export class UsuarioApi {
             config
          );
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -181,8 +172,6 @@ export class UsuarioApi {
             config
          );
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -208,8 +197,6 @@ export class UsuarioApi {
             config
          );
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }
@@ -235,8 +222,6 @@ export class UsuarioApi {
             config
          );
       } catch (err: any) {
-         console.log(err);
-
          return Promise.reject(err);
       }
    }

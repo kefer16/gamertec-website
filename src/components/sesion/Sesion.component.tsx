@@ -79,7 +79,6 @@ export const SesionProvider = ({ children }: any) => {
       sesionGamertec.usuario = sesion
          ? JSON.parse(sesion).usuario
          : sesionGamertec;
-      console.log(sesionGamertec);
 
       sesionGamertec.privilegio = sesion
          ? JSON.parse(sesion).privilegio

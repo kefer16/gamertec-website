@@ -1,16 +1,4 @@
-import { useEffect, useState } from "react";
-import { InterfaceAlertControl } from "../../controls/AlertControl";
-import {
-   Alert,
-   Button,
-   Dialog,
-   DialogActions,
-   DialogContent,
-   DialogContentText,
-   DialogTitle,
-   Snackbar,
-   Typography,
-} from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
@@ -29,6 +17,9 @@ import {
 } from "../../../interfaces/combobox.interface";
 import { ModeloEntity } from "../../../entities/modelo.entity";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { IconAlertTriangle } from "@tabler/icons-react";
+import { GamertecSesionContext } from "../../sesion/Sesion.component";
 
 const columnsModelo2: ColumnProps[] = [
    {
@@ -121,24 +112,22 @@ export const funcionObteneModelo = async (): Promise<
    ComboboxAnidadoProps[]
 > => {
    const array: ComboboxAnidadoProps[] = [];
-   await ModeloEntity.ListarTodos()
-      .then((respuesta) => {
-         respuesta.data.data.forEach((element: ModeloEntity) => {
-            array.push({
-               valor: element.fk_marca,
-               valorAnidado: element.modelo_id,
-               descripcion: element.nombre,
-            });
+   await ModeloEntity.ListarTodos().then((respuesta) => {
+      respuesta.data.data.forEach((element: ModeloEntity) => {
+         array.push({
+            valor: element.fk_marca,
+            valorAnidado: element.modelo_id,
+            descripcion: element.nombre,
          });
-      })
-      .catch((error: any) => {});
+      });
+   });
    return array;
 };
 
 export const Modelo = ({ nombreFormulario }: Props) => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
-   const [abrirAlerta, setAbrirAlerta] = useState(false);
    const [dialogo, setDialogo] = useState(false);
    const [arrayModelo, setArrayModelo] = useState<ValuesModeloProps[]>([]);
    const [modeloSeleccionado, setModeloSeleccionado] =
@@ -148,51 +137,9 @@ export const Modelo = ({ nombreFormulario }: Props) => {
       setDialogo(false);
    };
 
-   const funcionAbrirDialogo = () => {
-      const itemEdicion = arrayModelo.find((item) =>
-         item.id === modeloSeleccionado?.id ? item : undefined
-      );
-
-      if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
-
-         return;
-      }
-      setDialogo(true);
-   };
-
    const [itemSeleccionado, setItemSeleccionado] = useState<ModeloEntity>(
       new ModeloEntity()
    );
-
-   const [alerta, setAlerta] = useState<InterfaceAlertControl>({
-      active: false,
-      type: "info",
-      text: "",
-   });
-
-   const funcionAsignarAlerta = (
-      type: "error" | "warning" | "info" | "success",
-      text: string
-   ) => {
-      setAlerta({
-         active: true,
-         type: type,
-         text: text,
-      });
-   };
-
-   const funcionAbrirAlerta = () => {
-      setAbrirAlerta(true);
-   };
-
-   const funcionCerrarAlerta = () => {
-      setAbrirAlerta(false);
-   };
 
    const funcionListar = async () => {
       const arrayModelo: ValuesModeloProps[] = [];
@@ -252,14 +199,13 @@ export const Modelo = ({ nombreFormulario }: Props) => {
       const itemEdicion = arrayModelo.find((item) =>
          item.id === modeloSeleccionado?.id ? item : undefined
       );
-
       if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder editar`
-         );
-         funcionAbrirAlerta();
-
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder editar`,
+            pegado: false,
+         });
          return;
       }
 
@@ -285,39 +231,45 @@ export const Modelo = ({ nombreFormulario }: Props) => {
    };
 
    const funcionEliminar = async () => {
+      await ModeloEntity.EliminarUno(modeloSeleccionado.id)
+         .then((response) => {
+            if (response.data.code === 200) {
+               mostrarNotificacion({
+                  tipo: "success",
+                  titulo: "Exito",
+                  detalle: `${nombreFormulario} se eliminó correctamente`,
+                  pegado: false,
+               });
+               funcionCerrarDialogo();
+               funcionListar();
+            }
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "success",
+               titulo: "Exito",
+               detalle: error.message,
+               pegado: false,
+            });
+            funcionCerrarDialogo();
+         });
+   };
+   const funcionValidarEliminar = () => {
       const itemEdicion = arrayModelo.find((item) =>
          item.id === modeloSeleccionado?.id ? item : undefined
       );
 
       if (itemEdicion === undefined) {
-         funcionAsignarAlerta(
-            "warning",
-            `Elija un ${nombreFormulario} para poder eliminar`
-         );
-         funcionAbrirAlerta();
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+            pegado: false,
+         });
          funcionCerrarDialogo();
          return;
       }
-
-      await ModeloEntity.EliminarUno(itemEdicion.id)
-         .then((response) => {
-            if (response.data.code === 200) {
-               funcionAsignarAlerta(
-                  "success",
-                  `${nombreFormulario} se eliminó correctamente`
-               );
-               funcionAbrirAlerta();
-               funcionCerrarDialogo();
-               funcionListar();
-               return;
-            }
-         })
-         .catch((error) => {
-            funcionAsignarAlerta("error", "Hubo un error");
-            funcionAbrirAlerta();
-            funcionCerrarDialogo();
-            return;
-         });
+      setDialogo(true);
    };
 
    const funcionCerrarModal = () => {
@@ -342,17 +294,22 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
    return (
       <ContainerBodyStyled>
-         <Typography
-            variant="h5"
-            component={"h2"}
-            style={{ textAlign: "center", margin: "50px 0 20px 0" }}
-         >
+         <ConfirmDialog
+            visible={dialogo}
+            onHide={() => setDialogo(false)}
+            message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${modeloSeleccionado.modelo_nombre}?`}
+            header="Confirmación"
+            icon={<IconAlertTriangle size={24} />}
+            accept={funcionEliminar}
+            reject={funcionCerrarDialogo}
+         />
+         <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
-         </Typography>
+         </h2>
          <ToolbarControl
             functionCrear={funcionCrear}
             functionActualizar={funcionEditar}
-            functionEliminar={funcionAbrirDialogo}
+            functionEliminar={funcionValidarEliminar}
          />
          <TableControl<ValuesModeloProps>
             ancho={{ minWidth: "110rem" }}
@@ -369,48 +326,9 @@ export const Modelo = ({ nombreFormulario }: Props) => {
             itemSeleccionado={itemSeleccionado}
             funcionCerrarModal={funcionCerrarModal}
             funcionActualizarTabla={funcionListar}
-            funcionAsignarAlerta={funcionAsignarAlerta}
-            funcionAbrirAlerta={funcionAbrirAlerta}
             arrayCategorias={arrayCategoria}
             arrayMarcas={arrayMarca}
          />
-         <Snackbar
-            open={abrirAlerta}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            autoHideDuration={3000}
-            onClose={funcionCerrarAlerta}
-         >
-            <Alert onClose={funcionCerrarAlerta} severity={alerta.type}>
-               {alerta.text}
-            </Alert>
-         </Snackbar>
-         <Dialog
-            open={dialogo}
-            onClose={funcionCerrarDialogo}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-         >
-            <DialogTitle id="alert-dialog-title">¿Desea continuar?</DialogTitle>
-            <DialogContent>
-               <DialogContentText id="alert-dialog-description">
-                  {`Este proceso eliminará el/la ${nombreFormulario.toLowerCase()}: ${
-                     arrayModelo.find(
-                        (item) =>
-                           item.id ===
-                           (modeloSeleccionado ? modeloSeleccionado.id : 0)
-                     )?.modelo_nombre
-                  }`}
-               </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-               <Button onClick={funcionCerrarDialogo} autoFocus>
-                  Cancelar
-               </Button>
-               <Button color="error" onClick={funcionEliminar}>
-                  Eliminar
-               </Button>
-            </DialogActions>
-         </Dialog>
       </ContainerBodyStyled>
    );
 };

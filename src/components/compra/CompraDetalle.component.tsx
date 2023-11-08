@@ -127,9 +127,7 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
                setArrayCompraEstados([...arrayEstados]);
             }
          })
-         .catch((error: Error) => {
-            console.log(error);
-         });
+         .catch((error: Error) => {});
    };
 
    const selectedCountryTemplate = (option: IMultiSelectProps) => {
@@ -162,8 +160,6 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
             });
          })
          .catch((error: RespuestaEntity<null>) => {
-            console.log(error);
-
             mostrarNotificacion({
                tipo: "error",
                titulo: "Error",

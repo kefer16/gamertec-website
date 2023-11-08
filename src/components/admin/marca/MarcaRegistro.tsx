@@ -137,7 +137,6 @@ export const MarcaRegistro = ({
                >
                   <div>
                      <label htmlFor="calendar">Fecha Registro</label>
-
                      <Calendar
                         id="calendar"
                         dateFormat="dd/mm/yy"
@@ -170,8 +169,9 @@ export const MarcaRegistro = ({
                      <label htmlFor="input-nombre">Nombre</label>
                      <InputText
                         id="input-nombre"
+                        type="text"
+                        name="nombre"
                         style={{ width: "100%" }}
-                        name="name"
                         value={nombre}
                         onChange={(event) => setNombre(event.target.value)}
                      />

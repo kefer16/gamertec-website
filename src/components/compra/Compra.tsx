@@ -55,14 +55,10 @@ export const Compra = () => {
             .listarTodos(usuarioId)
             .then((resp: RespuestaEntity<ICompraCard[]>) => {
                if (resp.data) {
-                  console.log(resp.data);
-
                   setArrayCompra(resp.data);
                }
             })
-            .catch((error) => {
-               console.log(error);
-            });
+            .catch((error) => {});
       };
 
       obtenerData();
