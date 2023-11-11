@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 
-import { fechaActualISO } from "../../../utils/funciones.utils";
+import {
+   fechaActualISO,
+   fechaVisualizarCalendario,
+} from "../../../utils/funciones.utils";
 import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
@@ -30,7 +33,10 @@ export const PrivilegioRegistro = ({
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [privilegioId, setPrivilegioId] = useState(0);
    const [tipo, setTipo] = useState("");
-   const [activo, setActivo] = useState("");
+   const [activo, setActivo] = useState<DropdownProps>({
+      code: "0",
+      name: "Inactivo",
+   });
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
@@ -40,9 +46,21 @@ export const PrivilegioRegistro = ({
    useEffect(() => {
       setPrivilegioId(itemSeleccionado.privilegio_id);
       setTipo(itemSeleccionado.tipo);
-      setActivo(itemSeleccionado.activo ? "1" : "0");
+      setActivo(
+         itemSeleccionado.activo
+            ? {
+                 code: "1",
+                 name: "Activo",
+              }
+            : {
+                 code: "0",
+                 name: "Inactivo",
+              }
+      );
       setAbreviatura(itemSeleccionado.abreviatura);
-      setFechaRegistro(itemSeleccionado.fecha_registro);
+      setFechaRegistro(
+         fechaVisualizarCalendario(itemSeleccionado.fecha_registro)
+      );
    }, [itemSeleccionado]);
 
    const funcionEnviarCategoria = async (
@@ -53,7 +71,7 @@ export const PrivilegioRegistro = ({
       const data: PrivilegioService = new PrivilegioService(
          privilegioId,
          tipo,
-         activo === "1",
+         activo.code === "1",
          abreviatura,
          fechaActualISO()
       );

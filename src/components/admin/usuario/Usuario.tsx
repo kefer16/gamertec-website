@@ -10,7 +10,6 @@ import {
 
 import { UsuarioRegistro } from "./UsuarioRegistro";
 import { funcionObtenerPrivilegios } from "../privilegio/Privilegio";
-import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { UsuarioEntity } from "../../../entities/usuario.entities";
 import { UsuarioService } from "../../../services/usuario.service";
@@ -18,6 +17,8 @@ import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
+import { fechaActualISO } from "../../../utils/funciones.utils";
+import { DropdownProps } from "../categoria/CategoriaRegistro";
 
 const columnsUsuario2: ColumnProps[] = [
    {
@@ -69,12 +70,6 @@ const columnsUsuario2: ColumnProps[] = [
       style: { width: "5%" },
    },
    {
-      type: TypeColumn.MONEY,
-      field: "dinero",
-      header: "Dinero",
-      style: { width: "5%" },
-   },
-   {
       type: TypeColumn.STATUS,
       field: "estado",
       header: "Estado",
@@ -84,7 +79,7 @@ const columnsUsuario2: ColumnProps[] = [
 export interface ValuesUsuarioProps {
    id: number;
    index: number;
-   fecha_registro: Date;
+   fecha_registro: string;
    privilegio_id: number;
    privilegio_nombre?: string;
    usuario_nombre: string;
@@ -92,14 +87,13 @@ export interface ValuesUsuarioProps {
    correo: string;
    foto: ImagenProps;
    usuario: string;
-   dinero: number;
    estado: EstadoProps;
 }
 
 interface Props {
    nombreFormulario: string;
 }
-let arrayPrivilegio: ComboboxProps[] = [];
+let arrayPrivilegio: DropdownProps[] = [];
 
 export const Usuario = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
@@ -134,14 +128,13 @@ export const Usuario = ({ nombreFormulario }: Props) => {
                      fecha_registro: element.fecha_registro,
                      privilegio_id: element.fk_privilegio,
                      privilegio_nombre: arrayPrivilegio.find(
-                        (privilegio: ComboboxProps) =>
-                           privilegio.valor === element.fk_privilegio
-                     )?.descripcion,
+                        (privilegio: DropdownProps) =>
+                           privilegio.code === String(element.fk_privilegio)
+                     )?.name,
                      usuario_nombre: element.nombre,
                      usuario_apellido: element.apellido,
                      correo: element.correo,
                      usuario: element.usuario,
-                     dinero: element.dinero,
                      foto: {
                         img: element.foto,
                         alt: element.usuario,
@@ -170,9 +163,8 @@ export const Usuario = ({ nombreFormulario }: Props) => {
             "",
             "",
             "",
-            0,
             "",
-            new Date(),
+            fechaActualISO(),
             "",
             "",
             false,
@@ -206,7 +198,6 @@ export const Usuario = ({ nombreFormulario }: Props) => {
             itemEdicion.correo,
             itemEdicion.usuario,
             "",
-            itemEdicion.dinero,
             itemEdicion.foto.img,
             itemEdicion.fecha_registro,
             "",
@@ -286,6 +277,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
             onHide={() => setDialogo(false)}
             message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${usuarioSeleccionado.usuario}?`}
             header="Confirmación"
+            acceptClassName="p-button-danger"
             icon={<IconAlertTriangle size={24} />}
             accept={funcionEliminar}
             reject={funcionCerrarDialogo}

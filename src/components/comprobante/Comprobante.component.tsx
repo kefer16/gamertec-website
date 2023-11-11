@@ -85,7 +85,7 @@ export const Comprobante = () => {
          distrito_id: 10102,
          usuario_id: usuarioId,
          preferencia_id: preferencia_id,
-         fecha_registro: convertirFechaSQL(fechaActualISO().toISOString()),
+         fecha_registro: convertirFechaSQL(fechaActualISO()),
       };
 
       await pedServ.registrar(data).catch((error: Error) => {});

@@ -3,7 +3,6 @@ import { funcionObtenerCategorias } from "../admin/categoria/Categoria";
 import styled from "styled-components";
 import { funcionListarModelosPorFiltro } from "../../apis/producto.api";
 import { Link } from "react-router-dom";
-import { ComboboxProps } from "../../interfaces/combobox.interface";
 import { ModeloPorFiltroProps } from "../../interfaces/modelo.interface";
 import { InputText } from "primereact/inputtext";
 // import { IconSearch } from "@tabler/icons-react";
@@ -29,11 +28,11 @@ export const Products = () => {
    useEffect(() => {
       const obtenerData = async () => {
          let array: DropdownProps[] = [];
-         await funcionObtenerCategorias().then((resp: ComboboxProps[]) => {
+         await funcionObtenerCategorias().then((resp: DropdownProps[]) => {
             if (resp) {
                array = resp.map((item) => ({
-                  code: String(item.valor),
-                  name: item.descripcion,
+                  code: item.code,
+                  name: item.name,
                }));
             }
          });

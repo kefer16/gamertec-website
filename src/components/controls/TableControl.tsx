@@ -69,7 +69,9 @@ export const TableControl = <T extends object>({
                tableStyle={ancho}
                selection={filaSeleccionada}
                onSelectionChange={(e) => {
-                  funcionFilaSeleccionada(e.value);
+                  if (e.value !== null) {
+                     funcionFilaSeleccionada(e.value);
+                  }
                }}
                dataKey="id"
                loading={isLoading}

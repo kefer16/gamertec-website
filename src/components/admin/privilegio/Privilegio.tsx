@@ -8,11 +8,12 @@ import {
 } from "../../controls/TableControl";
 import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
-import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
+import { fechaActualISO } from "../../../utils/funciones.utils";
+import { DropdownProps } from "../categoria/CategoriaRegistro";
 
 const columnsPrivilegio2: ColumnProps[] = [
    {
@@ -50,7 +51,7 @@ const columnsPrivilegio2: ColumnProps[] = [
 export interface ValuesPrivilegioProps {
    id: number;
    index: number;
-   fecha_registro: Date;
+   fecha_registro: string;
    tipo: string;
    abreviatura: string;
    estado: EstadoProps;
@@ -59,14 +60,14 @@ interface Props {
    nombreFormulario: string;
 }
 
-export const funcionObtenerPrivilegios = async (): Promise<ComboboxProps[]> => {
-   const array: ComboboxProps[] = [];
+export const funcionObtenerPrivilegios = async (): Promise<DropdownProps[]> => {
+   const array: DropdownProps[] = [];
    await PrivilegioService.ListarTodos()
       .then((response) => {
          response.data.data.forEach((element: PrivilegioService) => {
             array.push({
-               valor: element.privilegio_id,
-               descripcion: element.tipo,
+               code: String(element.privilegio_id),
+               name: element.tipo,
             });
          });
       })
@@ -126,7 +127,9 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
    }, [mostrarNotificacion]);
 
    const funcionCrear = () => {
-      setItemSeleccionado(new PrivilegioService(0, "", false, "", new Date()));
+      setItemSeleccionado(
+         new PrivilegioService(0, "", false, "", fechaActualISO())
+      );
       setEsEdicion(false);
       setAbrirModal(true);
    };
@@ -218,6 +221,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
             onHide={() => setDialogo(false)}
             message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${privilegioSeleccionado.tipo}?`}
             header="Confirmación"
+            acceptClassName="p-button-danger"
             icon={<IconAlertTriangle size={24} />}
             accept={funcionEliminar}
             reject={funcionCerrarDialogo}

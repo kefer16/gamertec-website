@@ -9,7 +9,7 @@ export class ProductoService {
       public fk_modelo: number = 0,
       public fk_marca: number = 0,
       public fk_categoria: number = 0,
-      public fecha_registro: Date = new Date(),
+      public fecha_registro: string = "",
       public activo: boolean = false,
       public comprado: boolean = false
    ) {}

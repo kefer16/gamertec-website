@@ -1,7 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { fechaActualISO } from "../../../utils/funciones.utils";
+import {
+   fechaActualISO,
+   fechaVisualizarCalendario,
+} from "../../../utils/funciones.utils";
 
-import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { UsuarioService } from "../../../services/usuario.service";
 import { UsuarioEntity } from "../../../entities/usuario.entities";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
@@ -19,7 +21,7 @@ interface Props {
    itemSeleccionado: UsuarioEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayPrivilegios: ComboboxProps[];
+   arrayPrivilegios: DropdownProps[];
 }
 
 export const UsuarioRegistro = ({
@@ -38,12 +40,14 @@ export const UsuarioRegistro = ({
    const [correo, setCorreo] = useState("");
    const [usuario, setUsuario] = useState("");
    const [contrasenia, setContrasenia] = useState("");
-   const [dinero, setDinero] = useState("0");
    const [foto, setFoto] = useState("");
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [activo, setActivo] = useState("0");
+   const [activo, setActivo] = useState<DropdownProps>({
+      code: "0",
+      name: "Inactivo",
+   });
    const [fk_privilegio, setFk_privilegio] = useState("0");
    const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
 
@@ -54,10 +58,21 @@ export const UsuarioRegistro = ({
       setCorreo(itemSeleccionado.correo);
       setUsuario(itemSeleccionado.usuario);
       setContrasenia(itemSeleccionado.contrasenia);
-      setDinero(String(itemSeleccionado.dinero));
       setFoto(itemSeleccionado.foto);
-      setFechaRegistro(itemSeleccionado.fecha_registro);
-      setActivo(itemSeleccionado.activo ? "1" : "0");
+      setFechaRegistro(
+         fechaVisualizarCalendario(itemSeleccionado.fecha_registro)
+      );
+      setActivo(
+         itemSeleccionado.activo
+            ? {
+                 code: "1",
+                 name: "Activo",
+              }
+            : {
+                 code: "0",
+                 name: "Inactivo",
+              }
+      );
       setFk_privilegio(String(itemSeleccionado.fk_privilegio));
    }, [itemSeleccionado]);
 
@@ -73,12 +88,11 @@ export const UsuarioRegistro = ({
          correo,
          usuario,
          contrasenia,
-         parseInt(dinero),
          foto,
          fechaActualISO(),
          "",
          "",
-         activo === "0",
+         activo.code === "1",
          parseInt(fk_privilegio)
       );
 
@@ -260,18 +274,6 @@ export const UsuarioRegistro = ({
                         onChange={(event) => setContrasenia(event.target.value)}
                      />
                   </div>
-                  <div>
-                     <label htmlFor="input-dinero">Dinero</label>
-                     <InputText
-                        id="input-dinero"
-                        type="number"
-                        name="dinero"
-                        style={{ width: "100%" }}
-                        value={dinero}
-                        onChange={(event) => setDinero(event.target.value)}
-                     />
-                  </div>
-
                   <div>
                      <label htmlFor="input-foto">Foto</label>
                      <InputText

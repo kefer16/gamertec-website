@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { CategoryService } from "../../../entities/categoria.entities";
-import { fechaActualISO } from "../../../utils/funciones.utils";
+import {
+   fechaActualISO,
+   fechaVisualizarCalendario,
+} from "../../../utils/funciones.utils";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
@@ -11,6 +14,11 @@ import { GamertecSesionContext } from "../../sesion/Sesion.component";
 export interface DropdownProps {
    name: string;
    code: string;
+}
+export interface DropdownPropsAnidado {
+   name: string;
+   code: string;
+   codeAnidado: string;
 }
 interface Props {
    nombreFormulario: string;
@@ -42,7 +50,10 @@ export const CategoryRegister = ({
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [categoriaId, setCategoriaId] = useState(0);
    const [nombre, setNombre] = useState("");
-   const [activo, setActivo] = useState("");
+   const [activo, setActivo] = useState<DropdownProps>({
+      code: "0",
+      name: "Inactivo",
+   });
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
@@ -51,8 +62,20 @@ export const CategoryRegister = ({
    useEffect(() => {
       setCategoriaId(itemSeleccionado.categoria_id);
       setNombre(itemSeleccionado.nombre);
-      setFechaRegistro(itemSeleccionado.fecha_registro);
-      setActivo(itemSeleccionado.activo ? "1" : "0");
+      setFechaRegistro(
+         fechaVisualizarCalendario(itemSeleccionado.fecha_registro)
+      );
+      setActivo(
+         itemSeleccionado.activo
+            ? {
+                 code: "1",
+                 name: "Activo",
+              }
+            : {
+                 code: "0",
+                 name: "Inactivo",
+              }
+      );
    }, [itemSeleccionado]);
 
    const funcionEnviarCategoria = async (
@@ -63,7 +86,7 @@ export const CategoryRegister = ({
       const dataCategoria: CategoryService = new CategoryService(
          categoriaId,
          nombre,
-         activo === "1",
+         activo.code === "1",
          fechaActualISO(),
          fechaActualISO()
       );
@@ -114,7 +137,7 @@ export const CategoryRegister = ({
    return (
       <>
          <Dialog
-            header={`Registrar ${nombreFormulario}`}
+            header={`${esEdicion ? "Editar" : "Registrar"} ${nombreFormulario}`}
             visible={abrir}
             onHide={funcionCerrarModal}
             headerStyle={{ background: "#f8f9fa" }}
@@ -182,7 +205,7 @@ export const CategoryRegister = ({
                   style={{ marginTop: "24px" }}
                   severity={esEdicion ? "warning" : "success"}
                   type="submit"
-                  label={esEdicion ? "Editar" : "Registrarse"}
+                  label={esEdicion ? "Editar" : "Registrar"}
                />
             </form>
          </Dialog>

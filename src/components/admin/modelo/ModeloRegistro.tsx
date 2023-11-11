@@ -1,17 +1,26 @@
 import Compressor from "compressorjs";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
 import {
-   ComboboxProps,
-   ComboboxAnidadoProps,
-} from "../../../interfaces/combobox.interface";
+   ChangeEvent,
+   useCallback,
+   useContext,
+   useEffect,
+   useState,
+} from "react";
 import { ModeloEntity } from "../../../entities/modelo.entity";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
-import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
-import { fechaActualISO } from "../../../utils/funciones.utils";
+import {
+   DropdownProps,
+   DropdownPropsAnidado,
+   estadoCategoria,
+} from "../categoria/CategoriaRegistro";
+import {
+   fechaActualISO,
+   fechaVisualizarCalendario,
+} from "../../../utils/funciones.utils";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import {
    ColorPicker,
@@ -19,6 +28,11 @@ import {
    ColorPickerHSBType,
    ColorPickerRGBType,
 } from "primereact/colorpicker";
+import {
+   InputNumber,
+   InputNumberValueChangeEvent,
+} from "primereact/inputnumber";
+import { InputTextarea } from "primereact/inputtextarea";
 
 interface Props {
    nombreFormulario: string;
@@ -27,14 +41,14 @@ interface Props {
    itemSeleccionado: ModeloEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayCategorias: ComboboxProps[];
-   arrayMarcas: ComboboxAnidadoProps[];
+   arrayCategorias: DropdownProps[];
+   arrayMarcas: DropdownPropsAnidado[];
 }
 
-// interface ChangeValueSelect {
-//    valorCategoria: string;
-//    valorMarca: string;
-// }
+interface ChangeValueSelect {
+   valorPadre: string;
+   valorHijo: string;
+}
 export const ModeloRegistro = ({
    nombreFormulario,
    abrir,
@@ -54,58 +68,75 @@ export const ModeloRegistro = ({
    const [color, setColor] = useState<
       string | ColorPickerRGBType | ColorPickerHSBType
    >("");
-   const [precio, setPrecio] = useState("0");
+   const [precio, setPrecio] = useState<number>(0.0);
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [stock, setStock] = useState("0");
-   const [numeroSeries, setNumeroSeries] = useState("0");
-   const [activo, setActivo] = useState("0");
-   const [fkMarca, setFkMarca] = useState("0");
-   const [fkCategoria, setFkCategoria] = useState("0");
+   const [activo, setActivo] = useState<DropdownProps>({
+      code: "0",
+      name: "Inactivo",
+   });
+   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+
+   const [fkMarca, setFkMarca] = useState<DropdownPropsAnidado>(
+      {} as DropdownPropsAnidado
+   );
+   const [fkCategoria, setFkCategoria] = useState<DropdownProps>(
+      {} as DropdownProps
+   );
    const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
-      ComboboxAnidadoProps[]
+      DropdownPropsAnidado[]
    >([]);
 
    const [seleccionaImagen, setSeleccionaImagen] = useState<string | null>(
       null
    );
 
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+   const funcionObtenerMarcaPorCategoria = useCallback(
+      ({ valorPadre, valorHijo }: ChangeValueSelect) => {
+         const valorCategoria = arrayCategorias.find(
+            (item) => item.code === valorPadre
+         ) ?? { code: "", name: "" };
 
+         setFkCategoria({
+            code: valorCategoria.code,
+            name: valorCategoria.name,
+         });
+         const arrayNuevo: DropdownPropsAnidado[] = arrayMarcas.filter(
+            (item) => item.codeAnidado === valorPadre
+         );
+
+         const valorMarca = arrayNuevo.find(
+            (item) => item.code === valorHijo
+         ) ?? { code: "", name: "", codeAnidado: "" };
+
+         setArrayAnidadoMarca(arrayNuevo);
+         setFkMarca(valorMarca);
+      },
+      [arrayCategorias, arrayMarcas]
+   );
    useEffect(() => {
       setModeloId(itemSeleccionado.modelo_id);
       setNombre(itemSeleccionado.nombre);
       setDescripcion(itemSeleccionado.descripcion);
       setFoto(itemSeleccionado.foto);
-
       setSeleccionaImagen(itemSeleccionado.foto);
       setCaracteristicas(itemSeleccionado.caracteristicas);
       setColor(itemSeleccionado.color);
-      setPrecio(String(itemSeleccionado.precio));
-      setFechaRegistro(itemSeleccionado.fecha_registro);
-      setStock(String(itemSeleccionado.stock));
-      setActivo(itemSeleccionado.activo ? "1" : "0");
-      setFkCategoria(String(itemSeleccionado.fk_categoria));
-      const nuevoArray: ComboboxAnidadoProps[] = arrayMarcas.filter(
-         (item) => item.valor === itemSeleccionado.fk_categoria
+      setPrecio(itemSeleccionado.precio);
+      setFechaRegistro(
+         fechaVisualizarCalendario(itemSeleccionado.fecha_registro)
       );
-      setArrayAnidadoMarca(nuevoArray);
-      setFkMarca(String(itemSeleccionado.fk_marca));
-   }, [itemSeleccionado, arrayMarcas]);
-
-   // const funcionObtenerMarcaPorCategoria = ({
-   //    valorCategoria,
-   //    valorMarca,
-   // }: ChangeValueSelect) => {
-   //    setFkCategoria(valorCategoria);
-   //    const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
-   //       (item) => item.valor === parseInt(valorCategoria)
-   //    );
-
-   //    setArrayAnidadoMarca(arrayNuevo);
-   //    setFkMarca(valorMarca);
-   // };
+      setActivo(
+         itemSeleccionado.activo
+            ? { code: "1", name: "Activo" }
+            : { code: "0", name: "Inactivo" }
+      );
+      funcionObtenerMarcaPorCategoria({
+         valorPadre: String(itemSeleccionado.fk_categoria),
+         valorHijo: String(itemSeleccionado.fk_marca),
+      });
+   }, [itemSeleccionado, funcionObtenerMarcaPorCategoria]);
 
    const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -117,12 +148,11 @@ export const ModeloRegistro = ({
          foto ? foto : "",
          caracteristicas,
          color.toString(),
-         parseInt(precio),
+         precio,
          fechaActualISO(),
-         parseInt(stock),
-         activo === "1",
-         parseInt(fkMarca),
-         parseInt(fkCategoria)
+         activo.code === "1",
+         parseInt(fkMarca.code),
+         parseInt(fkCategoria.code)
       );
 
       if (esEdicion) {
@@ -258,9 +288,13 @@ export const ModeloRegistro = ({
                         id="select-categoria"
                         style={{ width: "100%" }}
                         value={fkCategoria}
-                        onChange={(e: DropdownChangeEvent) =>
-                           setFkCategoria(e.value)
-                        }
+                        onChange={(e: DropdownChangeEvent) => {
+                           setFkCategoria(e.value);
+                           funcionObtenerMarcaPorCategoria({
+                              valorPadre: e.value.code,
+                              valorHijo: "0",
+                           });
+                        }}
                         options={arrayCategorias}
                         optionLabel="name"
                         placeholder="Selec. Categoria"
@@ -356,15 +390,18 @@ export const ModeloRegistro = ({
                      <label htmlFor="input-caracteristicas">
                         Caracteristicas
                      </label>
-                     <InputText
+
+                     <InputTextarea
                         id="input-caracteristicas"
-                        type="text"
-                        name="caracteristicas"
                         style={{ width: "100%" }}
+                        name="caracteristicas"
+                        autoResize
                         value={caracteristicas}
-                        onChange={(event) =>
-                           setCaracteristicas(event.target.value)
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                           setCaracteristicas(e.target.value)
                         }
+                        rows={5}
+                        cols={30}
                      />
                   </div>
                   <div>
@@ -381,42 +418,19 @@ export const ModeloRegistro = ({
                   </div>
                   <div>
                      <label htmlFor="input-precio">Precio</label>
-                     <InputText
-                        id="input-precio"
-                        type="number"
-                        name="precio"
+
+                     <InputNumber
+                        inputId="input-precio"
                         style={{ width: "100%" }}
                         value={precio}
-                        onChange={(event) => setPrecio(event.target.value)}
-                     />
-                  </div>
-                  <div>
-                     <label htmlFor="input-stock">Stock</label>
-                     <InputText
-                        id="input-stock"
-                        type="number"
-                        name="stock"
-                        style={{ width: "100%" }}
-                        value={stock}
-                        onChange={(event) => setStock(event.target.value)}
-                     />
-                  </div>
-                  <div>
-                     <label htmlFor="input-numero-serie">
-                        Numeros de Serie
-                     </label>
-                     <InputText
-                        id="input-numero-serie"
-                        type="text"
-                        name="numero_serie"
-                        style={{ width: "100%" }}
-                        value={numeroSeries}
-                        onChange={(event) =>
-                           setNumeroSeries(event.target.value)
+                        onValueChange={(e: InputNumberValueChangeEvent) =>
+                           setPrecio(e.value ?? 0)
                         }
+                        mode="currency"
+                        currency="PEN"
+                        locale="es-ES"
                      />
                   </div>
-
                   <div>
                      <label htmlFor="select-estado">Estado</label>
                      <Dropdown

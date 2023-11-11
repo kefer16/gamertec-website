@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 
 import {
    Modal,
@@ -53,35 +53,38 @@ export const ModalHistoria = ({
    const [page, setPage] = useState(0);
    const [rowsPerPage, setRowsPerPage] = useState(5);
 
+   const buscarUsuarioHistorial = useCallback(
+      async (idUsuario: number) => {
+         const historial: UsuarioEntity[] = [];
+
+         const usuServ = new UsuarioService();
+
+         await usuServ
+            .historial(idUsuario)
+            .then((resp: RespuestaEntity<UsuarioEntity[]>) => {
+               if (resp.data) {
+                  resp.data.forEach((element: UsuarioEntity, index: number) => {
+                     element.index = index + 1;
+                     historial.push(element);
+                  });
+                  setHistoriales(historial);
+               }
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  titulo: "Error",
+                  detalle: `surgio un error: ${error.message}`,
+                  pegado: true,
+               });
+            });
+      },
+      [mostrarNotificacion]
+   );
+
    useEffect(() => {
       buscarUsuarioHistorial(itemSeleccionado.usuario_id);
-   }, [itemSeleccionado]);
-
-   const buscarUsuarioHistorial = async (idUsuario: number) => {
-      const historial: UsuarioEntity[] = [];
-
-      const usuServ = new UsuarioService();
-
-      await usuServ
-         .historial(idUsuario)
-         .then((resp: RespuestaEntity<UsuarioEntity[]>) => {
-            if (resp.data) {
-               resp.data.forEach((element: UsuarioEntity, index: number) => {
-                  element.index = index + 1;
-                  historial.push(element);
-               });
-               setHistoriales(historial);
-            }
-         })
-         .catch((error: Error) => {
-            mostrarNotificacion({
-               tipo: "error",
-               titulo: "Error",
-               detalle: `surgio un error: ${error.message}`,
-               pegado: true,
-            });
-         });
-   };
+   }, [itemSeleccionado, buscarUsuarioHistorial]);
 
    return (
       <>
@@ -131,18 +134,6 @@ export const ModalHistoria = ({
                                  page * rowsPerPage + rowsPerPage
                               )
                               .map((historial, index) => {
-                                 const dineroAnterior =
-                                    historiales[
-                                       historiales.length - historial.index
-                                    ]?.dinero;
-                                 const dineroActual = historial.dinero;
-
-                                 let activa = false;
-
-                                 if (dineroAnterior !== dineroActual) {
-                                    activa = true;
-                                 }
-
                                  return (
                                     <TableRow key={index}>
                                        <TableCell>{historial.index}</TableCell>
@@ -164,15 +155,7 @@ export const ModalHistoria = ({
                                        <TableCell>
                                           {historial.usuario}
                                        </TableCell>
-                                       <TableCell
-                                          sx={
-                                             activa
-                                                ? { background: "yellow" }
-                                                : {}
-                                          }
-                                       >
-                                          {historial.dinero}
-                                       </TableCell>
+
                                        <TableCell>
                                           {historial.activo
                                              ? "activo"

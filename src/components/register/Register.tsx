@@ -9,6 +9,8 @@ import { Button } from "primereact/button";
 import { IconUserPlus } from "@tabler/icons-react";
 import { UsuarioService } from "../../services/usuario.service";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { fechaActualISO } from "../../utils/funciones.utils";
+import { Password } from "primereact/password";
 
 export const Register = () => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
@@ -124,9 +126,8 @@ export const Register = () => {
          email,
          user,
          password,
-         0,
          "",
-         new Date(),
+         fechaActualISO(),
          "",
          "",
          true,
@@ -247,14 +248,17 @@ export const Register = () => {
                         Contraseña
                      </label>
 
-                     <InputText
+                     <Password
                         id="password"
-                        value={password}
+                        className="w-full mb-3"
+                        inputClassName="w-full"
                         type="password"
                         placeholder="Ingrese contraseña"
-                        className="w-full mb-3"
                         name="password"
+                        value={password}
                         onChange={(e) => onChange(e)}
+                        toggleMask
+                        feedback={false}
                      />
 
                      <label
@@ -263,14 +267,18 @@ export const Register = () => {
                      >
                         Confirmar Contraseña
                      </label>
-                     <InputText
+
+                     <Password
                         id="repeat_password"
+                        className="w-full mb-3"
+                        inputClassName="w-full"
                         type="password"
                         placeholder="Confirme contraseña"
-                        className="w-full mb-3"
                         name="repeat_password"
                         value={repeat_password}
                         onChange={(e) => onChange(e)}
+                        toggleMask
+                        feedback={false}
                      />
 
                      <Button

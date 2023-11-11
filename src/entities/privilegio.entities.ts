@@ -8,7 +8,7 @@ export class PrivilegioService {
       public tipo: string = "",
       public activo: boolean = false,
       public abreviatura: string = "",
-      public fecha_registro: Date = new Date()
+      public fecha_registro: string = ""
    ) {}
 
    private static url = `${API_URL}/privilegio`;

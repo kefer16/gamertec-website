@@ -10,19 +10,19 @@ import {
 import { MarcaRegistro } from "./MarcaRegistro";
 import { MarcaService } from "../../../entities/marca.entities";
 import { funcionObtenerCategorias } from "../categoria/Categoria";
-import {
-   ComboboxProps,
-   ComboboxAnidadoProps,
-} from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { IconAlertTriangle } from "@tabler/icons-react";
+import {
+   DropdownProps,
+   DropdownPropsAnidado,
+} from "../categoria/CategoriaRegistro";
 
 export interface ValuesMarcaProps {
    id: number;
    index: number;
-   fecha_registro: Date;
+   fecha_registro: string;
    categoria_id: number;
    categoria_nombre?: string;
    marca_nombre: string;
@@ -64,19 +64,19 @@ interface Props {
    nombreFormulario: string;
 }
 
-let arrayCategoria: ComboboxProps[] = [];
+let arrayCategoria: DropdownProps[] = [];
 
 export const funcionObtenerMarcas = async (): Promise<
-   ComboboxAnidadoProps[]
+   DropdownPropsAnidado[]
 > => {
-   const array: ComboboxAnidadoProps[] = [];
+   const array: DropdownPropsAnidado[] = [];
    await MarcaService.ListarTodos()
       .then((respuesta) => {
          respuesta.data.data.forEach((element: MarcaService) => {
             array.push({
-               valor: element.fk_categoria,
-               valorAnidado: element.marca_id,
-               descripcion: element.nombre,
+               codeAnidado: String(element.fk_categoria),
+               code: String(element.marca_id),
+               name: element.nombre,
             });
          });
       })
@@ -113,9 +113,9 @@ export const Marca = ({ nombreFormulario }: Props) => {
                      index: index + 1,
                      categoria_id: element.fk_categoria,
                      categoria_nombre: arrayCategoria.find(
-                        (categoria: ComboboxProps) =>
-                           categoria.valor === element.fk_categoria
-                     )?.descripcion,
+                        (categoria: DropdownProps) =>
+                           categoria.code === String(element.fk_categoria)
+                     )?.name,
                      marca_nombre: element.nombre,
                      fecha_registro: element.fecha_registro,
                      estado: {
@@ -141,7 +141,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 
    const funcionEditar = () => {
       const itemEdicion = arrayMarca.find((item) =>
-         item.id === marcaSeleccionada?.id ? item : undefined
+         item.id === marcaSeleccionada.id ? item : undefined
       );
 
       if (itemEdicion === undefined) {
@@ -196,7 +196,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
 
    const funcionValidarEliminar = () => {
       const itemEdicion = arrayMarca.find((item) =>
-         item.id === marcaSeleccionada?.id ? item : undefined
+         item.id === marcaSeleccionada.id ? item : undefined
       );
 
       if (itemEdicion === undefined) {
@@ -234,6 +234,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
             onHide={() => setDialogo(false)}
             message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${marcaSeleccionada.marca_nombre}?`}
             header="Confirmación"
+            acceptClassName="p-button-danger"
             icon={<IconAlertTriangle size={24} />}
             accept={funcionEliminar}
             reject={funcionCerrarDialogo}

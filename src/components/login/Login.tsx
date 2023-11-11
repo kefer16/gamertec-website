@@ -14,6 +14,7 @@ import { IconLogout } from "@tabler/icons-react";
 import { UsuarioService } from "../../services/usuario.service";
 import { RespuestaEntity } from "../../entities/respuesta.entity";
 import { LogeoUsuario } from "../../interfaces/usuario.interface";
+import { Password } from "primereact/password";
 
 export const Login = () => {
    const { obtenerSesion, obtenerCantidadCarrito, mostrarNotificacion } =
@@ -142,7 +143,7 @@ export const Login = () => {
                   </Link>
                </div>
 
-               <div>
+               <div style={{ display: "flex", flexDirection: "column" }}>
                   <label
                      htmlFor="user"
                      className="block text-900 font-medium mb-2"
@@ -152,10 +153,10 @@ export const Login = () => {
 
                   <InputText
                      id="user"
+                     className="w-full mb-3"
                      value={user}
                      type="text"
                      placeholder="Ingrese usuario"
-                     className="w-full mb-3"
                      name="user"
                      onChange={(e) => onChange(e)}
                      autoComplete="none"
@@ -163,18 +164,22 @@ export const Login = () => {
 
                   <label
                      htmlFor="password"
-                     className="text-900 font-medium mb-2"
+                     className="block text-900 font-medium mb-2"
                   >
                      Contraseña
                   </label>
-                  <InputText
+
+                  <Password
                      id="password"
+                     className="w-full mb-3"
+                     inputClassName="w-full"
                      type="password"
                      placeholder="Ingrese contraseña"
-                     className="w-full mb-3"
                      name="password"
                      value={password}
                      onChange={(e) => onChange(e)}
+                     toggleMask
+                     feedback={false}
                   />
 
                   <div className="flex align-items-center justify-content-between mb-6">

@@ -13,14 +13,15 @@ import { funcionObtenerMarcas } from "../marca/Marca";
 import { ProductoRegistro } from "./ProductoRegistro";
 import { funcionObteneModelo } from "../modelo/Modelo";
 import { ProductoService } from "../../../entities/producto.entities";
-import {
-   ComboboxProps,
-   ComboboxAnidadoProps,
-} from "../../../interfaces/combobox.interface";
+import { ComboboxAnidadoProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import {
+   DropdownProps,
+   DropdownPropsAnidado,
+} from "../categoria/CategoriaRegistro";
 
 const columnsProducto2: ColumnProps[] = [
    {
@@ -70,7 +71,7 @@ const columnsProducto2: ColumnProps[] = [
 export interface ValuesProductoProps {
    id: number;
    index: number;
-   fecha_registro: Date;
+   fecha_registro: string;
    categoria_id: number;
    categoria_nombre?: string;
    marca_id: number;
@@ -85,8 +86,8 @@ interface Props {
    nombreFormulario: string;
 }
 
-let arrayCategoria: ComboboxProps[] = [];
-let arrayMarca: ComboboxAnidadoProps[] = [];
+let arrayCategoria: DropdownProps[] = [];
+let arrayMarca: DropdownPropsAnidado[] = [];
 let arrayModelo: ComboboxAnidadoProps[] = [];
 
 export const Producto = ({ nombreFormulario }: Props) => {
@@ -120,14 +121,14 @@ export const Producto = ({ nombreFormulario }: Props) => {
                      fecha_registro: element.fecha_registro,
                      categoria_id: element.fk_categoria,
                      categoria_nombre: arrayCategoria.find(
-                        (categoria: ComboboxProps) =>
-                           categoria.valor === element.fk_categoria
-                     )?.descripcion,
+                        (categoria: DropdownProps) =>
+                           categoria.code === String(element.fk_categoria)
+                     )?.name,
                      marca_id: element.fk_marca,
                      marca_nombre: arrayMarca.find(
-                        (marca: ComboboxAnidadoProps) =>
-                           marca.valorAnidado === element.fk_marca
-                     )?.descripcion,
+                        (marca: DropdownPropsAnidado) =>
+                           marca.codeAnidado === String(element.fk_marca)
+                     )?.name,
                      modelo_id: element.fk_modelo,
                      modelo_nombre: arrayModelo.find(
                         (modelo: ComboboxAnidadoProps) =>

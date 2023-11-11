@@ -7,12 +7,12 @@ import {
 import { ToolbarControl } from "../../controls/ToobarControl";
 import { CategoryService } from "../../../entities/categoria.entities";
 import { useContext, useEffect, useState } from "react";
-import { CategoryRegister } from "./CategoriaRegistro";
+import { CategoryRegister, DropdownProps } from "./CategoriaRegistro";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 const columnsCategorias2: ColumnProps[] = [
    {
@@ -45,8 +45,8 @@ export interface ValuesCategoriaProps {
    id: number;
    index: number;
    categoria_nombre: string;
-   fecha_registro: Date;
-   fecha_actualizacion: Date;
+   fecha_registro: string;
+   fecha_actualizacion: string;
    estado: EstadoProps;
 }
 
@@ -54,14 +54,14 @@ interface Props {
    nombreFormulario: string;
 }
 
-export const funcionObtenerCategorias = async (): Promise<ComboboxProps[]> => {
-   const array: ComboboxProps[] = [];
+export const funcionObtenerCategorias = async (): Promise<DropdownProps[]> => {
+   const array: DropdownProps[] = [];
    await CategoryService.ListarTodos()
       .then((respuesta) => {
          respuesta.data.data.forEach((element: CategoryService) => {
             array.push({
-               valor: element.categoria_id,
-               descripcion: element.nombre,
+               code: String(element.categoria_id),
+               name: element.nombre,
             });
          });
       })
@@ -152,13 +152,30 @@ export const Categoria = ({ nombreFormulario }: Props) => {
       setAbrirModal(true);
    };
 
-   const funcionEliminarUno = async (id: number) => {
-      await CategoryService.EliminarUno(id)
+   const funcionValidarEliminar = async () => {
+      const eliminarItem = arrayCategoria.find((item) =>
+         item.id === categoriaSeleccionada.id ? item : undefined
+      );
+
+      if (eliminarItem === undefined) {
+         mostrarNotificacion({
+            tipo: "warn",
+            titulo: "Alerta",
+            detalle: `Elija un ${nombreFormulario} para poder eliminar`,
+            pegado: false,
+         });
+         funcionCerrarDialogo();
+         return;
+      }
+      setDialogo(true);
+   };
+   const funcionEliminar = async () => {
+      await CategoryService.EliminarUno(categoriaSeleccionada.id)
          .then((response) => {
             if (response.data.code === 200) {
                mostrarNotificacion({
-                  tipo: "warn",
-                  titulo: "Alerta",
+                  tipo: "success",
+                  titulo: "Éxito",
                   detalle: `${nombreFormulario} se eliminó correctamente`,
                   pegado: false,
                });
@@ -179,23 +196,6 @@ export const Categoria = ({ nombreFormulario }: Props) => {
          });
    };
 
-   const funcionEliminar = async () => {
-      const eliminarItem = arrayCategoria.find((item) =>
-         item.id === categoriaSeleccionada?.id ? item : undefined
-      );
-
-      if (eliminarItem === undefined) {
-         mostrarNotificacion({
-            tipo: "warn",
-            titulo: "Alerta",
-            detalle: `Elija un ${nombreFormulario} para poder eliminar`,
-            pegado: false,
-         });
-         funcionCerrarDialogo();
-         return;
-      }
-   };
-
    const funcionCerrarModal = () => {
       setAbrirModal(false);
    };
@@ -209,10 +209,11 @@ export const Categoria = ({ nombreFormulario }: Props) => {
          <ConfirmDialog
             visible={dialogo}
             onHide={() => setDialogo(false)}
-            message="Are you sure you want to proceed?"
-            header="Confirmation"
-            icon="pi pi-exclamation-triangle"
-            accept={() => funcionEliminarUno(1)}
+            message={`¿Estas seguro que deseas eliminar la ${nombreFormulario}: ${categoriaSeleccionada.categoria_nombre}?`}
+            header="Confirmación"
+            acceptClassName="p-button-danger"
+            icon={<IconAlertTriangle size={24} />}
+            accept={funcionEliminar}
             reject={funcionCerrarDialogo}
          />
 
@@ -222,7 +223,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
          <ToolbarControl
             functionCrear={funcionCrearCategoria}
             functionActualizar={funcionEditarCategoria}
-            functionEliminar={funcionEliminar}
+            functionEliminar={funcionValidarEliminar}
          />
          <TableControl<ValuesCategoriaProps>
             ancho={{ minWidth: "50rem" }}

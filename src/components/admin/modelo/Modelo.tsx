@@ -11,15 +11,17 @@ import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ModeloRegistro } from "./ModeloRegistro";
 
 import { funcionObtenerMarcas } from "../marca/Marca";
-import {
-   ComboboxProps,
-   ComboboxAnidadoProps,
-} from "../../../interfaces/combobox.interface";
+import { ComboboxAnidadoProps } from "../../../interfaces/combobox.interface";
 import { ModeloEntity } from "../../../entities/modelo.entity";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { fechaActualISO } from "../../../utils/funciones.utils";
+import {
+   DropdownProps,
+   DropdownPropsAnidado,
+} from "../categoria/CategoriaRegistro";
 
 const columnsModelo2: ColumnProps[] = [
    {
@@ -71,12 +73,6 @@ const columnsModelo2: ColumnProps[] = [
       style: { width: "4%" },
    },
    {
-      type: TypeColumn.NUMBER,
-      field: "stock",
-      header: "Stock",
-      style: { width: "1%" },
-   },
-   {
       type: TypeColumn.STATUS,
       field: "estado",
       header: "Estado",
@@ -87,7 +83,7 @@ const columnsModelo2: ColumnProps[] = [
 export interface ValuesModeloProps {
    id: number;
    index: number;
-   fecha_registro: Date;
+   fecha_registro: string;
    categoria_id: number;
    categoria_nombre?: string;
    marca_id: number;
@@ -96,7 +92,6 @@ export interface ValuesModeloProps {
    producto_nombre: string;
    foto: ImagenProps;
    precio: number;
-   stock: number;
    color: string;
    caracteristicas: string;
    estado: EstadoProps;
@@ -105,8 +100,8 @@ interface Props {
    nombreFormulario: string;
 }
 
-let arrayCategoria: ComboboxProps[] = [];
-let arrayMarca: ComboboxAnidadoProps[] = [];
+let arrayCategoria: DropdownProps[] = [];
+let arrayMarca: DropdownPropsAnidado[] = [];
 
 export const funcionObteneModelo = async (): Promise<
    ComboboxAnidadoProps[]
@@ -153,14 +148,14 @@ export const Modelo = ({ nombreFormulario }: Props) => {
                      fecha_registro: element.fecha_registro,
                      categoria_id: element.fk_categoria,
                      categoria_nombre: arrayCategoria.find(
-                        (categoria: ComboboxProps) =>
-                           categoria.valor === element.fk_categoria
-                     )?.descripcion,
+                        (categoria: DropdownProps) =>
+                           categoria.code === String(element.fk_categoria)
+                     )?.name,
                      marca_id: element.fk_marca,
                      marca_nombre: arrayMarca.find(
-                        (marca: ComboboxAnidadoProps) =>
-                           marca.valorAnidado === element.fk_marca
-                     )?.descripcion,
+                        (marca: DropdownPropsAnidado) =>
+                           marca.code === String(element.fk_marca)
+                     )?.name,
                      modelo_nombre: element.nombre,
                      producto_nombre: element.descripcion,
                      foto: {
@@ -168,7 +163,6 @@ export const Modelo = ({ nombreFormulario }: Props) => {
                         alt: element.descripcion,
                      },
                      precio: element.precio,
-                     stock: element.stock,
                      color: element.color,
                      caracteristicas: element.caracteristicas,
                      estado: {
@@ -189,7 +183,19 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
    const funcionCrear = () => {
       setItemSeleccionado(
-         new ModeloEntity(0, "", "", "", "", "", 0, new Date(), 0, false, 0, 0)
+         new ModeloEntity(
+            0,
+            "",
+            "",
+            "",
+            "",
+            "",
+            0,
+            fechaActualISO(),
+            false,
+            0,
+            0
+         )
       );
       setEsEdicion(false);
       setAbrirModal(true);
@@ -219,7 +225,6 @@ export const Modelo = ({ nombreFormulario }: Props) => {
             itemEdicion.color,
             itemEdicion.precio,
             itemEdicion.fecha_registro,
-            itemEdicion.stock,
             itemEdicion.estado.valor,
             itemEdicion.marca_id,
             itemEdicion.categoria_id

@@ -2,16 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 
 import { ProductoService } from "../../../entities/producto.entities";
-import {
-   ComboboxProps,
-   ComboboxAnidadoProps,
-} from "../../../interfaces/combobox.interface";
+import { ComboboxAnidadoProps } from "../../../interfaces/combobox.interface";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
+import {
+   DropdownProps,
+   DropdownPropsAnidado,
+   estadoCategoria,
+} from "../categoria/CategoriaRegistro";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 
 interface Props {
@@ -21,8 +22,8 @@ interface Props {
    itemSeleccionado: ProductoService;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayCategorias: ComboboxProps[];
-   arrayMarcas: ComboboxAnidadoProps[];
+   arrayCategorias: DropdownProps[];
+   arrayMarcas: DropdownPropsAnidado[];
    arrayModelos: ComboboxAnidadoProps[];
 }
 
@@ -53,7 +54,7 @@ export const ProductoRegistro = ({
    const [activo, setActivo] = useState("0");
 
    const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
-      ComboboxAnidadoProps[]
+      DropdownPropsAnidado[]
    >([]);
    const [arrayAnidadoModelo, setArrayAnidadoModelo] = useState<
       ComboboxAnidadoProps[]
@@ -68,8 +69,8 @@ export const ProductoRegistro = ({
 
       setFkCategoria(String(itemSeleccionado.fk_categoria));
 
-      const nuevoArrayMarca: ComboboxAnidadoProps[] = arrayMarcas.filter(
-         (item) => item.valor === itemSeleccionado.fk_categoria
+      const nuevoArrayMarca: DropdownPropsAnidado[] = arrayMarcas.filter(
+         (item) => item.code === String(itemSeleccionado.fk_categoria)
       );
       setArrayAnidadoMarca(nuevoArrayMarca);
       setFkMarca(String(itemSeleccionado.fk_marca));

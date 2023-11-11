@@ -1,7 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { fechaActualISO } from "../../../utils/funciones.utils";
+import {
+   fechaActualISO,
+   fechaVisualizarCalendario,
+} from "../../../utils/funciones.utils";
 import { MarcaService } from "../../../entities/marca.entities";
-import { ComboboxProps } from "../../../interfaces/combobox.interface";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
@@ -17,7 +19,7 @@ interface Props {
    itemSeleccionado: MarcaService;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayCategorias: ComboboxProps[];
+   arrayCategorias: DropdownProps[];
 }
 
 export const MarcaRegistro = ({
@@ -35,21 +37,33 @@ export const MarcaRegistro = ({
    const [fecha_registro, setFecha_registro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [activo, setActivo] = useState("");
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
-   const [estado, setEstado] = useState<DropdownProps>({
+   const [activo, setActivo] = useState<DropdownProps>({
       code: "0",
-      name: "Todas las Categorias",
+      name: "Inactivo",
    });
-   const [fkCategoria, setFkCategoria] = useState("0");
+   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+   const [fkCategoria, setFkCategoria] = useState<DropdownProps>(
+      {} as DropdownProps
+   );
 
    useEffect(() => {
       setMarcaId(itemSeleccionado.marca_id);
       setNombre(itemSeleccionado.nombre);
-      setFecha_registro(itemSeleccionado.fecha_registro);
-      setFkCategoria(String(itemSeleccionado.fk_categoria));
-      setActivo(itemSeleccionado.activo ? "1" : "0");
-   }, [itemSeleccionado]);
+      setFecha_registro(
+         fechaVisualizarCalendario(itemSeleccionado.fecha_registro)
+      );
+      setFkCategoria(
+         arrayCategorias.find(
+            (categoria: DropdownProps) =>
+               categoria.code === String(itemSeleccionado.fk_categoria)
+         ) ?? ({} as DropdownProps)
+      );
+      setActivo(
+         itemSeleccionado.activo
+            ? { code: "1", name: "Activo" }
+            : { code: "0", name: "Inactivo" }
+      );
+   }, [itemSeleccionado, arrayCategorias]);
 
    const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -57,8 +71,8 @@ export const MarcaRegistro = ({
       const data: MarcaService = new MarcaService(
          marcaId,
          nombre,
-         activo === "1",
-         parseInt(fkCategoria),
+         activo.code === "1",
+         parseInt(fkCategoria.code),
          fechaActualISO()
       );
       if (esEdicion) {
@@ -110,7 +124,7 @@ export const MarcaRegistro = ({
    return (
       <>
          <Dialog
-            header={`Registrar ${nombreFormulario}`}
+            header={`${esEdicion ? "Editar" : "Registrar"} ${nombreFormulario}`}
             visible={abrir}
             onHide={funcionCerrarModal}
             headerStyle={{ background: "#f8f9fa" }}
@@ -155,7 +169,7 @@ export const MarcaRegistro = ({
                      <Dropdown
                         id="select-categoria"
                         style={{ width: "100%" }}
-                        value={estado}
+                        value={fkCategoria}
                         onChange={(e: DropdownChangeEvent) =>
                            setFkCategoria(e.value)
                         }
@@ -181,9 +195,9 @@ export const MarcaRegistro = ({
                      <Dropdown
                         id="select-estado"
                         style={{ width: "100%" }}
-                        value={estado}
+                        value={activo}
                         onChange={(e: DropdownChangeEvent) =>
-                           setEstado(e.value)
+                           setActivo(e.value)
                         }
                         options={arrayEstado}
                         optionLabel="name"
@@ -195,7 +209,7 @@ export const MarcaRegistro = ({
                   style={{ marginTop: "24px" }}
                   severity={esEdicion ? "warning" : "success"}
                   type="submit"
-                  label={esEdicion ? "Editar" : "Registrarse"}
+                  label={esEdicion ? "Editar" : "Registrar"}
                />
             </form>
          </Dialog>
