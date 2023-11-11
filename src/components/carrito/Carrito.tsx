@@ -48,9 +48,7 @@ export const Carrito = () => {
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgió un error: ${error.message}`,
-                  pegado: true,
                });
             });
       },
@@ -68,17 +66,13 @@ export const Carrito = () => {
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Se eliminó el producto del carrito",
-               pegado: false,
             });
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgió un error: ${error.message}`,
-               pegado: true,
             });
          });
 
@@ -106,9 +100,7 @@ export const Carrito = () => {
          .catch(() => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: "Surgió un error al actualizar cantidad",
-               pegado: true,
             });
          });
 

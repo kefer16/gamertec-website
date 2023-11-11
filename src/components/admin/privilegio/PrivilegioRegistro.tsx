@@ -81,9 +81,7 @@ export const PrivilegioRegistro = ({
             .then((response) => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: `${nombreFormulario} se actualizó correctamente`,
-                  pegado: false,
                });
 
                funcionActualizarTabla();
@@ -92,9 +90,7 @@ export const PrivilegioRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
             });
       } else {
@@ -103,9 +99,7 @@ export const PrivilegioRegistro = ({
                if (response.data.code === 200) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Exito",
                      detalle: `${nombreFormulario} se registró correctamente`,
-                     pegado: false,
                   });
 
                   funcionActualizarTabla();
@@ -116,9 +110,7 @@ export const PrivilegioRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
                return;
             });

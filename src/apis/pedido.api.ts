@@ -4,6 +4,7 @@ import {
    IActualizaSerie,
    IPedidoCabeceraInterface,
 } from "../interfaces/pedido.interface";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class PedidoApi {
    static async crearPreferencia(usuario_id: number): Promise<AxiosResponse> {
@@ -21,8 +22,9 @@ export class PedidoApi {
             {},
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -42,8 +44,9 @@ export class PedidoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -67,8 +70,9 @@ export class PedidoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -81,8 +85,9 @@ export class PedidoApi {
          };
 
          return await axios.get(`${PedidoCabeceraEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -98,8 +103,9 @@ export class PedidoApi {
          };
 
          return await axios.get(`${PedidoCabeceraEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -118,8 +124,9 @@ export class PedidoApi {
             `${PedidoCabeceraEntity.url}/historial`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -131,8 +138,9 @@ export class PedidoApi {
             },
          };
          return await axios.get(`${PedidoCabeceraEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -147,16 +155,18 @@ export class PedidoApi {
             `${PedidoCabeceraEntity.url}/eliminar`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
    static async listarUltimo(): Promise<AxiosResponse> {
       try {
          return await axios.get(`${PedidoCabeceraEntity.url}/ultimo`);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -173,8 +183,9 @@ export class PedidoApi {
             `${PedidoCabeceraEntity.url}/pedidos_usuario`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -199,8 +210,9 @@ export class PedidoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

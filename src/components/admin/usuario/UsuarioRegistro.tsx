@@ -104,9 +104,7 @@ export const UsuarioRegistro = ({
             .then(() => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Éxito",
                   detalle: "Usuario se actualizó correctamente",
-                  pegado: false,
                });
                funcionActualizarTabla();
                funcionCerrarModal();
@@ -115,9 +113,7 @@ export const UsuarioRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       } else {
@@ -128,9 +124,7 @@ export const UsuarioRegistro = ({
             .then(() => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Éxito",
                   detalle: "Usuario se actualizó correctamente",
-                  pegado: false,
                });
                funcionActualizarTabla();
                funcionCerrarModal();
@@ -139,9 +133,7 @@ export const UsuarioRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       }

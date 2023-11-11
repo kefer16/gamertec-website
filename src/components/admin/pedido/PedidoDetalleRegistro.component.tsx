@@ -66,17 +66,13 @@ export const SeriesRegistro = ({
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Se agregó la(s) serie(s) correctamente ",
-               pegado: false,
             });
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgió un error: ${error.message}`,
-               pegado: true,
             });
          });
    };

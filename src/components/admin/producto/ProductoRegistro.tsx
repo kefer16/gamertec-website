@@ -127,9 +127,7 @@ export const ProductoRegistro = ({
                if (response.data.code === 200) {
                   mostrarNotificacion({
                      tipo: "warn",
-                     titulo: "Alerta",
                      detalle: `${nombreFormulario} se actualizó correctamente`,
-                     pegado: false,
                   });
                   funcionActualizarTabla();
                   funcionCerrarModal();
@@ -139,9 +137,7 @@ export const ProductoRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "warn",
-                  titulo: "Alerta",
                   detalle: error.message,
-                  pegado: false,
                });
                return;
             });
@@ -150,9 +146,7 @@ export const ProductoRegistro = ({
             .then((response) => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: `${nombreFormulario} se registró correctamente`,
-                  pegado: false,
                });
                funcionActualizarTabla();
                funcionCerrarModal();
@@ -161,9 +155,7 @@ export const ProductoRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: error.message,
-                  pegado: false,
                });
                return;
             });

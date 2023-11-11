@@ -8,6 +8,7 @@ import {
    ActualizaFotoUsuario,
    ActualizaNombreUsuario,
 } from "../interfaces/usuario.interface";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class UsuarioApi {
    static async logearse(
@@ -23,7 +24,7 @@ export class UsuarioApi {
          const body = JSON.stringify({ usuario, contrasenia });
          return await axios.post(`${UsuarioEntity.url}/login`, body, config);
       } catch (error: any) {
-         error.message = error.response.data.error.message;
+         error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }
    }
@@ -42,8 +43,9 @@ export class UsuarioApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -67,8 +69,9 @@ export class UsuarioApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -91,8 +94,9 @@ export class UsuarioApi {
          };
 
          return await axios.get(`${UsuarioEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -108,8 +112,9 @@ export class UsuarioApi {
          };
 
          return await axios.get(`${UsuarioEntity.url}/historial`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -121,8 +126,9 @@ export class UsuarioApi {
             },
          };
          return await axios.delete(`${UsuarioEntity.url}/eliminar`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -146,8 +152,9 @@ export class UsuarioApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -171,8 +178,9 @@ export class UsuarioApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -196,8 +204,9 @@ export class UsuarioApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -221,8 +230,9 @@ export class UsuarioApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
    async actualizarFoto(
@@ -246,6 +256,7 @@ export class UsuarioApi {
             config
          );
       } catch (error: any) {
+         error.message = personalizarMensajeError(error);
          return Promise.reject(error.response.data);
       }
    }

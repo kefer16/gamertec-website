@@ -208,9 +208,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: `Elija un ${nombreFormulario} para poder editar`,
-            pegado: false,
          });
          return;
       }
@@ -241,9 +239,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
             if (response.data.code === 200) {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: `${nombreFormulario} se eliminó correctamente`,
-                  pegado: false,
                });
                funcionCerrarDialogo();
                funcionListar();
@@ -252,9 +248,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Exito",
                detalle: error.message,
-               pegado: false,
             });
             funcionCerrarDialogo();
          });
@@ -267,9 +261,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: `Elija un ${nombreFormulario} para poder eliminar`,
-            pegado: false,
          });
          funcionCerrarDialogo();
          return;

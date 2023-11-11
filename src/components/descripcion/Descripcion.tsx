@@ -152,17 +152,13 @@ export const Descripcion = ({ modelo_id }: Props) => {
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Producto agregado al carrito",
-               pegado: false,
             });
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgio un error: ${error.message}`,
-               pegado: true,
             });
          });
       obtenerCantidadCarrito();

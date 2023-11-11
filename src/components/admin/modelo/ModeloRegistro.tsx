@@ -160,9 +160,7 @@ export const ModeloRegistro = ({
             .then((response) => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: `${nombreFormulario} se actualizó correctamente`,
-                  pegado: false,
                });
                funcionActualizarTabla();
                funcionCerrarModal();
@@ -170,9 +168,7 @@ export const ModeloRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
             });
       } else {
@@ -181,9 +177,7 @@ export const ModeloRegistro = ({
                if (response.data.code === 200) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Exito",
                      detalle: `${nombreFormulario} se registró correctamente`,
-                     pegado: false,
                   });
                   funcionActualizarTabla();
                   funcionCerrarModal();
@@ -192,9 +186,7 @@ export const ModeloRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
             });
       }
@@ -206,9 +198,7 @@ export const ModeloRegistro = ({
          if (file.size > 2000000) {
             mostrarNotificacion({
                tipo: "warn",
-               titulo: "Alerta",
                detalle: "Archivo demasiado grande",
-               pegado: false,
             });
 
             return;
@@ -231,9 +221,7 @@ export const ModeloRegistro = ({
             error(error: Error) {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
             },
          });

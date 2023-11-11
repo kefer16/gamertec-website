@@ -47,9 +47,7 @@ export const Login = () => {
       if (!user) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "Ingrese un usuario",
-            pegado: true,
          });
 
          return;
@@ -58,9 +56,7 @@ export const Login = () => {
       if (!password) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "Ingrese una contraseña",
-            pegado: true,
          });
 
          return;
@@ -98,9 +94,7 @@ export const Login = () => {
             obtenerCantidadCarrito();
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: `Hola ${data_sesion.usuario.usuario}, Bienvenido...`,
-               pegado: false,
             });
 
             navigate("/products/");
@@ -108,9 +102,7 @@ export const Login = () => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
-               detalle: `surgio un error: ${error.message}`,
-               pegado: true,
+               detalle: error.message,
             });
          });
    };

@@ -119,9 +119,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: error.message,
-               pegado: false,
             });
          });
    }, [mostrarNotificacion]);
@@ -142,9 +140,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "Elija un usuario para poder editar",
-            pegado: false,
          });
          return;
       }
@@ -171,9 +167,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: `Elija un ${nombreFormulario} para poder eliminar`,
-            pegado: false,
          });
          return;
       }
@@ -185,9 +179,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
          .then((response) => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Exito",
                detalle: `${nombreFormulario} se eliminó correctamente`,
-               pegado: false,
             });
 
             funcionCerrarDialogo();
@@ -197,9 +189,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: error.message,
-               pegado: false,
             });
             funcionCerrarDialogo();
             return;

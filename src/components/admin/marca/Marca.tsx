@@ -147,9 +147,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: `Elija un ${nombreFormulario} para poder editar`,
-            pegado: false,
          });
 
          return;
@@ -174,9 +172,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
          .then((response) => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Correcto",
                detalle: `${nombreFormulario} se eliminó correctamente`,
-               pegado: false,
             });
             funcionCerrarDialogo();
             funcionListar();
@@ -185,9 +181,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: error.message,
-               pegado: false,
             });
             funcionCerrarDialogo();
             return;
@@ -202,9 +196,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: `Elija un ${nombreFormulario} para poder eliminar`,
-            pegado: false,
          });
          funcionCerrarDialogo();
          return;

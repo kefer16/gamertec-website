@@ -7,9 +7,7 @@ import { Toast } from "primereact/toast";
 
 export interface NotificacionProps {
    tipo: "success" | "info" | "warn" | "error" | undefined;
-   titulo: string;
    detalle: string;
-   pegado: boolean;
 }
 export interface SesionGamertecContextProps {
    sesionGamertec: SesionGamertec;
@@ -120,12 +118,27 @@ export const SesionProvider = ({ children }: any) => {
          });
    };
 
-   const mostrarNotificacion = ({
-      tipo,
-      titulo,
-      detalle,
-      pegado,
-   }: NotificacionProps) => {
+   const mostrarNotificacion = ({ tipo, detalle }: NotificacionProps) => {
+      let titulo = "";
+      let pegado = false;
+
+      if (detalle.substring(0, 6) === "[warn]") {
+         tipo = "warn";
+         detalle = detalle.substring(6);
+      }
+
+      if (tipo === "error") {
+         titulo = "Error";
+         pegado = true;
+      }
+      if (tipo === "warn") {
+         titulo = "Alerta";
+         pegado = false;
+      }
+      if (tipo === "success") {
+         titulo = "Éxito";
+         pegado = false;
+      }
       notificacion.current?.show({
          severity: tipo,
          summary: titulo,

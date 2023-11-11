@@ -96,9 +96,7 @@ export const CategoryRegister = ({
             .then((response) => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: `${nombreFormulario} se actualizó correctamente`,
-                  pegado: false,
                });
                funcionActualizarTabla();
                funcionCerrarModal();
@@ -106,9 +104,7 @@ export const CategoryRegister = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
             });
       } else {
@@ -116,9 +112,7 @@ export const CategoryRegister = ({
             .then((response) => {
                mostrarNotificacion({
                   tipo: "success",
-                  titulo: "Exito",
                   detalle: `${nombreFormulario} se registró correctamente`,
-                  pegado: false,
                });
 
                funcionActualizarTabla();
@@ -127,9 +121,7 @@ export const CategoryRegister = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: true,
                });
             });
       }

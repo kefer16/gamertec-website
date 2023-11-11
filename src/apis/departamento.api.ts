@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { DepartamentoEntity } from "../entities/departamento.entity";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class DepartamentoApi {
    static async Registrar(data: DepartamentoEntity): Promise<AxiosResponse> {
@@ -17,8 +18,9 @@ export class DepartamentoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -42,8 +44,9 @@ export class DepartamentoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -56,8 +59,9 @@ export class DepartamentoApi {
          };
 
          return await axios.get(`${DepartamentoEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -73,8 +77,9 @@ export class DepartamentoApi {
          };
 
          return await axios.get(`${DepartamentoEntity.url}/historial`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -86,8 +91,9 @@ export class DepartamentoApi {
             },
          };
          return await axios.get(`${DepartamentoEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -102,8 +108,9 @@ export class DepartamentoApi {
             `${DepartamentoEntity.url}/eliminar`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

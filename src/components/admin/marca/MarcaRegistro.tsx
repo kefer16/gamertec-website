@@ -81,9 +81,7 @@ export const MarcaRegistro = ({
                if (response.data.code === 200) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Exito",
                      detalle: `${nombreFormulario} se actualizó correctamente`,
-                     pegado: false,
                   });
                   funcionActualizarTabla();
                   funcionCerrarModal();
@@ -92,9 +90,7 @@ export const MarcaRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: false,
                });
             });
       } else {
@@ -103,9 +99,7 @@ export const MarcaRegistro = ({
                if (response.data.code === 200) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Exito",
                      detalle: `${nombreFormulario} se registró correctamente`,
-                     pegado: false,
                   });
                   funcionActualizarTabla();
                   funcionCerrarModal();
@@ -114,9 +108,7 @@ export const MarcaRegistro = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: error.message,
-                  pegado: false,
                });
             });
       }

@@ -154,17 +154,13 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Se actualizó estado de compra",
-               pegado: false,
             });
          })
          .catch((error: RespuestaEntity<null>) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgió un error: ${error.error.message}`,
-               pegado: true,
             });
          });
    };

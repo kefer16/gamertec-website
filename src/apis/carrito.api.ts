@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { CarritoEntity } from "../entities/carrito.entities";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class CarritoApi {
    static async Registrar(data: CarritoEntity): Promise<AxiosResponse> {
@@ -17,8 +18,9 @@ export class CarritoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -42,8 +44,9 @@ export class CarritoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -56,8 +59,9 @@ export class CarritoApi {
          };
 
          return await axios.get(`${CarritoEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -73,8 +77,9 @@ export class CarritoApi {
          };
 
          return await axios.get(`${CarritoEntity.url}/historial`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -86,8 +91,9 @@ export class CarritoApi {
             },
          };
          return await axios.get(`${CarritoEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -99,8 +105,9 @@ export class CarritoApi {
             },
          };
          return await axios.delete(`${CarritoEntity.url}/eliminar`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -117,8 +124,9 @@ export class CarritoApi {
             `${CarritoEntity.url}/obtener_carrito_por_usuario`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -133,8 +141,9 @@ export class CarritoApi {
             `${CarritoEntity.url}/obtener_cantidad_carrito`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -153,8 +162,9 @@ export class CarritoApi {
             `${CarritoEntity.url}/eliminar_modelo_carrito`,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -177,8 +187,9 @@ export class CarritoApi {
             {},
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

@@ -73,9 +73,7 @@ export const ModalHistoria = ({
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       },

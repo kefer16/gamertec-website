@@ -183,9 +183,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "Elija un usuario para poder editar",
-            pegado: true,
          });
          return;
       }
@@ -218,9 +216,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
       if (itemEdicion === undefined) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: `Elija un ${nombreFormulario} para poder eliminar`,
-            pegado: true,
          });
          funcionCerrarDialogo();
          return;
@@ -234,9 +230,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: `${nombreFormulario} se eliminó correctamente`,
-               pegado: false,
             });
             funcionCerrarDialogo();
             funcionListar();
@@ -245,9 +239,7 @@ export const Usuario = ({ nombreFormulario }: Props) => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgio un error: ${error.message}`,
-               pegado: true,
             });
 
             funcionCerrarDialogo();

@@ -48,9 +48,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
                if (resp.data) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Éxito",
                      detalle: `Se cambio el ${dato} correctamente`,
-                     pegado: false,
                   });
 
                   setDatoAnterior(resp.data.nombre);
@@ -59,9 +57,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       }
@@ -76,9 +72,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
                if (resp.data) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Éxito",
                      detalle: `Se cambio el ${dato} correctamente`,
-                     pegado: false,
                   });
 
                   setDatoAnterior(resp.data.apellido);
@@ -87,9 +81,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       }
@@ -104,9 +96,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
                if (resp.data) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Éxito",
                      detalle: `Se cambio el ${dato} correctamente`,
-                     pegado: false,
                   });
 
                   setDatoAnterior(resp.data.correo);
@@ -115,9 +105,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       }
@@ -132,9 +120,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
                if (resp.data) {
                   mostrarNotificacion({
                      tipo: "success",
-                     titulo: "Éxito",
                      detalle: `Se cambio el ${dato} correctamente`,
-                     pegado: false,
                   });
 
                   setDatoAnterior(resp.data.direccion);
@@ -143,9 +129,7 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  titulo: "Error",
                   detalle: `surgio un error: ${error.message}`,
-                  pegado: true,
                });
             });
       }

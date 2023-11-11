@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 
 import { ProvinciaEntity } from "../entities/provincia.entity";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class ProvinciaApi {
    static async Registrar(data: ProvinciaEntity): Promise<AxiosResponse> {
@@ -18,8 +19,9 @@ export class ProvinciaApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -43,8 +45,9 @@ export class ProvinciaApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -57,8 +60,9 @@ export class ProvinciaApi {
          };
 
          return await axios.get(`${ProvinciaEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -74,8 +78,9 @@ export class ProvinciaApi {
          };
 
          return await axios.get(`${ProvinciaEntity.url}/historial`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -87,8 +92,9 @@ export class ProvinciaApi {
             },
          };
          return await axios.get(`${ProvinciaEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -100,8 +106,9 @@ export class ProvinciaApi {
             },
          };
          return await axios.delete(`${ProvinciaEntity.url}/eliminar`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

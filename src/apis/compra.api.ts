@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { CompraCabeceraEntity } from "../entities/compra_cabecera.entity";
 import { CompraRegistra } from "../interfaces/compra.interface";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class CompraApi {
    public async listarTodos(usuario_id: number): Promise<AxiosResponse> {
@@ -14,8 +15,9 @@ export class CompraApi {
             },
          };
          return await axios.get(`${CompraCabeceraEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -30,8 +32,9 @@ export class CompraApi {
             },
          };
          return await axios.get(`${CompraCabeceraEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
    public async registrar(data: CompraRegistra): Promise<AxiosResponse> {
@@ -48,7 +51,8 @@ export class CompraApi {
             config
          );
       } catch (error: any) {
-         return Promise.reject(error.response.data);
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -73,7 +77,8 @@ export class CompraApi {
             config
          );
       } catch (error: any) {
-         return Promise.reject(error.response.data);
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

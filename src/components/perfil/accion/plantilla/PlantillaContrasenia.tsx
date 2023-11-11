@@ -25,18 +25,14 @@ export const PlantillaContrasenia = () => {
       ) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Advertencia",
             detalle: "Ingrese todos los datos",
-            pegado: false,
          });
          return;
       }
       if (contraseniaNueva !== contraseniaNuevaRepetida) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Advertencia",
             detalle: "La contraseña nueva y la confirmación debe ser iguales",
-            pegado: false,
          });
          return;
       }
@@ -44,9 +40,7 @@ export const PlantillaContrasenia = () => {
       if (contraseniaActual === contraseniaNueva) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Advertencia",
             detalle: "La contraseña nueva no puede ser igual a la actual",
-            pegado: false,
          });
          return;
       }
@@ -61,17 +55,13 @@ export const PlantillaContrasenia = () => {
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Se actualizó la contraseña correctamente",
-               pegado: false,
             });
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgió un error: ${error.message}`,
-               pegado: true,
             });
          });
    };

@@ -84,3 +84,12 @@ export function formatoCalificacion(decimal: number): string {
 export const formatoMonedaPerunana = (value: number) => {
    return value.toLocaleString("es-PE", { style: "currency", currency: "PEN" });
 };
+
+export const personalizarMensajeError = (error: any): any => {
+   if (error.response.data.error.isValidate === true) {
+      error.message = "[warn]" + error.response.data.error.message;
+   } else {
+      error.message = error.response.data.error.message;
+   }
+   return error.message;
+};

@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { DistritoEntity } from "../entities/distrito.entity";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class DistritoApi {
    static async Registrar(data: DistritoEntity): Promise<AxiosResponse> {
@@ -17,8 +18,9 @@ export class DistritoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -42,8 +44,9 @@ export class DistritoApi {
             body,
             config
          );
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -56,8 +59,9 @@ export class DistritoApi {
          };
 
          return await axios.get(`${DistritoEntity.url}/todos`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -73,8 +77,9 @@ export class DistritoApi {
          };
 
          return await axios.get(`${DistritoEntity.url}/historial`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -86,8 +91,9 @@ export class DistritoApi {
             },
          };
          return await axios.get(`${DistritoEntity.url}/uno`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 
@@ -99,8 +105,9 @@ export class DistritoApi {
             },
          };
          return await axios.delete(`${DistritoEntity.url}/eliminar`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

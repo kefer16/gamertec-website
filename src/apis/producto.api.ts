@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { ModeloEntity } from "../entities/modelo.entity";
 import { ModeloPorFiltroProps } from "../interfaces/modelo.interface";
 import { ProductoService } from "../entities/producto.entities";
+import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export const funcionListarModelosPorFiltro = async (
    categoria_id: number,
@@ -38,8 +39,9 @@ export class ProductoApi {
             },
          };
          return await axios.get(`${ProductoService.url}/series`, config);
-      } catch (err: any) {
-         return Promise.reject(err);
+      } catch (error: any) {
+         error.message = personalizarMensajeError(error);
+         return Promise.reject(error);
       }
    }
 }

@@ -36,9 +36,7 @@ export const Compra = () => {
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `Surgió un error al obtener estados de compra: ${error.message}`,
-               pegado: true,
             });
          });
    }, [mostrarNotificacion]);

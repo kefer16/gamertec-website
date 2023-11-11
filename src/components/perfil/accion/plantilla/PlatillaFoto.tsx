@@ -41,17 +41,13 @@ export const PlantillaFoto = ({ dato }: Props) => {
             }
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Se actualizó la foto correctamente ",
-               pegado: false,
             });
          })
          .catch((error: RespuestaEntity<null>) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgió un error: ${error.error.message}`,
-               pegado: true,
             });
          });
    };

@@ -72,18 +72,14 @@ export const Register = () => {
       if (!name) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "complete el campo nombre",
-            pegado: true,
          });
          return;
       }
       if (!lastname) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "complete el campo apellido",
-            pegado: true,
          });
          return;
       }
@@ -91,9 +87,7 @@ export const Register = () => {
       if (!validateEmail(email)) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "se introdujo una direccion de correo inválida",
-            pegado: true,
          });
          return;
       }
@@ -101,10 +95,8 @@ export const Register = () => {
       if (!validateUserName(user)) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle:
                "nombre de usuario, solo caracteres: [ a-z, A-Z, _, 0-9] y longitud: [3-16]",
-            pegado: true,
          });
          return;
       }
@@ -112,9 +104,7 @@ export const Register = () => {
       if (password !== repeat_password) {
          mostrarNotificacion({
             tipo: "warn",
-            titulo: "Alerta",
             detalle: "Las contraseñas no coinciden",
-            pegado: true,
          });
          return;
       }
@@ -140,18 +130,14 @@ export const Register = () => {
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
-               titulo: "Éxito",
                detalle: "Usuario registrado correctamente",
-               pegado: false,
             });
             handleReset();
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
-               titulo: "Error",
                detalle: `surgio un error: ${error.message}`,
-               pegado: true,
             });
          });
    };

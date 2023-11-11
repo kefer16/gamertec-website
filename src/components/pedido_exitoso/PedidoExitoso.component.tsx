@@ -40,17 +40,13 @@ export const PedidoExitoso = ({ id, estado, preferenciaId }: Props) => {
                      setComprado(true);
                      mostrarNotificacion({
                         tipo: "success",
-                        titulo: "Éxito",
                         detalle: "Se registró la compra exitosamente",
-                        pegado: false,
                      });
                   })
                   .catch((error: RespuestaEntity<null>) => {
                      mostrarNotificacion({
                         tipo: "error",
-                        titulo: "Error",
                         detalle: `surgió un error: ${error.error.message}`,
-                        pegado: true,
                      });
                   });
             }
