@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
    EstadoProps,
@@ -89,7 +88,15 @@ export interface ValuesUsuarioProps {
    usuario: string;
    estado: EstadoProps;
 }
-
+const arrayFiltroGlobal: string[] = [
+   "fecha_registro",
+   "privilegio_nombre",
+   "usuario_nombre",
+   "usuario_apellido",
+   "correo",
+   "usuario",
+   "estado.estado",
+];
 interface Props {
    nombreFormulario: string;
 }
@@ -277,17 +284,17 @@ export const Usuario = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             Usuario
          </h2>
-         <ToolbarControl
-            functionCrear={funcionCrear}
-            functionActualizar={funcionEditar}
-            functionEliminar={funcionValidarEliminar}
-         />
+
          <TableControl<ValuesUsuarioProps>
             ancho={{ minWidth: "110rem" }}
             columnas={columnsUsuario2}
             filas={arrayUsuario}
             filaSeleccionada={usuarioSeleccionado}
+            arrayFiltroGlobal={arrayFiltroGlobal}
             funcionFilaSeleccionada={setUsuarioSeleccioando}
+            funcionCrear={funcionCrear}
+            funcionActualizar={funcionEditar}
+            funcionEliminar={funcionValidarEliminar}
          />
 
          <UsuarioRegistro

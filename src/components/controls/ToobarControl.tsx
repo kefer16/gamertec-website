@@ -1,12 +1,9 @@
-import { Toolbar } from "primereact/toolbar";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import {
    IconTrash,
    IconPlus,
    IconEdit,
    IconHistory,
-   IconSearch,
 } from "@tabler/icons-react";
 
 interface Props {
@@ -22,7 +19,7 @@ export const ToolbarControl = ({
    functionEliminar,
    functionHistoria,
 }: Props) => {
-   const startContent = (
+   return (
       <>
          <Button
             tooltip="Nuevo"
@@ -53,22 +50,6 @@ export const ToolbarControl = ({
             onClick={functionHistoria}
             rounded
          />
-      </>
-   );
-
-   const endContent = (
-      <>
-         <div className="p-inputgroup">
-            <InputText placeholder="Buscar..." />
-            <Button icon={<IconSearch size={24} />} />
-         </div>
-      </>
-   );
-   return (
-      <>
-         <div className="card">
-            <Toolbar start={startContent} end={endContent} />
-         </div>
       </>
    );
 };

@@ -29,7 +29,7 @@ export class UsuarioApi {
       }
    }
 
-   static async registrar(data: UsuarioEntity): Promise<AxiosResponse> {
+   async registrar(data: UsuarioEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -44,6 +44,8 @@ export class UsuarioApi {
             config
          );
       } catch (error: any) {
+         console.log("ERRO PASA", error);
+
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }

@@ -11,11 +11,11 @@ import {
 } from "../../../interfaces/pedido.interface";
 import { convertirFormatoMoneda } from "../../../utils/funciones.utils";
 import { SeriesRegistro } from "./PedidoDetalleRegistro.component";
-// import { CompraService } from "../../../services/compra.service";
 import { IMultiSelectProps } from "../../controls/primeUI/MultiSelectPrimeUI";
-import { ProductoService } from "../../../services/producto.service";
-import { IProductoSerie } from "../../../interfaces/producto.interface";
+
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
+import { ProductoService } from "../../../services/producto.service";
+import { ProductoSerieResponse } from "../../../responses/producto.response";
 
 interface Props {
    pedido_id: number;
@@ -23,9 +23,6 @@ interface Props {
 
 export const PedidoDetalle = ({ pedido_id }: Props) => {
    const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
-   // const [pedido, setPedido] = useState<IPedidoCabeceraListarUno>(
-   // 	{} as IPedidoCabeceraListarUno
-   // );
    const [direccion, setDireccion] = useState<string>("");
    const [telefono, setTelefono] = useState<string>("");
    const [pedidoDetalleId, setPedidoDetalleId] = useState<number>(0);
@@ -46,30 +43,23 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
    };
 
    const funcionAbrirModal = async (pedidoDetalleId: number) => {
-      const productoServ = new ProductoService();
+      const srvProducto = new ProductoService();
       let array: IMultiSelectProps[] = [];
-      await productoServ
+      await srvProducto
          .obtenerSeries(pedidoDetalleId, 1)
-         .then((resp: RespuestaEntity<IProductoSerie[]>) => {
-            if (resp.data) {
-               array = resp.data.map((item) => ({
-                  name: item.numero_serie,
-                  selected: item.checked,
-                  code: String(item.producto_id),
-               }));
-            }
+         .then((resp: ProductoSerieResponse[]) => {
+            array = resp.map((item) => ({
+               name: item.numero_serie,
+               selected: item.checked,
+               code: String(item.producto_id),
+            }));
          });
       setOpciones(array);
-
       setModal(true);
       setPedidoDetalleId(pedidoDetalleId);
    };
 
-   const completarPedido = async () => {
-      // const compraServ = new CompraService();
-      // await compraServ.registrar(pedido_id).then((resp) => {
-      // });
-   };
+   const completarPedido = async () => {};
 
    useEffect(() => {
       const obtenerDatos = async () => {

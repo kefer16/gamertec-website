@@ -12,6 +12,7 @@ import {
 } from "../interfaces/usuario.interface";
 
 export class UsuarioService {
+   private apiUsuario = new UsuarioApi();
    private respLogearse = new RespuestaEntity<LogeoUsuario>();
    private respRegistrar = new RespuestaEntity<boolean>();
    private respActualizar = new RespuestaEntity<boolean>();
@@ -47,13 +48,15 @@ export class UsuarioService {
    public async registrar(
       data: UsuarioEntity
    ): Promise<RespuestaEntity<boolean>> {
-      await UsuarioApi.registrar(data).then((resp) => {
+      await this.apiUsuario.registrar(data).then((resp) => {
          this.respRegistrar = {
             code: resp.data.code,
             data: resp.data.data,
             error: resp.data.error,
          };
       });
+      console.log(this.respRegistrar);
+
       return this.respRegistrar;
    }
 

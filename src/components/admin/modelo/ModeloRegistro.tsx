@@ -45,7 +45,7 @@ interface Props {
    arrayMarcas: DropdownPropsAnidado[];
 }
 
-interface ChangeValueSelect {
+export interface ChangeValueSelect {
    valorPadre: string;
    valorHijo: string;
 }

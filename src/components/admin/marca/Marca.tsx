@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
    EstadoProps,
@@ -28,6 +27,12 @@ export interface ValuesMarcaProps {
    marca_nombre: string;
    estado: EstadoProps;
 }
+const arrayFiltroGlobal: string[] = [
+   "fecha_registro",
+   "categoria_nombre",
+   "marca_nombre",
+   "estado.estado",
+];
 const columnsMarcas2: ColumnProps[] = [
    {
       type: TypeColumn.TEXT,
@@ -234,17 +239,16 @@ export const Marca = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <ToolbarControl
-            functionCrear={funcionCrear}
-            functionActualizar={funcionEditar}
-            functionEliminar={funcionValidarEliminar}
-         />
          <TableControl<ValuesMarcaProps>
             ancho={{ minWidth: "70rem" }}
             columnas={columnsMarcas2}
             filas={arrayMarca}
             filaSeleccionada={marcaSeleccionada}
+            arrayFiltroGlobal={arrayFiltroGlobal}
             funcionFilaSeleccionada={setMarcaSeleccionada}
+            funcionCrear={funcionCrear}
+            funcionActualizar={funcionEditar}
+            funcionEliminar={funcionValidarEliminar}
          />
 
          <MarcaRegistro

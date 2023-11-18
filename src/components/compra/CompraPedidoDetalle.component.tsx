@@ -51,9 +51,9 @@ export const CompraPedidoDetalle = ({ pedido_id }: Props) => {
       let array: IMultiSelectProps[] = [];
       await productoServ
          .obtenerSeries(pedidoDetalleId, 1)
-         .then((resp: RespuestaEntity<IProductoSerie[]>) => {
-            if (resp.data) {
-               array = resp.data.map((item) => ({
+         .then((resp: IProductoSerie[]) => {
+            if (resp) {
+               array = resp.map((item) => ({
                   name: item.numero_serie,
                   selected: item.checked,
                   code: String(item.producto_id),

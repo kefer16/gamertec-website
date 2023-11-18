@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
    EstadoProps,
@@ -11,7 +10,6 @@ import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ModeloRegistro } from "./ModeloRegistro";
 
 import { funcionObtenerMarcas } from "../marca/Marca";
-import { ComboboxAnidadoProps } from "../../../interfaces/combobox.interface";
 import { ModeloEntity } from "../../../entities/modelo.entity";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
@@ -96,6 +94,16 @@ export interface ValuesModeloProps {
    caracteristicas: string;
    estado: EstadoProps;
 }
+const arrayFiltroGlobal: string[] = [
+   "fecha_registro",
+   "categoria_nombre",
+   "marca_nombre",
+   "modelo_nombre",
+   "producto_nombre",
+   "precio",
+   "caracteristicas",
+   "estado.estado",
+];
 interface Props {
    nombreFormulario: string;
 }
@@ -104,15 +112,15 @@ let arrayCategoria: DropdownProps[] = [];
 let arrayMarca: DropdownPropsAnidado[] = [];
 
 export const funcionObteneModelo = async (): Promise<
-   ComboboxAnidadoProps[]
+   DropdownPropsAnidado[]
 > => {
-   const array: ComboboxAnidadoProps[] = [];
+   const array: DropdownPropsAnidado[] = [];
    await ModeloEntity.ListarTodos().then((respuesta) => {
       respuesta.data.data.forEach((element: ModeloEntity) => {
          array.push({
-            valor: element.fk_marca,
-            valorAnidado: element.modelo_id,
-            descripcion: element.nombre,
+            codeAnidado: String(element.fk_marca),
+            code: String(element.modelo_id),
+            name: element.nombre,
          });
       });
    });
@@ -303,17 +311,16 @@ export const Modelo = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <ToolbarControl
-            functionCrear={funcionCrear}
-            functionActualizar={funcionEditar}
-            functionEliminar={funcionValidarEliminar}
-         />
          <TableControl<ValuesModeloProps>
             ancho={{ minWidth: "110rem" }}
             columnas={columnsModelo2}
             filas={arrayModelo}
             filaSeleccionada={modeloSeleccionado}
+            arrayFiltroGlobal={arrayFiltroGlobal}
             funcionFilaSeleccionada={setModeloSeleccionado}
+            funcionCrear={funcionCrear}
+            funcionActualizar={funcionEditar}
+            funcionEliminar={funcionValidarEliminar}
          />
 
          <ModeloRegistro

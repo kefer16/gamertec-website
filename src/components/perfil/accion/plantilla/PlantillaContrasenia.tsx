@@ -1,9 +1,9 @@
-import { InputText } from "primereact/inputtext";
 import React, { useContext, useState } from "react";
 import { GamertecSesionContext } from "../../../sesion/Sesion.component";
 import { UsuarioService } from "../../../../services/usuario.service";
 import { ActualizaContraseniaUsuario } from "../../../../interfaces/usuario.interface";
 import { Button } from "primereact/button";
+import { Password } from "primereact/password";
 
 export const PlantillaContrasenia = () => {
    const { sesionGamertec, mostrarNotificacion } = useContext(
@@ -67,45 +67,66 @@ export const PlantillaContrasenia = () => {
    };
 
    return (
-      <div className="cajas-form">
-         <form onSubmit={(e) => cambiarContrasenia(e)}>
-            <div className="titulo">
-               <label>¿Cambiaras tu contraseña? </label>
-               <p>Primero deberás colocar tu contraseña actual</p>
-            </div>
-            <div className="inputs">
-               <label>Ingrese la contraseña Actual:</label>
+      <form className="form__accion" onSubmit={(e) => cambiarContrasenia(e)}>
+         <div className="form__accion__cambio">
+            <label className="form__accion__cambio-definicion">
+               Contraseña Actual:
+            </label>
 
-               <InputText
-                  value={contraseniaActual}
-                  onChange={(e) => {
-                     setContraseniaActual(e.target.value);
-                  }}
-               />
-            </div>
-            <div className="inputs">
-               <label>Ingrese la Nueva Contraseña:</label>
-               <InputText
-                  value={contraseniaNueva}
-                  onChange={(e) => {
-                     setContraseniaNueva(e.target.value);
-                  }}
-               />
-            </div>
-            <div className="inputs">
-               <label>Repita la Nueva Contraseña: </label>
-               <InputText
-                  value={contraseniaNuevaRepetida}
-                  onChange={(e) => {
-                     setContraseniaNuevaRepetida(e.target.value);
-                  }}
-               />
-            </div>
+            <Password
+               className="form__accion__cambio-valor"
+               inputClassName="form__accion__cambio-input"
+               placeholder="Ingrese Contraseña Actual"
+               value={contraseniaActual}
+               onChange={(e) => {
+                  setContraseniaActual(e.target.value);
+               }}
+               toggleMask
+               feedback={false}
+            />
+         </div>
+         <div className="form__accion__cambio">
+            <label className="form__accion__cambio-definicion">
+               Nueva Contraseña:
+            </label>
+            <Password
+               className="form__accion__cambio-valor"
+               inputClassName="form__accion__cambio-input"
+               placeholder="Ingrese Nueva Contraseña"
+               value={contraseniaNueva}
+               onChange={(e) => {
+                  setContraseniaNueva(e.target.value);
+               }}
+               toggleMask
+               promptLabel="Ingrese una contraseña"
+               weakLabel="Débil"
+               mediumLabel="Medio"
+               strongLabel="Fuerte"
+            />
+         </div>
+         <div className="form__accion__cambio">
+            <label className="form__accion__cambio-definicion">
+               Nueva Contraseña:{" "}
+            </label>
+            <Password
+               className="form__accion__cambio-valor"
+               inputClassName="form__accion__cambio-input"
+               placeholder="Ingrese Nueva Contraseña"
+               value={contraseniaNuevaRepetida}
+               onChange={(e) => {
+                  setContraseniaNuevaRepetida(e.target.value);
+               }}
+               toggleMask
+               promptLabel="Ingrese una contraseña"
+               weakLabel="Débil"
+               mediumLabel="Medio"
+               strongLabel="Fuerte"
+            />
+         </div>
 
-            <div className="boton">
-               <Button type="submit" label="Actualizar" />
-            </div>
-         </form>
-      </div>
+         <div className="boton">
+            <Button type="submit" label="Actualizar" />
+         </div>
+      </form>
    );
 };

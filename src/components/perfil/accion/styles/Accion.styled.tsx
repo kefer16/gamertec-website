@@ -6,121 +6,53 @@ export const AccionStyled = styled.div`
 
    & .titulo-principal {
       width: 100%;
-      /* height: 70px; */
       margin: auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-
       border-bottom: 3px solid rgba(gray, 0.15);
-      h1 {
-         margin-left: 20px;
-         font-weight: 600;
-         font-size: 1.2rem;
-         color: rgba($colorTexto, 0.8);
-      }
-   }
-   & .regresar {
-      color: $color1;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      font-weight: 500;
-      margin-right: 20px;
-      svg {
-         margin-right: 10px;
-      }
    }
 
-   & .cajas {
-      width: 70%;
-      /* height: 400px; */
+   & .form__accion {
+      width: 50%;
       margin: 0 auto;
-      @media screen and (max-width: 700px) {
-         width: 95%;
-      }
-      & .cajas-form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      &__cambio {
          width: 100%;
          display: flex;
-         justify-content: center;
-
-         & form {
-            width: 80%;
+         align-items: center;
+         display: flex;
+         margin-bottom: 20px;
+         &-definicion {
+            width: 50%;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-
-            @media screen and (max-width: 700px) {
-               width: 90%;
-               justify-content: space-between;
-            }
-            .mensaje {
-               width: 80%;
-               display: flex;
-               margin: auto;
-               // margin: 5px 0;
-            }
-            & .texto {
-               display: flex;
-               flex-direction: column;
-            }
-
-            & .inputs {
-               display: flex;
-               flex-direction: column;
-            }
-
-            & .texto,
-            .inputs,
-            .boton {
-               width: 100%;
-               display: flex;
-               /* height: 70px; */
-               justify-content: center;
-               align-items: center;
-               text-align: center;
-
-               & p {
-                  font-size: 1.4em;
-                  color: $colorTexto;
-                  font-weight: 500;
-               }
-            }
-
-            & .titulo {
-               color: $colorTexto;
-               width: 100%;
-               display: flex;
-               flex-direction: column;
-               justify-content: center;
-               align-items: center;
-               height: 100px;
-               text-align: center;
-            }
-            & .inputs {
-               justify-content: space-evenly;
-
-               & label {
-                  color: $colorTexto;
-                  font-weight: 500;
-               }
-
-               & input {
-                  width: 60%;
-                  padding: 7px 10px;
-                  font-size: 1em;
-                  color: $colorTexto;
-               }
-            }
-
-            .boton {
-               input {
-                  @include botonEnviar;
-               }
-            }
+            justify-content: end;
+            padding-right: 10px;
+            font-weight: bold;
+         }
+         &-valor {
+            width: 50%;
+            padding-left: 10px;
+            font-weight: 300;
+         }
+         &-input {
+            width: 100%;
          }
       }
+   }
+
+   & .boton__seleccionar__imagen {
+      color: #ffffff;
+      background: #6366f1;
+      /* border: 1px solid #6366f1; */
+      padding: 0.5rem;
+      font-size: 0.5rem;
+      /* transition: background-color 0.2s, color 0.2s, border-color 0.2s,
+         box-shadow 0.2s; */
+      border-radius: 6px;
    }
 `;

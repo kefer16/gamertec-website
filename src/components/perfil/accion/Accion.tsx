@@ -81,7 +81,7 @@ export const Accion = ({ nombreAccion }: AccionPerfilProps) => {
       <ContainerBodyStyled>
          <AccionStyled>
             <div className="titulo-principal">
-               <h1>Cambiar {titulo}</h1>
+               <h2>Cambiar {titulo}</h2>
                <Link className="regresar" to="/profile/">
                   <Button
                      icon={<IconArrowBack size={24} />}

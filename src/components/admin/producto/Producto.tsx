@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
    EstadoProps,
@@ -12,8 +11,6 @@ import { funcionObtenerMarcas } from "../marca/Marca";
 
 import { ProductoRegistro } from "./ProductoRegistro";
 import { funcionObteneModelo } from "../modelo/Modelo";
-import { ProductoService } from "../../../entities/producto.entities";
-import { ComboboxAnidadoProps } from "../../../interfaces/combobox.interface";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
@@ -22,6 +19,9 @@ import {
    DropdownProps,
    DropdownPropsAnidado,
 } from "../categoria/CategoriaRegistro";
+import { ProductoEntity } from "../../../entities/producto.entities";
+import { ProductoService } from "../../../services/producto.service";
+import { ProductoResponse } from "../../../responses/producto.response";
 
 const columnsProducto2: ColumnProps[] = [
    {
@@ -82,13 +82,22 @@ export interface ValuesProductoProps {
    estado: EstadoProps;
 }
 
+const arrayFiltroGlobal: string[] = [
+   "fecha_registro",
+   "categoria_nombre",
+   "marca_nombre",
+   "modelo_nombre",
+   "numero_serie",
+   "estado.estado",
+];
+
 interface Props {
    nombreFormulario: string;
 }
 
 let arrayCategoria: DropdownProps[] = [];
 let arrayMarca: DropdownPropsAnidado[] = [];
-let arrayModelo: ComboboxAnidadoProps[] = [];
+let arrayModelo: DropdownPropsAnidado[] = [];
 
 export const Producto = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
@@ -105,44 +114,44 @@ export const Producto = ({ nombreFormulario }: Props) => {
       setDialogo(false);
    };
 
-   const [itemSeleccionado, setItemSeleccionado] = useState<ProductoService>(
-      new ProductoService()
+   const [itemSeleccionado, setItemSeleccionado] = useState<ProductoEntity>(
+      new ProductoEntity()
    );
 
    const funcionListar = async () => {
       const arrayProducto: ValuesProductoProps[] = [];
-      await ProductoService.ListarTodos()
-         .then((response) => {
-            response.data.data.forEach(
-               (element: ProductoService, index: number) => {
-                  const newRow: ValuesProductoProps = {
-                     id: element.producto_id,
-                     index: index + 1,
-                     fecha_registro: element.fecha_registro,
-                     categoria_id: element.fk_categoria,
-                     categoria_nombre: arrayCategoria.find(
-                        (categoria: DropdownProps) =>
-                           categoria.code === String(element.fk_categoria)
-                     )?.name,
-                     marca_id: element.fk_marca,
-                     marca_nombre: arrayMarca.find(
-                        (marca: DropdownPropsAnidado) =>
-                           marca.codeAnidado === String(element.fk_marca)
-                     )?.name,
-                     modelo_id: element.fk_modelo,
-                     modelo_nombre: arrayModelo.find(
-                        (modelo: ComboboxAnidadoProps) =>
-                           modelo.valorAnidado === element.fk_modelo
-                     )?.descripcion,
-                     numero_serie: element.numero_serie,
-                     estado: {
-                        valor: element.activo,
-                        estado: element.activo ? "Activo" : "Inactivo",
-                     },
-                  };
-                  arrayProducto.push(newRow);
-               }
-            );
+      const srvProducto = new ProductoService();
+      await srvProducto
+         .listarTodos()
+         .then((resp) => {
+            resp.forEach((element: ProductoResponse, index: number) => {
+               const newRow: ValuesProductoProps = {
+                  id: element.producto_id,
+                  index: index + 1,
+                  fecha_registro: element.fecha_registro,
+                  categoria_id: element.fk_categoria,
+                  categoria_nombre: arrayCategoria.find(
+                     (categoria: DropdownProps) =>
+                        categoria.code === String(element.fk_categoria)
+                  )?.name,
+                  marca_id: element.fk_marca,
+                  marca_nombre: arrayMarca.find(
+                     (marca: DropdownPropsAnidado) =>
+                        marca.code === String(element.fk_marca)
+                  )?.name,
+                  modelo_id: element.fk_modelo,
+                  modelo_nombre: arrayModelo.find(
+                     (modelo: DropdownPropsAnidado) =>
+                        modelo.code === String(element.fk_modelo)
+                  )?.name,
+                  numero_serie: element.numero_serie,
+                  estado: {
+                     valor: element.activo,
+                     estado: element.activo ? "Activo" : "Inactivo",
+                  },
+               };
+               arrayProducto.push(newRow);
+            });
 
             setArrayProducto(arrayProducto);
          })
@@ -153,7 +162,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
 
    const funcionCrear = () => {
       setItemSeleccionado(
-         new ProductoService(0, "", 0, 0, 0, fechaActualISO(), false)
+         new ProductoEntity(0, "", 0, 0, 0, fechaActualISO(), false)
       );
       setEsEdicion(false);
       setAbrirModal(true);
@@ -173,7 +182,7 @@ export const Producto = ({ nombreFormulario }: Props) => {
       }
 
       setItemSeleccionado(
-         new ProductoService(
+         new ProductoEntity(
             itemEdicion.id,
             itemEdicion.numero_serie,
             itemEdicion.modelo_id,
@@ -203,9 +212,12 @@ export const Producto = ({ nombreFormulario }: Props) => {
       }
       setDialogo(true);
    };
+
    const funcionEliminar = async () => {
-      await ProductoService.EliminarUno(productoSeleccionado.id)
-         .then((response) => {
+      const srvProducto = new ProductoService();
+      await srvProducto
+         .eliminarUno(productoSeleccionado.id)
+         .then(() => {
             mostrarNotificacion({
                tipo: "success",
                detalle: `${nombreFormulario} se eliminó correctamente`,
@@ -264,17 +276,16 @@ export const Producto = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <ToolbarControl
-            functionCrear={funcionCrear}
-            functionActualizar={funcionEditar}
-            functionEliminar={funcionValidarEliminar}
-         />
          <TableControl
             ancho={{ minWidth: "90rem" }}
             columnas={columnsProducto2}
             filas={arrayProducto}
             filaSeleccionada={productoSeleccionado}
+            arrayFiltroGlobal={arrayFiltroGlobal}
             funcionFilaSeleccionada={setProductoSeleccionado}
+            funcionCrear={funcionCrear}
+            funcionActualizar={funcionEditar}
+            funcionEliminar={funcionValidarEliminar}
          />
          <ProductoRegistro
             nombreFormulario={nombreFormulario}

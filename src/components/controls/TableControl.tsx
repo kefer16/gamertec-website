@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { useEffect, useState } from "react";
 
-import { DataTable } from "primereact/datatable";
+import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { CSSProperties } from "styled-components";
 import { Tag } from "primereact/tag";
@@ -9,6 +9,11 @@ import {
    fechaVisualDateToString,
    formatoMonedaPerunana,
 } from "../../utils/funciones.utils";
+import { FilterMatchMode } from "primereact/api";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { IconFilterOff, IconSearch } from "@tabler/icons-react";
+import { ToolbarControl } from "./ToobarControl";
 
 export enum TypeColumn {
    TEXT = "text",
@@ -29,7 +34,12 @@ interface Props<T> {
    columnas: ColumnProps[];
    filas: T[];
    filaSeleccionada: T;
+   arrayFiltroGlobal: string[];
    funcionFilaSeleccionada: (param: T) => void;
+   funcionCrear?: () => void;
+   funcionActualizar?: () => void;
+   funcionEliminar?: () => void;
+   funcionHistoria?: () => void;
 }
 export interface ImagenProps {
    img: string;
@@ -41,22 +51,96 @@ export interface EstadoProps {
    estado: string;
 }
 
+const defaultFilters: DataTableFilterMeta = {
+   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+};
+
 export const TableControl = <T extends object>({
    ancho,
    columnas,
    filas,
    filaSeleccionada,
+   arrayFiltroGlobal,
    funcionFilaSeleccionada,
+   funcionCrear,
+   funcionActualizar,
+   funcionEliminar,
+   funcionHistoria,
 }: Props<T>) => {
    const [isLoading, setIsLoading] = useState(true);
+   const [filtros, setFiltros] = useState<DataTableFilterMeta>(defaultFilters);
+   const [valorFiltroGlobal, setValorFiltroGlobal] = useState<string>("");
 
    useEffect(() => {
       setIsLoading(true);
+
+      initFilters();
 
       setTimeout(() => {
          setIsLoading(false);
       }, 2000);
    }, []);
+
+   const limpiarFiltro = () => {
+      const value = "";
+      let _filters = { ...filtros };
+
+      // @ts-ignore
+      _filters["global"].value = value;
+
+      setFiltros(_filters);
+      setValorFiltroGlobal(value);
+   };
+
+   const activarFiltroGlobal = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      let _filters = { ...filtros };
+
+      // @ts-ignore
+      _filters["global"].value = value;
+
+      setFiltros(_filters);
+      setValorFiltroGlobal(value);
+   };
+
+   const initFilters = () => {
+      setFiltros(defaultFilters);
+      setValorFiltroGlobal("");
+   };
+
+   const header = () => {
+      return (
+         <div className="flex justify-content-between">
+            <div>
+               <ToolbarControl
+                  functionCrear={funcionCrear}
+                  functionActualizar={funcionActualizar}
+                  functionEliminar={funcionEliminar}
+                  functionHistoria={funcionHistoria}
+               />
+            </div>
+            <div style={{ display: "flex" }}>
+               <Button
+                  style={{ marginRight: "5px" }}
+                  type="button"
+                  icon={
+                     <IconFilterOff style={{ marginRight: "5px" }} size={24} />
+                  }
+                  outlined
+                  onClick={limpiarFiltro}
+               />
+               <span className="p-input-icon-left flex align-items">
+                  <IconSearch style={{ top: "47%" }} size={20} />
+                  <InputText
+                     value={valorFiltroGlobal}
+                     onChange={activarFiltroGlobal}
+                     placeholder="Ingrese valor a buscar"
+                  />
+               </span>
+            </div>
+         </div>
+      );
+   };
 
    return (
       <>
@@ -76,6 +160,10 @@ export const TableControl = <T extends object>({
                dataKey="id"
                loading={isLoading}
                showGridlines
+               filters={filtros}
+               globalFilterFields={arrayFiltroGlobal}
+               header={header}
+               emptyMessage="Ningun Resultado Encontrado"
             >
                <Column
                   selectionMode="single"
@@ -116,7 +204,6 @@ export const TableControl = <T extends object>({
                                  header={item.header}
                                  style={item.style}
                                  body={body}
-                                 sortable
                               />
                            );
                         }

@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { ToolbarControl } from "../../controls/ToobarControl";
 import {
    ColumnProps,
    EstadoProps,
@@ -56,6 +55,14 @@ export interface ValuesPrivilegioProps {
    abreviatura: string;
    estado: EstadoProps;
 }
+
+const arrayFiltroGlobal: string[] = [
+   "fecha_registro",
+   "tipo",
+   "abreviatura",
+   "estado.estado",
+];
+
 interface Props {
    nombreFormulario: string;
 }
@@ -219,17 +226,16 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <ToolbarControl
-            functionCrear={funcionCrear}
-            functionActualizar={funcionEditar}
-            functionEliminar={funcionValidarEliminar}
-         />
          <TableControl<ValuesPrivilegioProps>
             ancho={{ minWidth: "70rem" }}
             columnas={columnsPrivilegio2}
             filas={arrayPrivilegio}
             filaSeleccionada={privilegioSeleccionado}
+            arrayFiltroGlobal={arrayFiltroGlobal}
             funcionFilaSeleccionada={setPrivilegioSeleccionado}
+            funcionCrear={funcionCrear}
+            funcionActualizar={funcionEditar}
+            funcionEliminar={funcionValidarEliminar}
          />
 
          <PrivilegioRegistro

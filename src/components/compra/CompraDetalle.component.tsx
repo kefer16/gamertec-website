@@ -59,14 +59,12 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
       let array: IMultiSelectProps[] = [];
       await productoServ
          .obtenerSeries(compraDetalleId, sesionGamertec.usuario.usuario_id)
-         .then((resp: RespuestaEntity<IProductoSerie[]>) => {
-            if (resp.data) {
-               array = resp.data.map((item) => ({
-                  name: item.numero_serie,
-                  selected: item.checked,
-                  code: String(item.producto_id),
-               }));
-            }
+         .then((resp: IProductoSerie[]) => {
+            array = resp.map((item) => ({
+               name: item.numero_serie,
+               selected: item.checked,
+               code: String(item.producto_id),
+            }));
          });
       setOpciones(array);
       setModal(true);

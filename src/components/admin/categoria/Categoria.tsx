@@ -4,7 +4,6 @@ import {
    TableControl,
    TypeColumn,
 } from "../../controls/TableControl";
-import { ToolbarControl } from "../../controls/ToobarControl";
 import { CategoryService } from "../../../entities/categoria.entities";
 import { useContext, useEffect, useState } from "react";
 import { CategoryRegister, DropdownProps } from "./CategoriaRegistro";
@@ -49,6 +48,12 @@ export interface ValuesCategoriaProps {
    fecha_actualizacion: string;
    estado: EstadoProps;
 }
+
+const arrayFiltroGlobal: string[] = [
+   "fecha_registro",
+   "categoria_nombre",
+   "estado.estado",
+];
 
 interface Props {
    nombreFormulario: string;
@@ -214,17 +219,17 @@ export const Categoria = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <ToolbarControl
-            functionCrear={funcionCrearCategoria}
-            functionActualizar={funcionEditarCategoria}
-            functionEliminar={funcionValidarEliminar}
-         />
+
          <TableControl<ValuesCategoriaProps>
             ancho={{ minWidth: "50rem" }}
             columnas={columnsCategorias2}
             filas={arrayCategoria}
             filaSeleccionada={categoriaSeleccionada}
+            arrayFiltroGlobal={arrayFiltroGlobal}
             funcionFilaSeleccionada={setCategoriaSeleccionada}
+            funcionCrear={funcionCrearCategoria}
+            funcionActualizar={funcionEditarCategoria}
+            funcionEliminar={funcionValidarEliminar}
          />
 
          <CategoryRegister

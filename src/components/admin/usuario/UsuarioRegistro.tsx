@@ -48,7 +48,9 @@ export const UsuarioRegistro = ({
       code: "0",
       name: "Inactivo",
    });
-   const [fk_privilegio, setFk_privilegio] = useState("0");
+   const [fk_privilegio, setFk_privilegio] = useState<DropdownProps>(
+      {} as DropdownProps
+   );
    const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
 
    useEffect(() => {
@@ -73,10 +75,15 @@ export const UsuarioRegistro = ({
                  name: "Inactivo",
               }
       );
-      setFk_privilegio(String(itemSeleccionado.fk_privilegio));
-   }, [itemSeleccionado]);
+      setFk_privilegio(
+         arrayPrivilegios.find(
+            (privilegio: DropdownProps) =>
+               privilegio.code === String(itemSeleccionado.fk_privilegio)
+         ) ?? ({} as DropdownProps)
+      );
+   }, [itemSeleccionado, arrayPrivilegios]);
 
-   const funcionEnviarCategoria = async (
+   const funFormularioUsuarioEnviar = async (
       event: React.FormEvent<HTMLFormElement>
    ) => {
       event.preventDefault();
@@ -93,7 +100,7 @@ export const UsuarioRegistro = ({
          "",
          "",
          activo.code === "1",
-         parseInt(fk_privilegio)
+         parseInt(fk_privilegio.code)
       );
 
       if (esEdicion) {
@@ -128,12 +135,13 @@ export const UsuarioRegistro = ({
                });
                funcionActualizarTabla();
                funcionCerrarModal();
-               return;
             })
             .catch((error: Error) => {
+               console.log("Erro", error);
+
                mostrarNotificacion({
                   tipo: "error",
-                  detalle: `surgio un error: ${error.message}`,
+                  detalle: error.message,
                });
             });
       }
@@ -148,7 +156,7 @@ export const UsuarioRegistro = ({
             contentStyle={{ padding: "0px" }}
          >
             <form
-               onSubmit={(e) => funcionEnviarCategoria(e)}
+               onSubmit={(e) => funFormularioUsuarioEnviar(e)}
                style={{
                   display: "flex",
                   flexDirection: "column",

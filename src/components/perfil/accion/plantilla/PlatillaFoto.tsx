@@ -8,6 +8,7 @@ import { GamertecSesionContext } from "../../../sesion/Sesion.component";
 import { RespuestaEntity } from "../../../../entities/respuesta.entity";
 import { Button } from "primereact/button";
 import { SesionGamertec } from "../../../../interfaces/sesion.interface";
+import { Panel } from "primereact/panel";
 
 interface Props {
    dato: "foto";
@@ -89,64 +90,71 @@ export const PlantillaFoto = ({ dato }: Props) => {
    };
 
    return (
-      <div className="cajas-form">
-         <form onSubmit={actualizarFoto}>
-            <div className="texto">
-               <p>Hola ¿Cambiarás tu foto de perfil?</p>
-
-               <Image src={foto} alt="Image" width="250" />
+      <form className="form__accion" onSubmit={actualizarFoto}>
+         <div className="form__accion__cambio">
+            <label className="form__accion__cambio-definicion">
+               Foto Actual:
+            </label>
+            <div className="form__accion__cambio-valor">
+               <Image src={foto} alt="Image" width="100" />
             </div>
-            <div className="inputs">
-               <label>Escoje una foto:</label>
+         </div>
+         <div className="form__accion__cambio">
+            <label className="form__accion__cambio-definicion">
+               Escoje una Foto:
+            </label>
 
-               <div
+            <div className="form__accion__cambio-valor">
+               <Panel
+                  header="Previsualización"
                   style={{
                      display: "flex",
-                     padding: "10px",
                      flexDirection: "column",
-                     border: "1px solid #ccc",
-                     borderRadius: "7px",
+                     fontSize: "1rem",
                   }}
                >
-                  <p style={{ color: "#666", fontSize: "0.8em" }}>
-                     Previsualización
-                  </p>
-                  {fotoSeleccionada ? (
-                     <img
-                        src={fotoSeleccionada}
-                        style={{
-                           width: "100px",
-                           height: "100px",
-                           objectFit: "scale-down",
-                           border: "1px solid #ccc",
-                           borderRadius: "7px",
-                        }}
-                        alt="Selected"
-                     />
-                  ) : (
-                     <img
-                        src="https://placehold.co/300"
-                        style={{
-                           width: "100%",
-                           height: "200px",
-                           objectFit: "scale-down",
-                           border: "1px solid #ccc",
-                           borderRadius: "7px",
-                        }}
-                        alt="Selected"
-                     />
-                  )}
+                  <div>
+                     {fotoSeleccionada ? (
+                        <img
+                           src={fotoSeleccionada}
+                           style={{
+                              width: "100px",
+                              height: "100px",
+                              objectFit: "scale-down",
+                              borderRadius: "7px",
+                           }}
+                           alt="Escoger imagen Usuario"
+                        />
+                     ) : (
+                        <img
+                           src="https://placehold.co/100"
+                           style={{
+                              width: "100px",
+                              height: "100px",
+                              objectFit: "scale-down",
+                              borderRadius: "7px",
+                           }}
+                           alt="Escoger imagen Usuario"
+                        />
+                     )}
+                  </div>
                   <input
-                     style={{ marginTop: "10px" }}
+                     id="selecciona-arhivo"
+                     style={{ marginTop: "5px", display: "none" }}
                      type="file"
                      accept="image/*"
-                     // value={foto ? foto : ""}
                      onChange={seleccionarFoto}
                   />
-               </div>
+                  <label
+                     htmlFor="selecciona-arhivo"
+                     className="boton__seleccionar__imagen"
+                  >
+                     Selecciona Un archivo
+                  </label>
+               </Panel>
             </div>
-            <Button label="Actualizar" type="submit" />
-         </form>
-      </div>
+         </div>
+         <Button label="Actualizar" type="submit" />
+      </form>
    );
 };

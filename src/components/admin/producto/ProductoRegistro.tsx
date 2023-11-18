@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { fechaActualISO } from "../../../utils/funciones.utils";
+import { useCallback, useContext, useEffect, useState } from "react";
+import {
+   fechaActualISO,
+   fechaVisualizarCalendario,
+} from "../../../utils/funciones.utils";
 
-import { ProductoService } from "../../../entities/producto.entities";
-import { ComboboxAnidadoProps } from "../../../interfaces/combobox.interface";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
@@ -14,23 +15,22 @@ import {
    estadoCategoria,
 } from "../categoria/CategoriaRegistro";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { ChangeValueSelect } from "../modelo/ModeloRegistro";
+import { ProductoEntity } from "../../../entities/producto.entities";
+import { ProductoService } from "../../../services/producto.service";
 
 interface Props {
    nombreFormulario: string;
    abrir: boolean;
    esEdicion: boolean;
-   itemSeleccionado: ProductoService;
+   itemSeleccionado: ProductoEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
    arrayCategorias: DropdownProps[];
    arrayMarcas: DropdownPropsAnidado[];
-   arrayModelos: ComboboxAnidadoProps[];
+   arrayModelos: DropdownPropsAnidado[];
 }
 
-// interface ChangeValueSelect {
-//    valor: string;
-//    valorAnidado: string;
-// }
 export const ProductoRegistro = ({
    nombreFormulario,
    abrir,
@@ -45,119 +45,163 @@ export const ProductoRegistro = ({
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [productoId, setProductoId] = useState(0);
    const [numeroSerie, setNumeroSerie] = useState("");
-   const [fkModelo, setFkModelo] = useState("0");
-   const [fkMarca, setFkMarca] = useState("0");
-   const [fkCategoria, setFkCategoria] = useState("0");
+   const [fkModelo, setFkModelo] = useState<DropdownPropsAnidado>(
+      {} as DropdownPropsAnidado
+   );
+   const [fkMarca, setFkMarca] = useState<DropdownPropsAnidado>(
+      {} as DropdownPropsAnidado
+   );
+   const [fkCategoria, setFkCategoria] = useState<DropdownProps>(
+      {} as DropdownProps
+   );
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [activo, setActivo] = useState("0");
-
+   const [activo, setActivo] = useState<DropdownProps>({
+      code: "0",
+      name: "Inactivo",
+   });
    const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
       DropdownPropsAnidado[]
    >([]);
    const [arrayAnidadoModelo, setArrayAnidadoModelo] = useState<
-      ComboboxAnidadoProps[]
+      DropdownPropsAnidado[]
    >([]);
    const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
 
+   const funcionObtenerMarcaPorCategoria = useCallback(
+      ({ valorPadre, valorHijo }: ChangeValueSelect) => {
+         const valorCategoria = arrayCategorias.find(
+            (item) => item.code === valorPadre
+         ) ?? { code: "", name: "" };
+
+         setFkCategoria({
+            code: valorCategoria.code,
+            name: valorCategoria.name,
+         });
+         const arrayNuevo: DropdownPropsAnidado[] = arrayMarcas.filter(
+            (item) => item.codeAnidado === valorPadre
+         );
+
+         const valorMarca = arrayNuevo.find(
+            (item) => item.code === valorHijo
+         ) ?? { code: "", name: "", codeAnidado: "" };
+
+         setArrayAnidadoMarca(arrayNuevo);
+         setFkMarca(valorMarca);
+      },
+      [arrayCategorias, arrayMarcas]
+   );
+
+   const funcionObtenerModeloPorMarca = useCallback(
+      ({ valorPadre, valorHijo }: ChangeValueSelect) => {
+         const valorMarca = arrayMarcas.find(
+            (item) => item.code === valorPadre
+         ) ?? { codeAnidado: "", code: "", name: "" };
+
+         setFkMarca({
+            codeAnidado: valorMarca.codeAnidado,
+            code: valorMarca.code,
+            name: valorMarca.name,
+         });
+         const arrayNuevo: DropdownPropsAnidado[] = arrayModelos.filter(
+            (item) => item.codeAnidado === valorPadre
+         );
+
+         const valorModelo = arrayNuevo.find(
+            (item) => item.code === valorHijo
+         ) ?? { code: "", name: "", codeAnidado: "" };
+
+         setArrayAnidadoModelo(arrayNuevo);
+         setFkModelo(valorModelo);
+      },
+      [arrayMarcas, arrayModelos]
+   );
+
    useEffect(() => {
       setProductoId(itemSeleccionado.producto_id);
-      setFechaRegistro(itemSeleccionado.fecha_registro);
+      setFechaRegistro(
+         fechaVisualizarCalendario(itemSeleccionado.fecha_registro)
+      );
       setNumeroSerie(itemSeleccionado.numero_serie);
-      setActivo(itemSeleccionado.activo ? "1" : "0");
-
-      setFkCategoria(String(itemSeleccionado.fk_categoria));
-
-      const nuevoArrayMarca: DropdownPropsAnidado[] = arrayMarcas.filter(
-         (item) => item.code === String(itemSeleccionado.fk_categoria)
+      setActivo(
+         itemSeleccionado.activo
+            ? {
+                 code: "1",
+                 name: "Activo",
+              }
+            : {
+                 code: "0",
+                 name: "Inactivo",
+              }
       );
-      setArrayAnidadoMarca(nuevoArrayMarca);
-      setFkMarca(String(itemSeleccionado.fk_marca));
 
-      const nuevoArrayModelo: ComboboxAnidadoProps[] = arrayModelos.filter(
-         (item) => item.valor === itemSeleccionado.fk_marca
-      );
-      setArrayAnidadoModelo(nuevoArrayModelo);
-      setFkModelo(String(itemSeleccionado.fk_modelo));
-   }, [itemSeleccionado, arrayMarcas, arrayModelos]);
+      funcionObtenerMarcaPorCategoria({
+         valorPadre: String(itemSeleccionado.fk_categoria),
+         valorHijo: String(itemSeleccionado.fk_marca),
+      });
 
-   // const funcionObtenerMarcaPorCategoria = ({
-   //    valor,
-   //    valorAnidado,
-   // }: ChangeValueSelect) => {
-   //    setFkCategoria(valor);
-   //    const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
-   //       (item) => item.valor === parseInt(valor)
-   //    );
-
-   //    setArrayAnidadoMarca(arrayNuevo);
-   //    setFkMarca(valorAnidado);
-   // };
-
-   // const funcionObtenerModeloPorMarca = ({
-   //    valor,
-   //    valorAnidado,
-   // }: ChangeValueSelect) => {
-   //    setFkMarca(valor);
-   //    const arrayNuevo: ComboboxAnidadoProps[] = arrayModelos.filter(
-   //       (item) => item.valor === parseInt(valor)
-   //    );
-
-   //    setArrayAnidadoModelo(arrayNuevo);
-   //    setFkModelo(valorAnidado);
-   // };
+      funcionObtenerModeloPorMarca({
+         valorPadre: String(itemSeleccionado.fk_marca),
+         valorHijo: String(itemSeleccionado.fk_modelo),
+      });
+   }, [
+      itemSeleccionado,
+      arrayMarcas,
+      arrayModelos,
+      funcionObtenerMarcaPorCategoria,
+      funcionObtenerModeloPorMarca,
+   ]);
 
    const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const data: ProductoService = new ProductoService(
+      const data: ProductoEntity = new ProductoEntity(
          productoId,
          numeroSerie,
-         parseInt(fkModelo),
-         parseInt(fkMarca),
-         parseInt(fkCategoria),
+         parseInt(fkModelo.code),
+         parseInt(fkMarca.code),
+         parseInt(fkCategoria.code),
          fechaActualISO(),
-         activo === "1",
+         activo.code === "1",
          false
       );
+      const srvProducto = new ProductoService();
       if (esEdicion) {
-         await ProductoService.Actualizar(productoId, data)
-            .then((response) => {
-               if (response.data.code === 200) {
-                  mostrarNotificacion({
-                     tipo: "warn",
-                     detalle: `${nombreFormulario} se actualizó correctamente`,
-                  });
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-                  return;
-               }
+         await srvProducto
+            .actualizar(productoId, data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `${nombreFormulario} se actualizó correctamente`,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
             .catch((error: Error) => {
                mostrarNotificacion({
-                  tipo: "warn",
+                  tipo: "error",
                   detalle: error.message,
                });
-               return;
             });
       } else {
-         await ProductoService.Registrar(data)
-            .then((response) => {
+         await srvProducto
+            .registrar(data)
+            .then(() => {
                mostrarNotificacion({
                   tipo: "success",
                   detalle: `${nombreFormulario} se registró correctamente`,
                });
                funcionActualizarTabla();
                funcionCerrarModal();
-               return;
             })
             .catch((error: Error) => {
+               console.log(error);
+
                mostrarNotificacion({
-                  tipo: "success",
+                  tipo: "error",
                   detalle: error.message,
                });
-               return;
             });
       }
    };
@@ -209,9 +253,13 @@ export const ProductoRegistro = ({
                         id="select-categoria"
                         style={{ width: "100%" }}
                         value={fkCategoria}
-                        onChange={(e: DropdownChangeEvent) =>
-                           setActivo(e.value)
-                        }
+                        onChange={(e: DropdownChangeEvent) => {
+                           setFkCategoria(e.value);
+                           funcionObtenerMarcaPorCategoria({
+                              valorPadre: e.value.code,
+                              valorHijo: "0",
+                           });
+                        }}
                         options={arrayCategorias}
                         optionLabel="name"
                         placeholder="Selec. Categoria"
@@ -224,9 +272,13 @@ export const ProductoRegistro = ({
                         id="select-marca"
                         style={{ width: "100%" }}
                         value={fkMarca}
-                        onChange={(e: DropdownChangeEvent) =>
-                           setFkMarca(e.value)
-                        }
+                        onChange={(e: DropdownChangeEvent) => {
+                           setFkMarca(e.value);
+                           funcionObtenerModeloPorMarca({
+                              valorPadre: e.value.code,
+                              valorHijo: "0",
+                           });
+                        }}
                         options={arrayAnidadoMarca}
                         optionLabel="name"
                         placeholder="Selec. Marca"

@@ -142,37 +142,41 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
    }, [dato, obtenerSesion, titulo, sesionGamertec]);
 
    return (
-      <div className="cajas-form">
-         <form
-            action=""
-            method="POST"
-            onSubmit={(e) =>
-               actualizarDato(
-                  e,
-                  dato,
-                  sesionGamertec.usuario.usuario_id,
-                  datoACambiar
-               )
-            }
-         >
-            <div className="texto">
-               <p>{`${titulo} actual: ${datoAnterior}`}</p>
-            </div>
-            <div className="inputs">
-               <label> {`Ingrese el nuevo ${titulo}:`}</label>
+      <form
+         className="form__accion"
+         method="POST"
+         onSubmit={(e) =>
+            actualizarDato(
+               e,
+               dato,
+               sesionGamertec.usuario.usuario_id,
+               datoACambiar
+            )
+         }
+      >
+         <div className="form__accion__cambio">
+            <label className="form__accion__cambio-definicion">{`${titulo} actual: `}</label>
+            <p className="form__accion__cambio-valor">{datoAnterior}</p>
+         </div>
+         <div className="form__accion__cambio">
+            <label
+               className="form__accion__cambio-definicion"
+               htmlFor="input-label"
+            >{`Ingrese Nuevo ${titulo}:`}</label>
 
-               <InputText
-                  type="text"
-                  placeholder={`Ingrese ${dato}`}
-                  value={datoACambiar}
-                  onChange={(e) => setDatoACambiar(e.target.value)}
-               />
-            </div>
+            <InputText
+               className="form__accion__cambio-valor"
+               id="input-label"
+               type="text"
+               placeholder={`Ingrese ${dato}`}
+               value={datoACambiar}
+               onChange={(e) => setDatoACambiar(e.target.value)}
+            />
+         </div>
 
-            <div className="boton">
-               <Button label="Actualizar" type="submit" />
-            </div>
-         </form>
-      </div>
+         <div className="boton">
+            <Button label="Actualizar" type="submit" />
+         </div>
+      </form>
    );
 };
