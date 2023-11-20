@@ -137,8 +137,6 @@ export const PreCompra = () => {
    }, [mostrarNotificacion]);
 
    useEffect(() => {
-      console.log("pasa");
-
       funObtenerCarritoCaracteristicas(sesionGamertec.usuario.usuario_id);
       funObtenerDepartamento();
       funObtenerProvincia();
@@ -202,38 +200,6 @@ export const PreCompra = () => {
       },
       [arrayProvincia, arrayDistrito]
    );
-
-   // const funListarProvinciaComboboxAnidado = ({
-   //    valor,
-   //    valorAnidado,
-   // }: ChangeValueCombobox) => {
-   //    setDepartamentoId(valor);
-   //    console.log(valor);
-
-   //    console.table(arrayProvincia);
-
-   //    const arrayNuevo: DropdownPropsAnidado[] = arrayProvincia.filter(
-   //       (item) => item.codeAnidado === valor
-   //    );
-   //    setArrayAnidadoProvincia(arrayNuevo);
-   //    setProvinciaId(valorAnidado);
-   //    setDistritoId("0");
-   //    setArrayAnidadoDistrito([]);
-   // };
-
-   // const funcionListarComboboxAnidadoDistrito = ({
-   //    valor,
-   //    valorAnidado,
-   // }: ChangeValueCombobox) => {
-   //    setProvinciaId(valor);
-
-   //    const arrayNuevo: DropdownPropsAnidado[] = arrayDistrito.filter(
-   //       (item) => item.codeAnidado === valor
-   //    );
-   //    setArrayAnidadoDistrito(arrayNuevo);
-   //    setDistritoId(valorAnidado);
-   // };
-
    return (
       <ContainerBodyStyled>
          <PreCompraStyled>
