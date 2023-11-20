@@ -79,16 +79,26 @@ export const Marca = ({ nombreFormulario }: Props) => {
    );
    const [arrayMarca, setArrayMarca] = useState<ValuesMarcaProps[]>([]);
    const [dialogo, setDialogo] = useState(false);
-
-   const funcionCerrarDialogo = () => {
-      setDialogo(false);
-   };
-
    const [itemSeleccionado, setItemSeleccionado] = useState<MarcaResponse>(
       {} as MarcaResponse
    );
+   const funObtenerCategorias = useCallback(async () => {
+      const srvCategoria = new CategoriaService();
 
-   const funcionListar = async () => {
+      await srvCategoria
+         .obtenerCategoriasCombobox()
+         .then((resp) => {
+            arrayCategoria = [...resp];
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
+   const funObtenerMarcas = useCallback(async () => {
       const srvMarca = new MarcaService();
       const arrayMarca: ValuesMarcaProps[] = [];
       await srvMarca
@@ -114,18 +124,6 @@ export const Marca = ({ nombreFormulario }: Props) => {
             });
             setArrayMarca(arrayMarca);
          })
-         .catch((error: any) => {
-            return;
-         });
-   };
-
-   const funObtenerMarcas = useCallback(async () => {
-      const srvMarca = new MarcaService();
-      await srvMarca
-         .obtenerMarcasCombobox()
-         .then((resp) => {
-            arrayCategoria = resp;
-         })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
@@ -133,6 +131,19 @@ export const Marca = ({ nombreFormulario }: Props) => {
             });
          });
    }, [mostrarNotificacion]);
+
+   useEffect(() => {
+      funObtenerCategorias();
+      funObtenerMarcas();
+   }, [funObtenerCategorias, funObtenerMarcas]);
+
+   const funcionCerrarDialogo = () => {
+      setDialogo(false);
+   };
+
+   const funcionCerrarModal = () => {
+      setAbrirModal(false);
+   };
 
    const funcionCrear = () => {
       setItemSeleccionado(new MarcaEntity(0, "", false, 0, fechaActualISO()));
@@ -150,7 +161,6 @@ export const Marca = ({ nombreFormulario }: Props) => {
             tipo: "warn",
             detalle: `Elija un ${nombreFormulario} para poder editar`,
          });
-
          return;
       }
 
@@ -178,7 +188,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
                detalle: `${nombreFormulario} se eliminó correctamente`,
             });
             funcionCerrarDialogo();
-            funcionListar();
+            funObtenerMarcas();
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -202,35 +212,8 @@ export const Marca = ({ nombreFormulario }: Props) => {
          funcionCerrarDialogo();
          return;
       }
-
       setDialogo(true);
    };
-
-   const funcionCerrarModal = () => {
-      setAbrirModal(false);
-   };
-
-   const funObtenerCategorias = useCallback(async () => {
-      const srvCategoria = new CategoriaService();
-
-      await srvCategoria
-         .obtenerCategoriasCombobox()
-         .then((resp) => {
-            arrayCategoria = resp;
-         })
-         .catch((error: Error) => {
-            mostrarNotificacion({
-               tipo: "error",
-               detalle: error.message,
-            });
-         });
-   }, [mostrarNotificacion]);
-
-   useEffect(() => {
-      funObtenerCategorias();
-      funObtenerMarcas();
-      funcionListar();
-   }, [funObtenerCategorias, funObtenerMarcas]);
 
    return (
       <ContainerBodyStyled>
@@ -265,7 +248,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
             esEdicion={esEdicion}
             itemSeleccionado={itemSeleccionado}
             funcionCerrarModal={funcionCerrarModal}
-            funcionActualizarTabla={funcionListar}
+            funcionActualizarTabla={funObtenerMarcas}
             arrayCategorias={arrayCategoria}
          />
       </ContainerBodyStyled>

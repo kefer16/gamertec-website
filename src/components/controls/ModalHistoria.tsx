@@ -1,85 +1,67 @@
-import { useState, useEffect, useContext, useCallback } from "react";
-import {
-   Modal,
-   Box,
-   Container,
-   Typography,
-   TableContainer,
-   Table,
-   TableHead,
-   TableRow,
-   TableCell,
-   TableBody,
-   TableFooter,
-   TablePagination,
-} from "@mui/material";
 import { UsuarioEntity } from "../../entities/usuario.entities";
-import { convertirFecha } from "../../utils/funciones.utils";
-import { GamertecSesionContext } from "../sesion/Sesion.component";
-import { UsuarioService } from "../../services/usuario.service";
 interface Props {
    itemSeleccionado: UsuarioEntity;
    modalHistoria: boolean;
    funcionCerrarHistoria: () => void;
 }
-interface Cabeceras {
-   titulo: string;
-}
+// interface Cabeceras {
+//    titulo: string;
+// }
 
-const cabeceras: Cabeceras[] = [
-   { titulo: "N°" },
-   { titulo: "Fecha Inicial" },
-   { titulo: "Fecha Final" },
-   { titulo: "Apellido" },
-   { titulo: "Nombre" },
-   { titulo: "Correo" },
-   { titulo: "Usuario" },
-   { titulo: "Dinero" },
-   { titulo: "Activo" },
-];
+// const cabeceras: Cabeceras[] = [
+//    { titulo: "N°" },
+//    { titulo: "Fecha Inicial" },
+//    { titulo: "Fecha Final" },
+//    { titulo: "Apellido" },
+//    { titulo: "Nombre" },
+//    { titulo: "Correo" },
+//    { titulo: "Usuario" },
+//    { titulo: "Dinero" },
+//    { titulo: "Activo" },
+// ];
 
 export const ModalHistoria = ({
    itemSeleccionado,
    modalHistoria,
    funcionCerrarHistoria,
 }: Props) => {
-   const { mostrarNotificacion } = useContext(GamertecSesionContext);
-   const [historiales, setHistoriales] = useState<UsuarioEntity[]>([]);
-   const [page, setPage] = useState(0);
-   const [rowsPerPage, setRowsPerPage] = useState(5);
+   // const { mostrarNotificacion } = useContext(GamertecSesionContext);
+   // const [historiales, setHistoriales] = useState<UsuarioEntity[]>([]);
+   // const [page, setPage] = useState(0);
+   // const [rowsPerPage, setRowsPerPage] = useState(5);
 
-   const buscarUsuarioHistorial = useCallback(
-      async (idUsuario: number) => {
-         const historial: UsuarioEntity[] = [];
+   // const buscarUsuarioHistorial = useCallback(
+   //    async (idUsuario: number) => {
+   //       const historial: UsuarioEntity[] = [];
 
-         const srvUsuario = new UsuarioService();
+   //       const srvUsuario = new UsuarioService();
 
-         await srvUsuario
-            .historial(idUsuario)
-            .then((resp: UsuarioEntity[]) => {
-               resp.forEach((element: UsuarioEntity, index: number) => {
-                  element.index = index + 1;
-                  historial.push(element);
-               });
-               setHistoriales(historial);
-            })
-            .catch((error: Error) => {
-               mostrarNotificacion({
-                  tipo: "error",
-                  detalle: error.message,
-               });
-            });
-      },
-      [mostrarNotificacion]
-   );
+   //       await srvUsuario
+   //          .historial(idUsuario)
+   //          .then((resp: UsuarioEntity[]) => {
+   //             resp.forEach((element: UsuarioEntity, index: number) => {
+   //                element.index = index + 1;
+   //                historial.push(element);
+   //             });
+   //             setHistoriales(historial);
+   //          })
+   //          .catch((error: Error) => {
+   //             mostrarNotificacion({
+   //                tipo: "error",
+   //                detalle: error.message,
+   //             });
+   //          });
+   //    },
+   //    [mostrarNotificacion]
+   // );
 
-   useEffect(() => {
-      buscarUsuarioHistorial(itemSeleccionado.usuario_id);
-   }, [itemSeleccionado, buscarUsuarioHistorial]);
+   // useEffect(() => {
+   //    buscarUsuarioHistorial(itemSeleccionado.usuario_id);
+   // }, [itemSeleccionado, buscarUsuarioHistorial]);
 
    return (
       <>
-         <Modal open={modalHistoria} onClose={funcionCerrarHistoria}>
+         {/* <Modal open={modalHistoria} onClose={funcionCerrarHistoria}>
             <Box
                sx={{ flexGrow: 1 }}
                style={{
@@ -185,7 +167,7 @@ export const ModalHistoria = ({
                   </TableContainer>
                </Container>
             </Box>
-         </Modal>
+         </Modal> */}
       </>
    );
 };

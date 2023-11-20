@@ -1,58 +1,62 @@
 import { Link } from "react-router-dom";
 import { PreCompraStyled } from "./styles/PreCompra";
-import {
-   FormControl,
-   InputLabel,
-   MenuItem,
-   Select,
-   SelectChangeEvent,
-   TextField,
-} from "@mui/material";
-
 import { useCallback, useContext, useEffect, useState } from "react";
 import { DepartamentoService } from "../../services/departamento.service";
 import { ProvinciaService } from "../../services/provincia.service";
 import { DistritoService } from "../../services/distrito.service";
-import {
-   ChangeValueCombobox,
-   ComboboxAnidadoProps,
-   ComboboxProps,
-} from "../../interfaces/combobox.interface";
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { InputText } from "primereact/inputtext";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
+import {
+   DropdownProps,
+   DropdownPropsAnidado,
+} from "../admin/categoria/CategoriaRegistro";
+import { ChangeValueSelect } from "../admin/modelo/ModeloRegistro";
 
 export const PreCompra = () => {
    const { sesionGamertec, mostrarNotificacion } = useContext(
       GamertecSesionContext
    );
-   const [arrayDepartamento, setArrayDepartamento] = useState<ComboboxProps[]>(
+   // departamento
+   const [arrayDepartamento, setArrayDepartamento] = useState<DropdownProps[]>(
       []
    );
-   const [arrayProvincia, setArrayProvincia] = useState<ComboboxAnidadoProps[]>(
+   const [departamentoId, setDepartamentoId] = useState<DropdownProps>({
+      code: "0",
+      name: "",
+   });
+   const [arrayProvincia, setArrayProvincia] = useState<DropdownPropsAnidado[]>(
       []
    );
-   const [arrayDistrito, setArrayDistrito] = useState<ComboboxAnidadoProps[]>(
-      []
-   );
-
+   // provincia
    const [arrayAnidadoProvincia, setArrayAnidadoProvincia] = useState<
-      ComboboxAnidadoProps[]
+      DropdownPropsAnidado[]
    >([]);
-
+   const [provinciaId, setProvinciaId] = useState<DropdownPropsAnidado>({
+      code: "0",
+      codeAnidado: "0",
+      name: "",
+   });
+   // distrito
+   const [arrayDistrito, setArrayDistrito] = useState<DropdownPropsAnidado[]>(
+      []
+   );
    const [arrayAnidadoDistrito, setArrayAnidadoDistrito] = useState<
-      ComboboxAnidadoProps[]
+      DropdownPropsAnidado[]
    >([]);
+   const [distritoId, setDistritoId] = useState<DropdownPropsAnidado>({
+      code: "0",
+      codeAnidado: "0",
+      name: "",
+   });
 
    const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
-
-   const [departamentoId, setDepartamentoId] = useState<string>("0");
-   const [provinciaId, setProvinciaId] = useState<string>("0");
-   const [distritoId, setDistritoId] = useState<string>("0");
    const [direccion, setDireccion] = useState<string>("");
    const [telefono, setTelefono] = useState<string>("");
-
    const [precioSubTotal, setPrecioSubTotal] = useState<number>(0);
    const [precioTotal, setPrecioTotal] = useState<number>(0);
    const [precioEnvio, setPrecioEnvio] = useState<number>(0);
@@ -85,28 +89,13 @@ export const PreCompra = () => {
       [mostrarNotificacion]
    );
 
-   const funObtenerProvinciaCombobox = useCallback(async () => {
-      const srvProvincia = new ProvinciaService();
-      await srvProvincia
-         .listarTodos()
-         .then((resp) => {
-            setArrayProvincia(resp);
-         })
-         .catch((error: Error) => {
-            mostrarNotificacion({
-               tipo: "error",
-               detalle: error.message,
-            });
-         });
-   }, [mostrarNotificacion]);
-
-   const funObtenerDepartamentoCombobox = useCallback(async () => {
+   const funObtenerDepartamento = useCallback(async () => {
       const srvDepartamento = new DepartamentoService();
 
       await srvDepartamento
          .listarTodos()
          .then((resp) => {
-            setArrayDepartamento(resp);
+            setArrayDepartamento([...resp]);
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -116,7 +105,22 @@ export const PreCompra = () => {
          });
    }, [mostrarNotificacion]);
 
-   const funObtenerDistritoCombobox = useCallback(async () => {
+   const funObtenerProvincia = useCallback(async () => {
+      const srvProvincia = new ProvinciaService();
+      await srvProvincia
+         .listarTodos()
+         .then((resp) => {
+            setArrayProvincia([...resp]);
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
+   const funObtenerDistrito = useCallback(async () => {
       const srvDistrito = new DistritoService();
 
       await srvDistrito
@@ -133,51 +137,105 @@ export const PreCompra = () => {
    }, [mostrarNotificacion]);
 
    useEffect(() => {
+      console.log("pasa");
+
       funObtenerCarritoCaracteristicas(sesionGamertec.usuario.usuario_id);
-      funObtenerDepartamentoCombobox();
-      funObtenerProvinciaCombobox();
-      funObtenerDistritoCombobox();
+      funObtenerDepartamento();
+      funObtenerProvincia();
+      funObtenerDistrito();
 
       setDireccion(sesionGamertec.usuario.direccion);
       setTelefono(sesionGamertec.usuario.telefono);
    }, [
       sesionGamertec,
       funObtenerCarritoCaracteristicas,
-      funObtenerDepartamentoCombobox,
-      funObtenerProvinciaCombobox,
-      funObtenerDistritoCombobox,
+      funObtenerDepartamento,
+      funObtenerProvincia,
+      funObtenerDistrito,
    ]);
 
-   const funcionListarComboboxAnidadoProvincia = ({
-      valor,
-      valorAnidado,
-   }: ChangeValueCombobox) => {
-      setDepartamentoId(valor);
+   const funcionObtenerProvinciaPorDepartamento = useCallback(
+      ({ valorPadre, valorHijo }: ChangeValueSelect) => {
+         const valorCategoria = arrayDepartamento.find(
+            (item) => item.code === valorPadre
+         ) ?? { code: "", name: "" };
 
-      const arrayNuevo: ComboboxAnidadoProps[] = arrayProvincia.filter(
-         (item) => item.valorAnidado === parseInt(valor)
-      );
-      setArrayAnidadoProvincia(arrayNuevo);
-      setProvinciaId(valorAnidado);
-      setDistritoId("0");
-      setArrayAnidadoDistrito([]);
-   };
+         setDepartamentoId({
+            code: valorCategoria.code,
+            name: valorCategoria.name,
+         });
+         const arrayNuevo: DropdownPropsAnidado[] = arrayProvincia.filter(
+            (item) => item.codeAnidado === valorPadre
+         );
 
-   const funcionListarComboboxAnidadoDistrito = ({
-      valor,
-      valorAnidado,
-   }: ChangeValueCombobox) => {
-      setProvinciaId(valor);
+         const nuevoValorAnidado = arrayNuevo.find(
+            (item) => item.code === valorHijo
+         ) ?? { code: "", name: "", codeAnidado: "" };
 
-      const arrayNuevo: ComboboxAnidadoProps[] = arrayDistrito.filter(
-         (item) => item.valorAnidado === parseInt(valor)
-      );
-      setArrayAnidadoDistrito(arrayNuevo);
-      setDistritoId(valorAnidado);
-   };
+         setArrayAnidadoProvincia(arrayNuevo);
+         setProvinciaId(nuevoValorAnidado);
+      },
+      [arrayDepartamento, arrayProvincia]
+   );
+
+   const funcionObtenerDistritoPorProvincia = useCallback(
+      ({ valorPadre, valorHijo }: ChangeValueSelect) => {
+         const valorCategoria = arrayProvincia.find(
+            (item) => item.code === valorPadre
+         ) ?? { code: "", codeAnidado: "", name: "" };
+
+         setProvinciaId({
+            code: valorCategoria.code,
+            codeAnidado: valorCategoria.codeAnidado,
+            name: valorCategoria.name,
+         });
+         const arrayNuevo: DropdownPropsAnidado[] = arrayDistrito.filter(
+            (item) => item.codeAnidado === valorPadre
+         );
+
+         const nuevoValorAnidado = arrayNuevo.find(
+            (item) => item.code === valorHijo
+         ) ?? { code: "", name: "", codeAnidado: "" };
+
+         setArrayAnidadoDistrito(arrayNuevo);
+         setDistritoId(nuevoValorAnidado);
+      },
+      [arrayProvincia, arrayDistrito]
+   );
+
+   // const funListarProvinciaComboboxAnidado = ({
+   //    valor,
+   //    valorAnidado,
+   // }: ChangeValueCombobox) => {
+   //    setDepartamentoId(valor);
+   //    console.log(valor);
+
+   //    console.table(arrayProvincia);
+
+   //    const arrayNuevo: DropdownPropsAnidado[] = arrayProvincia.filter(
+   //       (item) => item.codeAnidado === valor
+   //    );
+   //    setArrayAnidadoProvincia(arrayNuevo);
+   //    setProvinciaId(valorAnidado);
+   //    setDistritoId("0");
+   //    setArrayAnidadoDistrito([]);
+   // };
+
+   // const funcionListarComboboxAnidadoDistrito = ({
+   //    valor,
+   //    valorAnidado,
+   // }: ChangeValueCombobox) => {
+   //    setProvinciaId(valor);
+
+   //    const arrayNuevo: DropdownPropsAnidado[] = arrayDistrito.filter(
+   //       (item) => item.codeAnidado === valor
+   //    );
+   //    setArrayAnidadoDistrito(arrayNuevo);
+   //    setDistritoId(valorAnidado);
+   // };
 
    return (
-      <>
+      <ContainerBodyStyled>
          <PreCompraStyled>
             <div className="titulo">
                <h2>Estas a un paso de realizar tu compra</h2>
@@ -193,120 +251,95 @@ export const PreCompra = () => {
                         quieres despachar o retirar tus productos
                      </p>
                   </div>
-                  <div className="despacho-select">
-                     <FormControl fullWidth sx={{ marginBottom: "20px" }}>
-                        <InputLabel id="departamento-select-label" required>
+                  <form className="despacho-select">
+                     <div>
+                        <label htmlFor="departamento-select-label">
                            Departamento
-                        </InputLabel>
-                        <Select
-                           labelId="departamento-select-label"
-                           id="departamento-select"
+                        </label>
+                        <Dropdown
+                           id="departamento-select-label"
+                           style={{ width: "100%" }}
                            value={departamentoId}
-                           label="Departamento"
-                           onChange={(event: SelectChangeEvent) =>
-                              funcionListarComboboxAnidadoProvincia({
-                                 valor: event.target.value,
-                                 valorAnidado: "0",
-                              })
-                           }
-                        >
-                           <MenuItem value={"0"}>Selec. Departamento</MenuItem>
-                           {arrayDepartamento.map((item: ComboboxProps) => {
-                              return (
-                                 <MenuItem
-                                    key={item.valor}
-                                    value={String(item.valor)}
-                                 >
-                                    {item.descripcion}
-                                 </MenuItem>
-                              );
-                           })}
-                        </Select>
-                     </FormControl>
+                           onChange={(e: DropdownChangeEvent) => {
+                              setDepartamentoId(e.value);
+                              funcionObtenerProvinciaPorDepartamento({
+                                 valorPadre: e.value.code,
+                                 valorHijo: "0",
+                              });
+                           }}
+                           options={arrayDepartamento}
+                           optionLabel="name"
+                           placeholder="Todos los departamentos"
+                        />
+                     </div>
 
-                     <FormControl fullWidth sx={{ marginBottom: "20px" }}>
-                        <InputLabel id="provincia-select-label" required>
-                           Provincia
-                        </InputLabel>
-                        <Select
-                           labelId="provincia-select-label"
-                           id="provincia-select"
+                     <div>
+                        <label id="provincia-select-label">Provincia</label>
+                        <Dropdown
+                           id="provincia-select-label"
+                           style={{ width: "100%" }}
                            value={provinciaId}
-                           label="Provincia"
-                           onChange={(event: SelectChangeEvent) =>
-                              funcionListarComboboxAnidadoDistrito({
-                                 valor: event.target.value as string,
-                                 valorAnidado: "0",
-                              })
-                           }
-                        >
-                           <MenuItem value={"0"}>Selec. Provincia</MenuItem>
-                           {arrayAnidadoProvincia.map((item: ComboboxProps) => {
-                              return (
-                                 <MenuItem
-                                    key={item.valor}
-                                    value={String(item.valor)}
-                                 >
-                                    {item.descripcion}
-                                 </MenuItem>
-                              );
-                           })}
-                        </Select>
-                     </FormControl>
+                           onChange={(e: DropdownChangeEvent) => {
+                              setProvinciaId(e.value);
+                              funcionObtenerDistritoPorProvincia({
+                                 valorPadre: e.value.code,
+                                 valorHijo: "0",
+                              });
+                           }}
+                           options={arrayAnidadoProvincia}
+                           optionLabel="name"
+                           placeholder="Todas las provincias"
+                        />
+                     </div>
 
-                     <FormControl fullWidth sx={{ marginBottom: "20px" }}>
-                        <InputLabel id="distrito-select-label" required>
-                           Distrito
-                        </InputLabel>
-                        <Select
-                           labelId="distrito-select-label"
-                           id="distrito-select"
+                     <div>
+                        <label id="distrito-select-label">Distrito</label>
+                        <Dropdown
+                           id="distrito-select-label"
+                           style={{ width: "100%" }}
                            value={distritoId}
-                           label="Distrito"
-                           onChange={(event: SelectChangeEvent) =>
-                              setDistritoId(event.target.value as string)
+                           onChange={(e: DropdownChangeEvent) =>
+                              setDistritoId(e.value)
                            }
-                        >
-                           <MenuItem value={"0"}>Selec. Distrito</MenuItem>
-                           {arrayAnidadoDistrito.map((item: ComboboxProps) => {
-                              return (
-                                 <MenuItem
-                                    key={item.valor}
-                                    value={String(item.valor)}
-                                 >
-                                    {item.descripcion}
-                                 </MenuItem>
-                              );
-                           })}
-                        </Select>
-                     </FormControl>
+                           options={arrayAnidadoDistrito}
+                           optionLabel="name"
+                           placeholder="Todas las provincias"
+                        />
+                     </div>
+                     <div>
+                        <label htmlFor="input-direccion">
+                           Dirección de vivienda
+                        </label>
+                        <InputText
+                           required
+                           style={{ width: "100%" }}
+                           id="input-direccion"
+                           placeholder="Dirección de vivienda exacta"
+                           value={direccion}
+                           name="direccion"
+                           onChange={(event) =>
+                              setDireccion(event.target.value)
+                           }
+                        />
+                     </div>
 
-                     <TextField
-                        sx={{ marginBottom: "20px" }}
-                        required
-                        fullWidth
-                        label="Dirección de vivienda exacta"
-                        variant="outlined"
-                        value={direccion}
-                        name="direccion"
-                        onChange={(event) => setDireccion(event.target.value)}
-                     />
-
-                     <TextField
-                        sx={{ marginBottom: "20px" }}
-                        required
-                        fullWidth
-                        label="Teléfono"
-                        variant="outlined"
-                        value={telefono}
-                        name="telefono"
-                        onChange={(event) => setTelefono(event.target.value)}
-                     />
+                     <div>
+                        <label htmlFor="input-telefono">Teléfono</label>
+                        <InputText
+                           required
+                           style={{ width: "100%" }}
+                           id="input-telefono"
+                           placeholder="Teléfono"
+                           value={telefono}
+                           name="telefono"
+                           onChange={(event) => setTelefono(event.target.value)}
+                        />
+                     </div>
 
                      <Link to={"/voucher/"} type="submit">
                         CONTINUAR
                      </Link>
-                  </div>
+                  </form>
                </div>
 
                <div className="orden">
@@ -372,6 +405,6 @@ export const PreCompra = () => {
                </div>
             </div>
          </PreCompraStyled>
-      </>
+      </ContainerBodyStyled>
    );
 };

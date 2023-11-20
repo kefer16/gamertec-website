@@ -52,6 +52,10 @@ export class CategoriaService {
    }
    public async obtenerCategoriasCombobox(): Promise<DropdownProps[]> {
       await this.apiCategoria.listarTodos().then((resp) => {
+         this.rspArrayCategoriaCombobox.push({
+            code: "0",
+            name: "Seleccione Opción",
+         });
          resp.data.data.forEach((element: CategoriaResponse) => {
             this.rspArrayCategoriaCombobox.push({
                code: String(element.categoria_id),

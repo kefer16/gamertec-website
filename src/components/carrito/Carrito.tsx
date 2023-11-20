@@ -2,13 +2,12 @@ import { Link } from "react-router-dom";
 import { CarritoStyles } from "./styles/CarritoStyles";
 import { IconTrash, IconHistoryToggle } from "@tabler/icons-react";
 import { useContext, useEffect, useState, useCallback } from "react";
-
 import { formatoMonedaPerunana } from "../../utils/funciones.utils";
-import { Button } from "@mui/material";
 import { CarritoService } from "../../services/carrito.service";
 import { CarritoUsuarioProps } from "../../interfaces/carrito.interface";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
+import { Button } from "primereact/button";
 
 export const Carrito = () => {
    const { sesionGamertec, mostrarNotificacion, obtenerCantidadCarrito } =
@@ -253,9 +252,10 @@ export const Carrito = () => {
                   <Link to={"/before_purchase/"} style={{ color: "red" }}>
                      Procesar Compra
                   </Link>
-                  <Button onClick={calcularTotalOrden}>
-                     Volver a calcular
-                  </Button>
+                  <Button
+                     onClick={calcularTotalOrden}
+                     label="Volver a calcular"
+                  />
                </div>
             </div>
          </CarritoStyles>

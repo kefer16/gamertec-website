@@ -34,10 +34,7 @@ export const Products = () => {
       await srvCategoria
          .obtenerCategoriasCombobox()
          .then((resp) => {
-            arrayCategoria = resp.map((item) => ({
-               code: item.code,
-               name: item.name,
-            }));
+            arrayCategoria = [...resp];
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -47,20 +44,36 @@ export const Products = () => {
          });
    }, [mostrarNotificacion]);
 
+   const funObtenerModelos = useCallback(
+      async (categoria_id: number, nombre_modelo: string) => {
+         const srvModelo = new ModeloService();
+         await srvModelo
+            .listarModelosPorFiltro(categoria_id, nombre_modelo)
+            .then((resp) => {
+               setArrayModelo(resp);
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  detalle: error.message,
+               });
+            });
+      },
+      [mostrarNotificacion]
+   );
+
    useEffect(() => {
       funObtenerCategorias();
-   }, [funObtenerCategorias]);
+      funObtenerModelos(0, "");
+   }, [funObtenerCategorias, funObtenerModelos]);
 
    const funcionAsignarFiltroCategoria = async (
-      event: React.FormEvent<HTMLFormElement>
+      event: React.FormEvent<HTMLFormElement>,
+      categoria_id: number,
+      nombre_modelo: string
    ) => {
       event.preventDefault();
-      const srvModelo = new ModeloService();
-      await srvModelo
-         .listarModelosPorFiltro(parseInt(categoria.code), nombreModelo)
-         .then((resp) => {
-            setArrayModelo(resp);
-         });
+      await funObtenerModelos(categoria_id, nombre_modelo);
    };
 
    return (
@@ -69,7 +82,13 @@ export const Products = () => {
 
          <form
             className="flex flex-start justify-content-between"
-            onSubmit={funcionAsignarFiltroCategoria}
+            onSubmit={(event) =>
+               funcionAsignarFiltroCategoria(
+                  event,
+                  parseInt(categoria.code),
+                  nombreModelo
+               )
+            }
          >
             <Dropdown
                className="w-3 mr-3"

@@ -1,4 +1,3 @@
-import { TextField } from "@mui/material";
 import { ComprobanteStyled } from "../../comprobante/styles/Comprobante.styled";
 import { useContext, useEffect, useState } from "react";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
@@ -11,10 +10,10 @@ import {
 import { convertirFormatoMoneda } from "../../../utils/funciones.utils";
 import { SeriesRegistro } from "./PedidoDetalleRegistro.component";
 import { IMultiSelectProps } from "../../controls/primeUI/MultiSelectPrimeUI";
-
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ProductoService } from "../../../services/producto.service";
 import { ProductoSerieResponse } from "../../../responses/producto.response";
+import { InputText } from "primereact/inputtext";
 
 interface Props {
    pedido_id: number;
@@ -89,35 +88,35 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
                   </div>
                   <div className="formulario">
                      <div className="form-dividido">
-                        <TextField
-                           sx={{ marginBottom: "20px" }}
+                        <InputText
+                           style={{ marginBottom: "20px" }}
                            disabled
                            required
-                           label="Cliente"
+                           placeholder="Cliente"
                            value={`${sesionGamertec.usuario.nombre} ${sesionGamertec.usuario.apellido}`}
                         />
 
-                        <TextField
-                           sx={{ marginBottom: "20px" }}
+                        <InputText
+                           style={{ marginBottom: "20px" }}
                            disabled
                            required
-                           label="Fecha"
+                           placeholder="Fecha"
                            value={""}
                         />
                      </div>
                      <div className="form-dividido">
-                        <TextField
-                           sx={{ marginBottom: "20px" }}
+                        <InputText
+                           style={{ marginBottom: "20px" }}
                            disabled
                            required
-                           label="Direccion"
+                           placeholder="Direccion"
                            value={direccion}
                         />
-                        <TextField
-                           sx={{ marginBottom: "20px" }}
+                        <InputText
+                           style={{ marginBottom: "20px" }}
                            disabled
                            required
-                           label="Telefono"
+                           placeholder="Telefono"
                            value={telefono}
                         />
                      </div>
