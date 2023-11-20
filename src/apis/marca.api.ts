@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios";
-import { ModeloEntity } from "../entities/modelo.entity";
+import { MarcaEntity } from "../entities/marca.entities";
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
-export class ModeloApi {
-   async registrar(data: ModeloEntity): Promise<AxiosResponse> {
+export class MarcaApi {
+   async registrar(data: MarcaEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -13,7 +13,7 @@ export class ModeloApi {
 
          const body = JSON.stringify(data);
 
-         return await axios.post(`${ModeloEntity.url}/registrar`, body, config);
+         return await axios.post(`${MarcaEntity.url}/registrar`, body, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
@@ -21,13 +21,13 @@ export class ModeloApi {
    }
 
    async actualizar(
-      modelo_id: number,
-      data: ModeloEntity
+      marca_id: number,
+      data: MarcaEntity
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               modelo_id,
+               marca_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export class ModeloApi {
          };
          const body = JSON.stringify(data);
 
-         return await axios.put(`${ModeloEntity.url}/actualizar`, body, config);
+         return await axios.put(`${MarcaEntity.url}/actualizar`, body, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
@@ -50,85 +50,53 @@ export class ModeloApi {
             },
          };
 
-         return await axios.get(`${ModeloEntity.url}/todos`, config);
+         return await axios.get(`${MarcaEntity.url}/todos`, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }
    }
 
-   async historial(modelo_id: number): Promise<AxiosResponse> {
+   async historial(marca_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               modelo_id,
+               marca_id,
             },
             headers: {
                "Content-Type": "application/json",
             },
          };
 
-         return await axios.get(`${ModeloEntity.url}/historial`, config);
+         return await axios.get(`${MarcaEntity.url}/historial`, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }
    }
 
-   async buscarPorId(modelo_id: number): Promise<AxiosResponse> {
+   async buscarPorId(marca_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               modelo_id,
+               marca_id,
             },
          };
-         return await axios.get(`${ModeloEntity.url}/uno`, config);
+         return await axios.get(`${MarcaEntity.url}/uno`, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }
    }
 
-   async eliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(marca_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               modelo_id: ID,
+               marca_id,
             },
          };
-         return await axios.delete(`${ModeloEntity.url}/eliminar`, config);
-      } catch (error: any) {
-         error.message = personalizarMensajeError(error);
-         return Promise.reject(error);
-      }
-   }
-
-   async listarModelosPorFiltro(
-      categoria_id: number,
-      nombre_modelo: string
-   ): Promise<AxiosResponse> {
-      try {
-         const config = {
-            params: {
-               categoria_id,
-               nombre_modelo,
-            },
-         };
-         return await axios.get(`${ModeloEntity.url}/listar_filtro`, config);
-      } catch (error: any) {
-         error.message = personalizarMensajeError(error);
-         return Promise.reject(error);
-      }
-   }
-
-   async listarModeloDescripcion(modelo_id: number): Promise<AxiosResponse> {
-      try {
-         const config = {
-            params: {
-               modelo_id,
-            },
-         };
-         return await axios.get(`${ModeloEntity.url}/descripcion`, config);
+         return await axios.delete(`${MarcaEntity.url}/eliminar`, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);

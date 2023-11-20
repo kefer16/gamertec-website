@@ -3,7 +3,7 @@ import { DistritoEntity } from "../entities/distrito.entity";
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class DistritoApi {
-   static async Registrar(data: DistritoEntity): Promise<AxiosResponse> {
+   async registrar(data: DistritoEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -24,10 +24,7 @@ export class DistritoApi {
       }
    }
 
-   static async Actualizar(
-      ID: number,
-      data: DistritoEntity
-   ): Promise<AxiosResponse> {
+   async actualizar(ID: number, data: DistritoEntity): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -50,7 +47,7 @@ export class DistritoApi {
       }
    }
 
-   static async ListarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -65,7 +62,7 @@ export class DistritoApi {
       }
    }
 
-   static async Historial(ID: number): Promise<AxiosResponse> {
+   async historial(ID: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -83,7 +80,7 @@ export class DistritoApi {
       }
    }
 
-   static async BuscarPorID(ID: number): Promise<AxiosResponse> {
+   async buscarPorID(ID: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -97,7 +94,7 @@ export class DistritoApi {
       }
    }
 
-   static async EliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(ID: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {

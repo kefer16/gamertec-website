@@ -86,8 +86,6 @@ export const formatoMonedaPerunana = (value: number) => {
 };
 
 export const personalizarMensajeError = (error: any): any => {
-   console.log("ERROR:", error);
-
    if (error.response.data.error.isValidate) {
       error.message = "[warn]" + error.response.data.error.message;
    } else {

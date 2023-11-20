@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -72,61 +72,60 @@ export const CompraDetalle = ({ compraCabeceraId }: Props) => {
       setCompraDetalleId(compraDetalleId);
    };
 
+   const funObtenerCompraEstados = useCallback(async () => {
+      const srvCompraEstados = new CompraEstadoService();
+
+      await srvCompraEstados
+         .listarTodos()
+         .then((resp: CompraEstadoListaTodos[]) => {
+            const arrayEstados: IMultiSelectProps[] = [];
+
+            resp.forEach((element: CompraEstadoListaTodos) => {
+               arrayEstados.push({
+                  code: element.abreviatura,
+                  name: element.nombre,
+                  selected: false,
+               });
+            });
+            setArrayCompraEstados([...arrayEstados]);
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
    const obtenerDatos = async (compraCabeceraId: number) => {
       const compraServ = new CompraService();
 
-      compraServ
-         .listarUno(compraCabeceraId)
-         .then((resp: RespuestaEntity<ICompraTable>) => {
-            if (resp.data) {
-               setDireccion(resp.data.direccion);
-               setTelefono(resp.data.telefono);
-               setSubTotal(resp.data.sub_total);
-               setCostoEnvio(resp.data.costo_envio);
-               setTotal(resp.data.total);
-               setCompraDetalle(resp.data.lst_compra_detalle);
-               setCompraEstadoSeleccionado({
-                  code: resp.data.cls_compra_estado.abreviatura,
-                  name: resp.data.cls_compra_estado.nombre,
-                  selected: false,
-               });
-            }
+      compraServ.listarUno(compraCabeceraId).then((resp: ICompraTable) => {
+         setDireccion(resp.direccion);
+         setTelefono(resp.telefono);
+         setSubTotal(resp.sub_total);
+         setCostoEnvio(resp.costo_envio);
+         setTotal(resp.total);
+         setCompraDetalle(resp.lst_compra_detalle);
+         setCompraEstadoSeleccionado({
+            code: resp.cls_compra_estado.abreviatura,
+            name: resp.cls_compra_estado.nombre,
+            selected: false,
          });
+      });
    };
 
    useEffect(() => {
       obtenerSesion();
       obtenerDatos(compraCabeceraId);
-      listarCompraEstados();
-   }, [obtenerSesion, compraCabeceraId]);
+      funObtenerCompraEstados();
+   }, [obtenerSesion, compraCabeceraId, funObtenerCompraEstados]);
 
    const [arrayCompraEstados, setArrayCompraEstados] = useState<
       IMultiSelectProps[]
    >([]);
    const [compraEstadoSeleccionado, setCompraEstadoSeleccionado] =
       useState<IMultiSelectProps | null>(null);
-
-   const listarCompraEstados = async () => {
-      const servCompraEstados = new CompraEstadoService();
-
-      await servCompraEstados
-         .listarTodos()
-         .then((resp: RespuestaEntity<CompraEstadoListaTodos[]>) => {
-            if (resp.data) {
-               const arrayEstados: IMultiSelectProps[] = [];
-
-               resp.data.forEach((element: CompraEstadoListaTodos) => {
-                  arrayEstados.push({
-                     code: element.abreviatura,
-                     name: element.nombre,
-                     selected: false,
-                  });
-               });
-               setArrayCompraEstados([...arrayEstados]);
-            }
-         })
-         .catch((error: Error) => {});
-   };
 
    const selectedCountryTemplate = (option: IMultiSelectProps) => {
       if (option) {

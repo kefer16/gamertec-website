@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
    ColumnProps,
    EstadoProps,
@@ -8,16 +8,15 @@ import {
 } from "../../controls/TableControl";
 
 import { UsuarioRegistro } from "./UsuarioRegistro";
-import { funcionObtenerPrivilegios } from "../privilegio/Privilegio";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { UsuarioEntity } from "../../../entities/usuario.entities";
 import { UsuarioService } from "../../../services/usuario.service";
-import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import { DropdownProps } from "../categoria/CategoriaRegistro";
+import { PrivilegioService } from "../../../services/privilegio.service";
 
 const columnsUsuario2: ColumnProps[] = [
    {
@@ -100,6 +99,7 @@ const arrayFiltroGlobal: string[] = [
 interface Props {
    nombreFormulario: string;
 }
+
 let arrayPrivilegio: DropdownProps[] = [];
 
 export const Usuario = ({ nombreFormulario }: Props) => {
@@ -121,45 +121,46 @@ export const Usuario = ({ nombreFormulario }: Props) => {
       new UsuarioEntity()
    );
 
-   const funcionListar = async () => {
+   const funcionListar = useCallback(async () => {
       const arrayUsuario: ValuesUsuarioProps[] = [];
-      const usuServ = new UsuarioService();
-      await usuServ
+      const srvUsuario = new UsuarioService();
+      await srvUsuario
          .listarTodos()
-         .then((resp: RespuestaEntity<UsuarioEntity[]>) => {
-            if (resp.data) {
-               resp.data.forEach((element: UsuarioEntity, index: number) => {
-                  const newRow: ValuesUsuarioProps = {
-                     id: element.usuario_id,
-                     index: index + 1,
-                     fecha_registro: element.fecha_registro,
-                     privilegio_id: element.fk_privilegio,
-                     privilegio_nombre: arrayPrivilegio.find(
-                        (privilegio: DropdownProps) =>
-                           privilegio.code === String(element.fk_privilegio)
-                     )?.name,
-                     usuario_nombre: element.nombre,
-                     usuario_apellido: element.apellido,
-                     correo: element.correo,
-                     usuario: element.usuario,
-                     foto: {
-                        img: element.foto,
-                        alt: element.usuario,
-                     },
-                     estado: {
-                        valor: element.activo,
-                        estado: element.activo ? "Activo" : "Inactivo",
-                     },
-                  };
-                  arrayUsuario.push(newRow);
-               });
-            }
+         .then((resp: UsuarioEntity[]) => {
+            resp.forEach((element: UsuarioEntity, index: number) => {
+               const newRow: ValuesUsuarioProps = {
+                  id: element.usuario_id,
+                  index: index + 1,
+                  fecha_registro: element.fecha_registro,
+                  privilegio_id: element.fk_privilegio,
+                  privilegio_nombre: arrayPrivilegio.find(
+                     (privilegio: DropdownProps) =>
+                        privilegio.code === String(element.fk_privilegio)
+                  )?.name,
+                  usuario_nombre: element.nombre,
+                  usuario_apellido: element.apellido,
+                  correo: element.correo,
+                  usuario: element.usuario,
+                  foto: {
+                     img: element.foto,
+                     alt: element.usuario,
+                  },
+                  estado: {
+                     valor: element.activo,
+                     estado: element.activo ? "Activo" : "Inactivo",
+                  },
+               };
+               arrayUsuario.push(newRow);
+            });
             setArrayUsuario(arrayUsuario);
          })
-         .catch((error: any) => {
-            return;
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
          });
-   };
+   }, [mostrarNotificacion]);
 
    const funcionCrear = () => {
       setItemSeleccionado(
@@ -241,16 +242,13 @@ export const Usuario = ({ nombreFormulario }: Props) => {
             });
             funcionCerrarDialogo();
             funcionListar();
-            return;
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
                detalle: `surgio un error: ${error.message}`,
             });
-
             funcionCerrarDialogo();
-            return;
          });
    };
 
@@ -258,16 +256,25 @@ export const Usuario = ({ nombreFormulario }: Props) => {
       setAbrirModal(false);
    };
 
-   useEffect(() => {
-      const ObtenerData = async () => {
-         return await funcionObtenerPrivilegios();
-      };
+   const funcionObtenerPrivilegios = useCallback(async () => {
+      const srvPrivilegio = new PrivilegioService();
+      await srvPrivilegio
+         .obtenerPrivilegiosCombobox()
+         .then((resp) => {
+            arrayPrivilegio = [...resp];
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: `surgio un error: ${error.message}`,
+            });
+         });
+   }, [mostrarNotificacion]);
 
-      ObtenerData().then((result) => {
-         arrayPrivilegio = result;
-         funcionListar();
-      });
-   }, []);
+   useEffect(() => {
+      funcionObtenerPrivilegios();
+      funcionListar();
+   }, [funcionObtenerPrivilegios, funcionListar]);
 
    return (
       <ContainerBodyStyled>

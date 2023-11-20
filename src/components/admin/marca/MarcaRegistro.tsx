@@ -3,7 +3,6 @@ import {
    fechaActualISO,
    fechaVisualizarCalendario,
 } from "../../../utils/funciones.utils";
-import { MarcaService } from "../../../entities/marca.entities";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
@@ -11,12 +10,15 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { MarcaResponse } from "../../../responses/marca.response";
+import { MarcaEntity } from "../../../entities/marca.entities";
+import { MarcaService } from "../../../services/marca.service";
 
 interface Props {
    nombreFormulario: string;
    abrir: boolean;
    esEdicion: boolean;
-   itemSeleccionado: MarcaService;
+   itemSeleccionado: MarcaResponse;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
    arrayCategorias: DropdownProps[];
@@ -68,24 +70,24 @@ export const MarcaRegistro = ({
    const funcionGuardar = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const data: MarcaService = new MarcaService(
+      const data: MarcaEntity = new MarcaEntity(
          marcaId,
          nombre,
          activo.code === "1",
          parseInt(fkCategoria.code),
          fechaActualISO()
       );
+      const srvMarca = new MarcaService();
       if (esEdicion) {
-         await MarcaService.Actualizar(marcaId, data)
-            .then((response) => {
-               if (response.data.code === 200) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `${nombreFormulario} se actualizó correctamente`,
-                  });
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-               }
+         await srvMarca
+            .actualizar(marcaId, data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `${nombreFormulario} se actualizó correctamente`,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
             .catch((error: Error) => {
                mostrarNotificacion({
@@ -94,16 +96,15 @@ export const MarcaRegistro = ({
                });
             });
       } else {
-         await MarcaService.Registrar(data)
-            .then((response) => {
-               if (response.data.code === 200) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `${nombreFormulario} se registró correctamente`,
-                  });
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-               }
+         await srvMarca
+            .registrar(data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `${nombreFormulario} se registró correctamente`,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
             .catch((error: Error) => {
                mostrarNotificacion({

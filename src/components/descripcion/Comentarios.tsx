@@ -1,4 +1,3 @@
-import { ComentarioService } from "../../entities/comentario.entities";
 import { formatoCalificacion } from "../../utils/funciones.utils";
 
 import { ModalComentario } from "../global/ModalComentario";
@@ -10,11 +9,12 @@ import {
 import { Button } from "primereact/button";
 import { IconMessage2Plus } from "@tabler/icons-react";
 import { RatingPrimeUI } from "../controls/primeUI/RatingPrimeUI";
+import { ComentarioResponse } from "../../responses/comentario.response";
 
 interface Props {
    modeloId: number;
    calificacionGeneral: number;
-   comentarios: ComentarioService[];
+   comentarios: ComentarioResponse[];
    modalComentario: boolean;
    funcionObtenerComentarios: (modelo_id: number) => void;
    funcionAbrirModal: () => void;
@@ -74,7 +74,7 @@ export const Comentarios = ({
             </ComentariosStyled>
 
             <ListaComentariosStyled>
-               {comentarios.map((comentario: ComentarioService) => {
+               {comentarios.map((comentario: ComentarioResponse) => {
                   return (
                      <div key={comentario.comentario_id} className="comentario">
                         <div className="com-izq">

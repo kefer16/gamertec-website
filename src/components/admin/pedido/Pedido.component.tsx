@@ -1,7 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CardPedido } from "../../controls/CardPedido";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
-import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { PedidoService } from "../../../services/pedido.service";
 
 import { PedidoCabeceraUsuarioProsp } from "../../../interfaces/pedido.interface";
@@ -9,29 +8,37 @@ import { CardPedidoDetalleProps } from "../../../interfaces/card_pedido.interfac
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 
 export const Pedido = () => {
-   const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
+   const { sesionGamertec, obtenerSesion, mostrarNotificacion } = useContext(
+      GamertecSesionContext
+   );
 
    const [arrayPedidoCabecera, setArrayPedidoCabecera] = useState<
       PedidoCabeceraUsuarioProsp[]
    >([]);
 
-   useEffect(() => {
-      const obtenerData = async () => {
-         obtenerSesion();
-         const pedido: PedidoService = new PedidoService();
+   const funObtenerPedido = useCallback(
+      async (usuario_id: number) => {
+         const srvPedido = new PedidoService();
 
-         await pedido
-            .listarPedidoUsuario(sesionGamertec.usuario.usuario_id)
-            .then((resp: RespuestaEntity<PedidoCabeceraUsuarioProsp[]>) => {
-               if (resp.data) {
-                  setArrayPedidoCabecera(resp.data);
-               }
+         await srvPedido
+            .listarPedidoUsuario(usuario_id)
+            .then((resp: PedidoCabeceraUsuarioProsp[]) => {
+               setArrayPedidoCabecera(resp);
             })
-            .catch((error) => {});
-      };
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  detalle: error.message,
+               });
+            });
+      },
+      [mostrarNotificacion]
+   );
 
-      obtenerData();
-   }, [sesionGamertec, obtenerSesion]);
+   useEffect(() => {
+      obtenerSesion();
+      funObtenerPedido(sesionGamertec.usuario.usuario_id);
+   }, [sesionGamertec, obtenerSesion, funObtenerPedido]);
 
    return (
       <ContainerBodyStyled className="grid gap-3">

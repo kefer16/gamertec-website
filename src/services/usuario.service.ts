@@ -1,5 +1,4 @@
 import { UsuarioApi } from "../apis/usuario.api";
-import { RespuestaEntity } from "../entities/respuesta.entity";
 import { UsuarioEntity } from "../entities/usuario.entities";
 import {
    ActualizaApellidoUsuario,
@@ -10,190 +9,138 @@ import {
    ActualizaNombreUsuario,
    LogeoUsuario,
 } from "../interfaces/usuario.interface";
-
 export class UsuarioService {
    private apiUsuario = new UsuarioApi();
-   private respLogearse = new RespuestaEntity<LogeoUsuario>();
-   private respRegistrar = new RespuestaEntity<boolean>();
-   private respActualizar = new RespuestaEntity<boolean>();
-   private respListarTodo = new RespuestaEntity<UsuarioEntity[]>();
-   private respHistorial = new RespuestaEntity<UsuarioEntity[]>();
-   private respEliminarUno = new RespuestaEntity<boolean>();
 
-   private respActualizarNombre = new RespuestaEntity<ActualizaNombreUsuario>();
-   private respActualizarApellido =
-      new RespuestaEntity<ActualizaApellidoUsuario>();
-   private respActualizarCorreo = new RespuestaEntity<ActualizaCorreoUsuario>();
-   private respActualizarDireccion =
-      new RespuestaEntity<ActualizaDireccionUsuario>();
-   private respActualizarFoto = new RespuestaEntity<ActualizaFotoUsuario>();
-   private respActualizarContrasenia = new RespuestaEntity<boolean>();
+   private rspLogearse: LogeoUsuario = {} as LogeoUsuario;
+   private rspRegistrar: boolean = false;
+   private rspActualizar: boolean = false;
+   private rspListarTodo: UsuarioEntity[] = [];
+   private rspHistorial: UsuarioEntity[] = [];
+   private rspEliminarUno: boolean = false;
 
-   private _apiUsuario = new UsuarioApi();
+   private rspActualizarNombre: ActualizaNombreUsuario =
+      {} as ActualizaNombreUsuario;
+   private rspActualizarApellido: ActualizaApellidoUsuario =
+      {} as ActualizaApellidoUsuario;
+   private rspActualizarCorreo: ActualizaCorreoUsuario =
+      {} as ActualizaCorreoUsuario;
+   private rspActualizarDireccion: ActualizaDireccionUsuario =
+      {} as ActualizaDireccionUsuario;
+   private rspActualizarFoto: ActualizaFotoUsuario = {} as ActualizaFotoUsuario;
+   private rspActualizarContrasenia: boolean = false;
 
    public async logearse(
       usuario: string,
       contrasenia: string
-   ): Promise<RespuestaEntity<LogeoUsuario>> {
-      await UsuarioApi.logearse(usuario, contrasenia).then((resp) => {
-         this.respLogearse = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   ): Promise<LogeoUsuario> {
+      await this.apiUsuario.logearse(usuario, contrasenia).then((resp) => {
+         this.rspLogearse = resp.data.data;
       });
-      return this.respLogearse;
+      return this.rspLogearse;
    }
 
-   public async registrar(
-      data: UsuarioEntity
-   ): Promise<RespuestaEntity<boolean>> {
+   public async registrar(data: UsuarioEntity): Promise<boolean> {
       await this.apiUsuario.registrar(data).then((resp) => {
-         this.respRegistrar = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+         this.rspRegistrar = resp.data.data;
       });
-      console.log(this.respRegistrar);
-
-      return this.respRegistrar;
+      return this.rspRegistrar;
    }
 
    public async actualizar(
       usuario_id: number,
       data: UsuarioEntity
-   ): Promise<RespuestaEntity<boolean>> {
-      await UsuarioApi.actualizar(usuario_id, data).then((resp) => {
-         this.respActualizar = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   ): Promise<boolean> {
+      await this.apiUsuario.actualizar(usuario_id, data).then((resp) => {
+         this.rspActualizar = resp.data.data;
       });
-      return this.respActualizar;
+      return this.rspActualizar;
    }
 
-   public async listarTodos(): Promise<RespuestaEntity<UsuarioEntity[]>> {
-      await UsuarioApi.listarTodos().then((resp) => {
-         this.respListarTodo = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   public async listarTodos(): Promise<UsuarioEntity[]> {
+      await this.apiUsuario.listarTodos().then((resp) => {
+         this.rspListarTodo = resp.data.data;
       });
-      return this.respListarTodo;
+      return this.rspListarTodo;
    }
 
-   public async historial(
-      idUsuario: number
-   ): Promise<RespuestaEntity<UsuarioEntity[]>> {
-      await UsuarioApi.historial(idUsuario).then((resp) => {
-         this.respHistorial = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   public async historial(idUsuario: number): Promise<UsuarioEntity[]> {
+      await this.apiUsuario.historial(idUsuario).then((resp) => {
+         this.rspHistorial = resp.data.data;
       });
-      return this.respHistorial;
+      return this.rspHistorial;
    }
 
-   public async eliminarUno(
-      usuario_id: number
-   ): Promise<RespuestaEntity<boolean>> {
-      await UsuarioApi.eliminarUno(usuario_id).then((resp) => {
-         this.respEliminarUno = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   public async eliminarUno(usuario_id: number): Promise<boolean> {
+      await this.apiUsuario.eliminarUno(usuario_id).then((resp) => {
+         this.rspEliminarUno = resp.data.data;
       });
-      return this.respEliminarUno;
+      return this.rspEliminarUno;
    }
 
    public async actualizarNombre(
       usuario_id: number,
       data: ActualizaNombreUsuario
-   ): Promise<RespuestaEntity<ActualizaNombreUsuario>> {
-      await UsuarioApi.actualizarNombre(usuario_id, data).then((resp) => {
-         this.respActualizarNombre = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   ): Promise<ActualizaNombreUsuario> {
+      await this.apiUsuario.actualizarNombre(usuario_id, data).then((resp) => {
+         this.rspActualizarNombre = resp.data.data;
       });
-      return this.respActualizarNombre;
+      return this.rspActualizarNombre;
    }
 
    public async actualizarApellido(
       usuario_id: number,
       data: ActualizaApellidoUsuario
-   ): Promise<RespuestaEntity<ActualizaApellidoUsuario>> {
-      await UsuarioApi.actualizarApellido(usuario_id, data).then((resp) => {
-         this.respActualizarApellido = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
-      });
-      return this.respActualizarApellido;
+   ): Promise<ActualizaApellidoUsuario> {
+      await this.apiUsuario
+         .actualizarApellido(usuario_id, data)
+         .then((resp) => {
+            this.rspActualizarApellido = resp.data.data;
+         });
+      return this.rspActualizarApellido;
    }
 
    public async actualizarCorreo(
       usuario_id: number,
       data: ActualizaCorreoUsuario
-   ): Promise<RespuestaEntity<ActualizaCorreoUsuario>> {
-      await UsuarioApi.actualizarCorreo(usuario_id, data).then((resp) => {
-         this.respActualizarCorreo = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   ): Promise<ActualizaCorreoUsuario> {
+      await this.apiUsuario.actualizarCorreo(usuario_id, data).then((resp) => {
+         this.rspActualizarCorreo = resp.data.data;
       });
-      return this.respActualizarCorreo;
+      return this.rspActualizarCorreo;
    }
 
    public async actualizarDireccion(
       usuario_id: number,
       data: ActualizaDireccionUsuario
-   ): Promise<RespuestaEntity<ActualizaDireccionUsuario>> {
-      await UsuarioApi.actualizarDireccion(usuario_id, data).then((resp) => {
-         this.respActualizarDireccion = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
-      });
-      return this.respActualizarDireccion;
+   ): Promise<ActualizaDireccionUsuario> {
+      await this.apiUsuario
+         .actualizarDireccion(usuario_id, data)
+         .then((resp) => {
+            this.rspActualizarDireccion = resp.data.data;
+         });
+      return this.rspActualizarDireccion;
    }
 
    public async actualizarFoto(
       usuario_id: number,
       data: ActualizaFotoUsuario
-   ): Promise<RespuestaEntity<ActualizaFotoUsuario>> {
-      await this._apiUsuario.actualizarFoto(usuario_id, data).then((resp) => {
-         this.respActualizarFoto = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   ): Promise<ActualizaFotoUsuario> {
+      await this.apiUsuario.actualizarFoto(usuario_id, data).then((resp) => {
+         this.rspActualizarFoto = resp.data.data;
       });
-      return this.respActualizarFoto;
+      return this.rspActualizarFoto;
    }
 
    public async actualizarContrasenia(
       usuario_id: number,
       data: ActualizaContraseniaUsuario
-   ): Promise<RespuestaEntity<boolean>> {
-      await this._apiUsuario
+   ): Promise<boolean> {
+      await this.apiUsuario
          .actualizarContrasenia(usuario_id, data)
          .then((resp) => {
-            this.respActualizarContrasenia = {
-               code: resp.data.code,
-               data: resp.data.data,
-               error: resp.data.error,
-            };
+            this.rspActualizarContrasenia = resp.data.data;
          });
-      return this.respActualizarContrasenia;
+      return this.rspActualizarContrasenia;
    }
 }

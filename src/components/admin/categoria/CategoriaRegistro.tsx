@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { CategoryService } from "../../../entities/categoria.entities";
 import {
    fechaActualISO,
    fechaVisualizarCalendario,
@@ -10,6 +9,8 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { CategoriaEntity } from "../../../entities/categoria.entities";
+import { CategoriaService } from "../../../services/categoria.service";
 
 export interface DropdownProps {
    name: string;
@@ -24,7 +25,7 @@ interface Props {
    nombreFormulario: string;
    abrir: boolean;
    esEdicion: boolean;
-   itemSeleccionado: CategoryService;
+   itemSeleccionado: CategoriaEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
 }
@@ -83,17 +84,19 @@ export const CategoryRegister = ({
    ) => {
       event.preventDefault();
 
-      const dataCategoria: CategoryService = new CategoryService(
-         categoriaId,
-         nombre,
-         activo.code === "1",
-         fechaActualISO(),
-         fechaActualISO()
-      );
+      const data: CategoriaEntity = {
+         categoria_id: categoriaId,
+         nombre: nombre,
+         activo: activo.code === "1",
+         fecha_actualizacion: fechaActualISO(),
+         fecha_registro: fechaActualISO(),
+      };
 
+      const srvCategoria = new CategoriaService();
       if (esEdicion) {
-         await CategoryService.Actualizar(categoriaId, dataCategoria)
-            .then((response) => {
+         await srvCategoria
+            .actualizar(categoriaId, data)
+            .then(() => {
                mostrarNotificacion({
                   tipo: "success",
                   detalle: `${nombreFormulario} se actualizó correctamente`,
@@ -108,8 +111,9 @@ export const CategoryRegister = ({
                });
             });
       } else {
-         await CategoryService.Registrar(dataCategoria)
-            .then((response) => {
+         await srvCategoria
+            .registrar(data)
+            .then(() => {
                mostrarNotificacion({
                   tipo: "success",
                   detalle: `${nombreFormulario} se registró correctamente`,

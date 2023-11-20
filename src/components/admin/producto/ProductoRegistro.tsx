@@ -196,8 +196,6 @@ export const ProductoRegistro = ({
                funcionCerrarModal();
             })
             .catch((error: Error) => {
-               console.log(error);
-
                mostrarNotificacion({
                   tipo: "error",
                   detalle: error.message,

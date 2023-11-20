@@ -3,7 +3,7 @@ import { DepartamentoEntity } from "../entities/departamento.entity";
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class DepartamentoApi {
-   static async Registrar(data: DepartamentoEntity): Promise<AxiosResponse> {
+   async registrar(data: DepartamentoEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -24,14 +24,14 @@ export class DepartamentoApi {
       }
    }
 
-   static async Actualizar(
-      ID: number,
+   async actualizar(
+      departamento_id: number,
       data: DepartamentoEntity
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               departamento_id: ID,
+               departamento_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export class DepartamentoApi {
       }
    }
 
-   static async ListarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -65,11 +65,11 @@ export class DepartamentoApi {
       }
    }
 
-   static async Historial(ID: number): Promise<AxiosResponse> {
+   async historial(departamento_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               departamento_id: ID,
+               departamento_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -83,11 +83,11 @@ export class DepartamentoApi {
       }
    }
 
-   static async BuscarPorID(ID: number): Promise<AxiosResponse> {
+   async buscarPorId(departamento_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               departamento_id: ID,
+               departamento_id,
             },
          };
          return await axios.get(`${DepartamentoEntity.url}/uno`, config);
@@ -97,11 +97,11 @@ export class DepartamentoApi {
       }
    }
 
-   static async EliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(departamento_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               departamento_id: ID,
+               departamento_id,
             },
          };
          return await axios.delete(

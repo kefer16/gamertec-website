@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import {
    ColumnProps,
@@ -6,9 +6,6 @@ import {
    TableControl,
    TypeColumn,
 } from "../../controls/TableControl";
-import { funcionObtenerCategorias } from "../categoria/Categoria";
-import { funcionObtenerMarcas } from "../marca/Marca";
-
 import { ProductoRegistro } from "./ProductoRegistro";
 import { funcionObteneModelo } from "../modelo/Modelo";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
@@ -22,6 +19,8 @@ import {
 import { ProductoEntity } from "../../../entities/producto.entities";
 import { ProductoService } from "../../../services/producto.service";
 import { ProductoResponse } from "../../../responses/producto.response";
+import { CategoriaService } from "../../../services/categoria.service";
+import { MarcaService } from "../../../services/marca.service";
 
 const columnsProducto2: ColumnProps[] = [
    {
@@ -222,19 +221,15 @@ export const Producto = ({ nombreFormulario }: Props) => {
                tipo: "success",
                detalle: `${nombreFormulario} se eliminó correctamente`,
             });
-
             funcionCerrarDialogo();
             funcionListar();
-            return;
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
                detalle: error.message,
             });
-
             funcionCerrarDialogo();
-            return;
          });
    };
 
@@ -242,25 +237,45 @@ export const Producto = ({ nombreFormulario }: Props) => {
       setAbrirModal(false);
    };
 
+   const obtenerData = useCallback(async () => {
+      const srvCategoria = new CategoriaService();
+      const srvMarcas = new MarcaService();
+      // const srvModelo = new modelose();
+
+      await srvCategoria
+         .obtenerCategoriasCombobox()
+         .then((resp) => {
+            arrayCategoria = resp;
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+
+      await srvMarcas
+         .obtenerMarcasCombobox()
+         .then((resp) => {
+            arrayMarca = resp;
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+
+      await funcionObteneModelo().then((resp) => {
+         arrayModelo = resp;
+      });
+
+      await funcionListar();
+   }, [mostrarNotificacion]);
+
    useEffect(() => {
-      const obtenerData = async () => {
-         await funcionObtenerCategorias().then((result) => {
-            arrayCategoria = result;
-         });
-
-         await funcionObtenerMarcas().then((result) => {
-            arrayMarca = result;
-         });
-
-         await funcionObteneModelo().then((result) => {
-            arrayModelo = result;
-         });
-
-         await funcionListar();
-      };
-
       obtenerData();
-   }, []);
+   }, [obtenerData]);
 
    return (
       <ContainerBodyStyled>

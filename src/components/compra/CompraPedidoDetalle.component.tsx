@@ -10,7 +10,6 @@ import {
    IPedidoDetalleListarUno,
 } from "../../interfaces/pedido.interface";
 import { ProductoService } from "../../services/producto.service";
-import { RespuestaEntity } from "../../entities/respuesta.entity";
 import { IProductoSerie } from "../../interfaces/producto.interface";
 import { convertirFormatoMoneda } from "../../utils/funciones.utils";
 import { ComprobanteStyled } from "../comprobante/styles/Comprobante.styled";
@@ -72,16 +71,13 @@ export const CompraPedidoDetalle = ({ pedido_id }: Props) => {
          obtenerSesion();
          pedidoServ
             .listarUno(pedido_id)
-            .then((resp: RespuestaEntity<IPedidoCabeceraListarUno>) => {
-               if (resp.data) {
-                  setDireccion(resp.data.direccion);
-                  setTelefono(resp.data.telefono);
-                  setSubTotal(resp.data.sub_total);
-                  setCostoEnvio(resp.data.costo_envio);
-                  setTotal(resp.data.total);
-                  // setPedido(resp.data);
-                  setPedidoDetalle(resp.data.lst_pedido_detalle);
-               }
+            .then((resp: IPedidoCabeceraListarUno) => {
+               setDireccion(resp.direccion);
+               setTelefono(resp.telefono);
+               setSubTotal(resp.sub_total);
+               setCostoEnvio(resp.costo_envio);
+               setTotal(resp.total);
+               setPedidoDetalle(resp.lst_pedido_detalle);
             });
       };
       obtenerDatos();

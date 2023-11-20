@@ -4,14 +4,16 @@ import {
    TableControl,
    TypeColumn,
 } from "../../controls/TableControl";
-import { CategoryService } from "../../../entities/categoria.entities";
-import { useContext, useEffect, useState } from "react";
-import { CategoryRegister, DropdownProps } from "./CategoriaRegistro";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { CategoryRegister } from "./CategoriaRegistro";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
+import { CategoriaService } from "../../../services/categoria.service";
+import { CategoriaResponse } from "../../../responses/categoria.response";
+import { CategoriaEntity } from "../../../entities/categoria.entities";
 
 const columnsCategorias2: ColumnProps[] = [
    {
@@ -59,21 +61,6 @@ interface Props {
    nombreFormulario: string;
 }
 
-export const funcionObtenerCategorias = async (): Promise<DropdownProps[]> => {
-   const array: DropdownProps[] = [];
-   await CategoryService.ListarTodos()
-      .then((respuesta) => {
-         respuesta.data.data.forEach((element: CategoryService) => {
-            array.push({
-               code: String(element.categoria_id),
-               name: element.nombre,
-            });
-         });
-      })
-      .catch((error: any) => {});
-   return array;
-};
-
 export const Categoria = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [arrayCategoria, setArrayCategoria] = useState<ValuesCategoriaProps[]>(
@@ -89,41 +76,49 @@ export const Categoria = ({ nombreFormulario }: Props) => {
       setDialogo(false);
    };
 
-   const [itemSeleccionado, setItemSeleccionado] = useState<CategoryService>(
-      new CategoryService()
+   const [itemSeleccionado, setItemSeleccionado] = useState<CategoriaEntity>(
+      new CategoriaEntity()
    );
 
-   const funcionListar = async () => {
+   const funcionListar = useCallback(async () => {
       const arrayCategorias: ValuesCategoriaProps[] = [];
-      await CategoryService.ListarTodos()
-         .then((response) => {
-            response.data.data.forEach(
-               (element: CategoryService, index: number) => {
-                  const newRow: ValuesCategoriaProps = {
-                     id: element.categoria_id,
-                     index: index + 1,
-                     categoria_nombre: element.nombre,
-                     fecha_registro: element.fecha_registro,
-                     fecha_actualizacion: element.fecha_actualizacion,
-                     estado: {
-                        valor: element.activo,
-                        estado: element.activo ? "Activo" : "Inactivo",
-                     },
-                  };
-                  arrayCategorias.push(newRow);
-               }
-            );
+      const srvCategoria = new CategoriaService();
+      await srvCategoria
+         .listarTodos()
+         .then((resp) => {
+            resp.forEach((element: CategoriaResponse, index: number) => {
+               const newRow: ValuesCategoriaProps = {
+                  id: element.categoria_id,
+                  index: index + 1,
+                  categoria_nombre: element.nombre,
+                  fecha_registro: element.fecha_registro,
+                  fecha_actualizacion: element.fecha_actualizacion,
+                  estado: {
+                     valor: element.activo,
+                     estado: element.activo ? "Activo" : "Inactivo",
+                  },
+               };
+               arrayCategorias.push(newRow);
+            });
             setArrayCategoria(arrayCategorias);
          })
-         .catch((error: any) => {
-            return;
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
          });
-   };
+   }, [mostrarNotificacion]);
 
    const funcionCrearCategoria = () => {
-      setItemSeleccionado(
-         new CategoryService(0, "", false, fechaActualISO(), fechaActualISO())
-      );
+      const data: CategoriaEntity = {
+         categoria_id: 0,
+         nombre: "",
+         activo: false,
+         fecha_actualizacion: fechaActualISO(),
+         fecha_registro: fechaActualISO(),
+      };
+      setItemSeleccionado(data);
       setEsEdicion(false);
       setAbrirModal(true);
    };
@@ -141,15 +136,15 @@ export const Categoria = ({ nombreFormulario }: Props) => {
          return;
       }
 
-      setItemSeleccionado(
-         new CategoryService(
-            editarItem.id,
-            editarItem.categoria_nombre,
-            editarItem.estado.valor,
-            editarItem.fecha_registro,
-            editarItem.fecha_actualizacion
-         )
-      );
+      const data: CategoriaEntity = {
+         categoria_id: editarItem.id,
+         nombre: editarItem.categoria_nombre,
+         activo: editarItem.estado.valor,
+         fecha_actualizacion: editarItem.fecha_registro,
+         fecha_registro: editarItem.fecha_actualizacion,
+      };
+
+      setItemSeleccionado(data);
 
       setEsEdicion(true);
       setAbrirModal(true);
@@ -171,27 +166,23 @@ export const Categoria = ({ nombreFormulario }: Props) => {
       setDialogo(true);
    };
    const funcionEliminar = async () => {
-      await CategoryService.EliminarUno(categoriaSeleccionada.id)
-         .then((response) => {
-            if (response.data.code === 200) {
-               mostrarNotificacion({
-                  tipo: "success",
-
-                  detalle: `${nombreFormulario} se eliminó correctamente`,
-               });
-               funcionCerrarDialogo();
-               funcionListar();
-               return;
-            }
+      const srvCategoria = new CategoriaService();
+      await srvCategoria
+         .eliminarUno(categoriaSeleccionada.id)
+         .then(() => {
+            mostrarNotificacion({
+               tipo: "success",
+               detalle: `${nombreFormulario} se eliminó correctamente`,
+            });
+            funcionCerrarDialogo();
+            funcionListar();
          })
          .catch((error: any) => {
             mostrarNotificacion({
                tipo: "error",
-
                detalle: error.message,
             });
             funcionCerrarDialogo();
-            return;
          });
    };
 
@@ -201,7 +192,7 @@ export const Categoria = ({ nombreFormulario }: Props) => {
 
    useEffect(() => {
       funcionListar();
-   }, []);
+   }, [funcionListar]);
 
    return (
       <ContainerBodyStyled>

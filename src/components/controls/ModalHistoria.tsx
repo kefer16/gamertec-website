@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext, useCallback } from "react";
-
 import {
    Modal,
    Box,
@@ -16,16 +15,13 @@ import {
 } from "@mui/material";
 import { UsuarioEntity } from "../../entities/usuario.entities";
 import { convertirFecha } from "../../utils/funciones.utils";
-import { RespuestaEntity } from "../../entities/respuesta.entity";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { UsuarioService } from "../../services/usuario.service";
-
 interface Props {
    itemSeleccionado: UsuarioEntity;
    modalHistoria: boolean;
    funcionCerrarHistoria: () => void;
 }
-
 interface Cabeceras {
    titulo: string;
 }
@@ -49,7 +45,6 @@ export const ModalHistoria = ({
 }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [historiales, setHistoriales] = useState<UsuarioEntity[]>([]);
-
    const [page, setPage] = useState(0);
    const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -57,23 +52,21 @@ export const ModalHistoria = ({
       async (idUsuario: number) => {
          const historial: UsuarioEntity[] = [];
 
-         const usuServ = new UsuarioService();
+         const srvUsuario = new UsuarioService();
 
-         await usuServ
+         await srvUsuario
             .historial(idUsuario)
-            .then((resp: RespuestaEntity<UsuarioEntity[]>) => {
-               if (resp.data) {
-                  resp.data.forEach((element: UsuarioEntity, index: number) => {
-                     element.index = index + 1;
-                     historial.push(element);
-                  });
-                  setHistoriales(historial);
-               }
+            .then((resp: UsuarioEntity[]) => {
+               resp.forEach((element: UsuarioEntity, index: number) => {
+                  element.index = index + 1;
+                  historial.push(element);
+               });
+               setHistoriales(historial);
             })
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  detalle: `surgio un error: ${error.message}`,
+                  detalle: error.message,
                });
             });
       },

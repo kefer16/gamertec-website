@@ -5,14 +5,15 @@ import {
    TableControl,
    TypeColumn,
 } from "../../controls/TableControl";
-import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import { DropdownProps } from "../categoria/CategoriaRegistro";
+import { PrivilegioService } from "../../../services/privilegio.service";
+import { PrivilegioResponse } from "../../../responses/privilegio.response";
+import { PrivilegioEntity } from "../../../entities/privilegio.entities";
 
 const columnsPrivilegio2: ColumnProps[] = [
    {
@@ -67,21 +68,6 @@ interface Props {
    nombreFormulario: string;
 }
 
-export const funcionObtenerPrivilegios = async (): Promise<DropdownProps[]> => {
-   const array: DropdownProps[] = [];
-   await PrivilegioService.ListarTodos()
-      .then((response) => {
-         response.data.data.forEach((element: PrivilegioService) => {
-            array.push({
-               code: String(element.privilegio_id),
-               name: element.tipo,
-            });
-         });
-      })
-      .catch((error: any) => {});
-   return array;
-};
-
 export const Privilegio = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
@@ -97,30 +83,30 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
    const funcionCerrarDialogo = () => {
       setDialogo(false);
    };
-   const [itemSeleccionado, setItemSeleccionado] = useState<PrivilegioService>(
-      new PrivilegioService()
+   const [itemSeleccionado, setItemSeleccionado] = useState<PrivilegioEntity>(
+      new PrivilegioEntity()
    );
 
    const funcionListar = useCallback(async () => {
       const arrayPrivilegio: ValuesPrivilegioProps[] = [];
-      await PrivilegioService.ListarTodos()
-         .then((response) => {
-            response.data.data.forEach(
-               (element: PrivilegioService, index: number) => {
-                  const newRow: ValuesPrivilegioProps = {
-                     id: element.privilegio_id,
-                     index: index + 1,
-                     fecha_registro: element.fecha_registro,
-                     tipo: element.tipo,
-                     abreviatura: element.abreviatura,
-                     estado: {
-                        valor: element.activo,
-                        estado: element.activo ? "Activo" : "Inactivo",
-                     },
-                  };
-                  arrayPrivilegio.push(newRow);
-               }
-            );
+      const srvPrivilegio = new PrivilegioService();
+      await srvPrivilegio
+         .listarTodos()
+         .then((resp) => {
+            resp.forEach((element: PrivilegioResponse, index: number) => {
+               const newRow: ValuesPrivilegioProps = {
+                  id: element.privilegio_id,
+                  index: index + 1,
+                  fecha_registro: element.fecha_registro,
+                  tipo: element.tipo,
+                  abreviatura: element.abreviatura,
+                  estado: {
+                     valor: element.activo,
+                     estado: element.activo ? "Activo" : "Inactivo",
+                  },
+               };
+               arrayPrivilegio.push(newRow);
+            });
             setArrayPrivilegio(arrayPrivilegio);
          })
          .catch((error: Error) => {
@@ -133,7 +119,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 
    const funcionCrear = () => {
       setItemSeleccionado(
-         new PrivilegioService(0, "", false, "", fechaActualISO())
+         new PrivilegioEntity(0, "", false, "", fechaActualISO())
       );
       setEsEdicion(false);
       setAbrirModal(true);
@@ -153,7 +139,7 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
       }
 
       setItemSeleccionado(
-         new PrivilegioService(
+         new PrivilegioEntity(
             itemEdicion.id,
             itemEdicion.tipo,
             itemEdicion.estado.valor,
@@ -182,8 +168,10 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
    };
 
    const funcionEliminar = async () => {
-      await PrivilegioService.EliminarUno(privilegioSeleccionado.id)
-         .then((response) => {
+      const srvPrivilegio = new PrivilegioService();
+      await srvPrivilegio
+         .eliminarUno(privilegioSeleccionado.id)
+         .then(() => {
             mostrarNotificacion({
                tipo: "success",
                detalle: `${nombreFormulario} se eliminó correctamente`,
@@ -191,7 +179,6 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
 
             funcionCerrarDialogo();
             funcionListar();
-            return;
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -199,7 +186,6 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
                detalle: error.message,
             });
             funcionCerrarDialogo();
-            return;
          });
    };
 

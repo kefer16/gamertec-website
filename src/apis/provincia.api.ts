@@ -4,7 +4,7 @@ import { ProvinciaEntity } from "../entities/provincia.entity";
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class ProvinciaApi {
-   static async Registrar(data: ProvinciaEntity): Promise<AxiosResponse> {
+   async registrar(data: ProvinciaEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -25,10 +25,7 @@ export class ProvinciaApi {
       }
    }
 
-   static async Actualizar(
-      ID: number,
-      data: ProvinciaEntity
-   ): Promise<AxiosResponse> {
+   async actualizar(ID: number, data: ProvinciaEntity): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -51,7 +48,7 @@ export class ProvinciaApi {
       }
    }
 
-   static async ListarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -66,11 +63,11 @@ export class ProvinciaApi {
       }
    }
 
-   static async Historial(ID: number): Promise<AxiosResponse> {
+   async historial(provincia_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               provincia_id: ID,
+               provincia_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -84,11 +81,11 @@ export class ProvinciaApi {
       }
    }
 
-   static async BuscarPorID(ID: number): Promise<AxiosResponse> {
+   async buscarPorId(provincia_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               provincia_id: ID,
+               provincia_id,
             },
          };
          return await axios.get(`${ProvinciaEntity.url}/uno`, config);
@@ -98,11 +95,11 @@ export class ProvinciaApi {
       }
    }
 
-   static async EliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(provincia_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               provincia_id: ID,
+               provincia_id,
             },
          };
          return await axios.delete(`${ProvinciaEntity.url}/eliminar`, config);

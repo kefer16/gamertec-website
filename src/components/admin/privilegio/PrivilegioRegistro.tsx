@@ -4,7 +4,6 @@ import {
    fechaActualISO,
    fechaVisualizarCalendario,
 } from "../../../utils/funciones.utils";
-import { PrivilegioService } from "../../../entities/privilegio.entities";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
@@ -12,12 +11,14 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
+import { PrivilegioService } from "../../../services/privilegio.service";
+import { PrivilegioEntity } from "../../../entities/privilegio.entities";
 
 interface Props {
    nombreFormulario: string;
    abrir: boolean;
    esEdicion: boolean;
-   itemSeleccionado: PrivilegioService;
+   itemSeleccionado: PrivilegioEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
 }
@@ -68,16 +69,18 @@ export const PrivilegioRegistro = ({
    ) => {
       event.preventDefault();
 
-      const data: PrivilegioService = new PrivilegioService(
-         privilegioId,
-         tipo,
-         activo.code === "1",
-         abreviatura,
-         fechaActualISO()
-      );
+      const data: PrivilegioEntity = {
+         privilegio_id: privilegioId,
+         tipo: tipo,
+         activo: activo.code === "1",
+         abreviatura: abreviatura,
+         fecha_registro: fechaActualISO(),
+      };
+      const srvPrivilegio = new PrivilegioService();
 
       if (esEdicion) {
-         await PrivilegioService.Actualizar(privilegioId, data)
+         await srvPrivilegio
+            .actualizar(privilegioId, data)
             .then((response) => {
                mostrarNotificacion({
                   tipo: "success",
@@ -94,25 +97,22 @@ export const PrivilegioRegistro = ({
                });
             });
       } else {
-         await PrivilegioService.Registrar(data)
-            .then((response) => {
-               if (response.data.code === 200) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `${nombreFormulario} se registró correctamente`,
-                  });
+         await srvPrivilegio
+            .registrar(data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `${nombreFormulario} se registró correctamente`,
+               });
 
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-                  return;
-               }
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
                   detalle: error.message,
                });
-               return;
             });
       }
    };

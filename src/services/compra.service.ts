@@ -1,5 +1,4 @@
 import { CompraApi } from "../apis/compra.api";
-import { RespuestaEntity } from "../entities/respuesta.entity";
 import {
    CompraRegistra,
    ICompraCard,
@@ -7,71 +6,43 @@ import {
 } from "../interfaces/compra.interface";
 
 export class CompraService {
-   private respuestaRegistrar = new RespuestaEntity<boolean>();
-   private respuestaListarTodos = new RespuestaEntity<ICompraCard[]>();
-   private respuestaListarUno = new RespuestaEntity<ICompraTable>();
+   private apiCompra = new CompraApi();
 
-   public async listarTodos(
-      usuarioId: number
-   ): Promise<RespuestaEntity<ICompraCard[]>> {
-      const compraApi = new CompraApi();
+   private rspRegistrar: boolean = false;
+   private rspListarTodos: ICompraCard[] = [];
+   private rspListarUno: ICompraTable = {} as ICompraTable;
 
-      await compraApi.listarTodos(usuarioId).then((resp) => {
-         this.respuestaListarTodos = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   async listarTodos(usuarioId: number): Promise<ICompraCard[]> {
+      await this.apiCompra.listarTodos(usuarioId).then((resp) => {
+         this.rspListarTodos = resp.data.data;
       });
-
-      return this.respuestaListarTodos;
+      return this.rspListarTodos;
    }
 
-   public async listarUno(
-      compraCabeceraId: number
-   ): Promise<RespuestaEntity<ICompraTable>> {
-      const compraApi = new CompraApi();
-
-      await compraApi.listarUno(compraCabeceraId).then((resp) => {
-         this.respuestaListarUno = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   async listarUno(compraCabeceraId: number): Promise<ICompraTable> {
+      await this.apiCompra.listarUno(compraCabeceraId).then((resp) => {
+         this.rspListarUno = resp.data.data;
       });
-
-      return this.respuestaListarUno;
+      return this.rspListarUno;
    }
 
-   public async registrar(
-      data: CompraRegistra
-   ): Promise<RespuestaEntity<boolean>> {
+   async registrar(data: CompraRegistra): Promise<boolean> {
       const compraApi = new CompraApi();
       await compraApi.registrar(data).then((resp) => {
-         this.respuestaRegistrar = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+         this.rspRegistrar = resp.data.data;
       });
-
-      return this.respuestaRegistrar;
+      return this.rspRegistrar;
    }
-   public async actualizarCompraEstado(
+   async actualizarCompraEstado(
       compra_cabecera_id: number,
       compra_estado: string
-   ): Promise<RespuestaEntity<boolean>> {
+   ): Promise<boolean> {
       const compraApi = new CompraApi();
       await compraApi
          .actualizarCompraEstado(compra_cabecera_id, compra_estado)
          .then((resp) => {
-            this.respuestaRegistrar = {
-               code: resp.data.code,
-               data: resp.data.data,
-               error: resp.data.error,
-            };
+            this.rspRegistrar = resp.data.data;
          });
-
-      return this.respuestaRegistrar;
+      return this.rspRegistrar;
    }
 }

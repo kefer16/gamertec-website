@@ -3,20 +3,20 @@ import { DistritoEntity } from "../entities/distrito.entity";
 import { ComboboxAnidadoProps } from "../interfaces/combobox.interface";
 
 export class DistritoService {
-   static listarComboDistrito = async (): Promise<ComboboxAnidadoProps[]> => {
-      const array: ComboboxAnidadoProps[] = [];
+   private apiDistrito = new DistritoApi();
 
-      await DistritoApi.ListarTodos()
-         .then((respuesta) => {
-            respuesta.data.data.forEach((element: DistritoEntity) => {
-               array.push({
-                  valor: element.distrito_id,
-                  valorAnidado: element.fk_provincia,
-                  descripcion: element.nombre,
-               });
+   private rspListarDistritoCombobox: ComboboxAnidadoProps[] = [];
+
+   async listarTodos(): Promise<ComboboxAnidadoProps[]> {
+      await this.apiDistrito.listarTodos().then((resp) => {
+         resp.data.data.forEach((element: DistritoEntity) => {
+            this.rspListarDistritoCombobox.push({
+               valor: element.distrito_id,
+               valorAnidado: element.fk_provincia,
+               descripcion: element.nombre,
             });
-         })
-         .catch((error: any) => {});
-      return array;
-   };
+         });
+      });
+      return this.rspListarDistritoCombobox;
+   }
 }

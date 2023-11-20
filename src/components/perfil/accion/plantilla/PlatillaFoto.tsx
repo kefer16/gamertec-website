@@ -34,12 +34,11 @@ export const PlantillaFoto = ({ dato }: Props) => {
       };
       servUsuario
          .actualizarFoto(sesionGamertec.usuario.usuario_id, data)
-         .then((resp: RespuestaEntity<ActualizaFotoUsuario>) => {
-            if (resp.data) {
-               guardarFotoLocalStorage(resp.data.foto);
-               setFoto(resp.data.foto);
-               obtenerSesion();
-            }
+         .then((resp: ActualizaFotoUsuario) => {
+            guardarFotoLocalStorage(resp.foto);
+            setFoto(resp.foto);
+            obtenerSesion();
+
             mostrarNotificacion({
                tipo: "success",
                detalle: "Se actualizó la foto correctamente ",

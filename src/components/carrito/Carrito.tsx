@@ -30,9 +30,12 @@ export const Carrito = () => {
       setPrecioTotal(precioTotal);
    };
 
-   const obtenerModelosCarrito = useCallback(
+   const funObtenerModelosCarrito = useCallback(
       async (usuario_id: number) => {
-         await CarritoService.listarCaracteristicas(usuario_id)
+         const srvCarrito = new CarritoService();
+
+         await srvCarrito
+            .listarCaracteristicas(usuario_id)
             .then((respuesta) => {
                setArrayCarrito(respuesta);
                const precioSubTotal: number = respuesta.reduce(
@@ -48,7 +51,7 @@ export const Carrito = () => {
             .catch((error: Error) => {
                mostrarNotificacion({
                   tipo: "error",
-                  detalle: `surgió un error: ${error.message}`,
+                  detalle: error.message,
                });
             });
       },
@@ -78,7 +81,7 @@ export const Carrito = () => {
 
       obtenerCantidadCarrito();
 
-      await obtenerModelosCarrito(usuario_id);
+      await funObtenerModelosCarrito(usuario_id);
    };
 
    const actualizarCantidadCarrito = async (
@@ -106,12 +109,12 @@ export const Carrito = () => {
 
       obtenerCantidadCarrito();
 
-      await obtenerModelosCarrito(usuario_id);
+      await funObtenerModelosCarrito(usuario_id);
    };
 
    useEffect(() => {
-      obtenerModelosCarrito(sesionGamertec.usuario.usuario_id);
-   }, [sesionGamertec, obtenerModelosCarrito]);
+      funObtenerModelosCarrito(sesionGamertec.usuario.usuario_id);
+   }, [sesionGamertec, funObtenerModelosCarrito]);
 
    return (
       <ContainerBodyStyled>

@@ -1,9 +1,6 @@
 import { CompraStyled } from "./styles/CompraStyles";
 import { useCallback, useContext, useEffect, useState } from "react";
-
 import { GamertecSesionContext } from "../sesion/Sesion.component";
-import { RespuestaEntity } from "../../entities/respuesta.entity";
-
 import {
    ICompraCard,
    ICompraDetalleCard,
@@ -24,14 +21,12 @@ export const Compra = () => {
    >([]);
 
    const listarTodosCompraEstado = useCallback(async () => {
-      const servCompraEstado = new CompraEstadoService();
+      const srvCompraEstado = new CompraEstadoService();
 
-      await servCompraEstado
+      await srvCompraEstado
          .listarTodos()
-         .then((resp: RespuestaEntity<CompraEstadoListaTodos[]>) => {
-            if (resp.data) {
-               setArrayCompraEstado([...resp.data]);
-            }
+         .then((resp: CompraEstadoListaTodos[]) => {
+            setArrayCompraEstado([...resp]);
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -41,26 +36,36 @@ export const Compra = () => {
          });
    }, [mostrarNotificacion]);
 
+   const funObtenerCompras = useCallback(
+      async (usuario_id: number) => {
+         const srvCompra = new CompraService();
+
+         srvCompra
+            .listarTodos(usuario_id)
+            .then((resp: ICompraCard[]) => {
+               setArrayCompra(resp);
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  detalle: error.message,
+               });
+            });
+      },
+      [mostrarNotificacion]
+   );
+
    useEffect(() => {
       listarTodosCompraEstado();
+      obtenerSesion();
 
-      const obtenerData = async () => {
-         obtenerSesion();
-         const usuarioId = sesionGamertec.usuario.usuario_id;
-         const compraServ = new CompraService();
-
-         compraServ
-            .listarTodos(usuarioId)
-            .then((resp: RespuestaEntity<ICompraCard[]>) => {
-               if (resp.data) {
-                  setArrayCompra(resp.data);
-               }
-            })
-            .catch((error) => {});
-      };
-
-      obtenerData();
-   }, [obtenerSesion, sesionGamertec, listarTodosCompraEstado]);
+      funObtenerCompras(sesionGamertec.usuario.usuario_id);
+   }, [
+      sesionGamertec,
+      obtenerSesion,
+      funObtenerCompras,
+      listarTodosCompraEstado,
+   ]);
 
    return (
       <>

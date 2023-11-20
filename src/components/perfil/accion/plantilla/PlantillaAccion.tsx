@@ -2,7 +2,6 @@ import { useEffect, useContext, useState } from "react";
 import { GamertecSesionContext } from "../../../sesion/Sesion.component";
 import { Button } from "primereact/button";
 import { UsuarioService } from "../../../../services/usuario.service";
-import { RespuestaEntity } from "../../../../entities/respuesta.entity";
 import {
    ActualizaApellidoUsuario,
    ActualizaCorreoUsuario,
@@ -10,7 +9,6 @@ import {
    ActualizaNombreUsuario,
 } from "../../../../interfaces/usuario.interface";
 import { InputText } from "primereact/inputtext";
-
 interface Props {
    titulo: string;
    dato:
@@ -22,6 +20,7 @@ interface Props {
       | "direccion"
       | "telefono";
 }
+
 export const PlantillaAccion = ({ titulo, dato }: Props) => {
    const { obtenerSesion, sesionGamertec, mostrarNotificacion } = useContext(
       GamertecSesionContext
@@ -37,22 +36,20 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
       dato_cambio: string
    ) => {
       e.preventDefault();
-      const usuServ = new UsuarioService();
+      const srvUsuario = new UsuarioService();
       if (dato === "nombre") {
          const data: ActualizaNombreUsuario = {
             nombre: dato_cambio,
          };
-         await usuServ
+         await srvUsuario
             .actualizarNombre(usuario_id, data)
-            .then((resp: RespuestaEntity<ActualizaNombreUsuario>) => {
-               if (resp.data) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `Se cambio el ${dato} correctamente`,
-                  });
+            .then((resp: ActualizaNombreUsuario) => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `Se cambio el ${dato} correctamente`,
+               });
 
-                  setDatoAnterior(resp.data.nombre);
-               }
+               setDatoAnterior(resp.nombre);
             })
             .catch((error: Error) => {
                mostrarNotificacion({
@@ -66,17 +63,15 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
          const data: ActualizaApellidoUsuario = {
             apellido: dato_cambio,
          };
-         await usuServ
+         await srvUsuario
             .actualizarApellido(usuario_id, data)
-            .then((resp: RespuestaEntity<ActualizaApellidoUsuario>) => {
-               if (resp.data) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `Se cambio el ${dato} correctamente`,
-                  });
+            .then((resp: ActualizaApellidoUsuario) => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `Se cambio el ${dato} correctamente`,
+               });
 
-                  setDatoAnterior(resp.data.apellido);
-               }
+               setDatoAnterior(resp.apellido);
             })
             .catch((error: Error) => {
                mostrarNotificacion({
@@ -90,17 +85,15 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
          const data: ActualizaCorreoUsuario = {
             correo: dato_cambio,
          };
-         await usuServ
+         await srvUsuario
             .actualizarCorreo(usuario_id, data)
-            .then((resp: RespuestaEntity<ActualizaCorreoUsuario>) => {
-               if (resp.data) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `Se cambio el ${dato} correctamente`,
-                  });
+            .then((resp: ActualizaCorreoUsuario) => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `Se cambio el ${dato} correctamente`,
+               });
 
-                  setDatoAnterior(resp.data.correo);
-               }
+               setDatoAnterior(resp.correo);
             })
             .catch((error: Error) => {
                mostrarNotificacion({
@@ -114,17 +107,15 @@ export const PlantillaAccion = ({ titulo, dato }: Props) => {
          const data: ActualizaDireccionUsuario = {
             direccion: dato_cambio,
          };
-         await usuServ
+         await srvUsuario
             .actualizarDireccion(usuario_id, data)
-            .then((resp: RespuestaEntity<ActualizaDireccionUsuario>) => {
-               if (resp.data) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `Se cambio el ${dato} correctamente`,
-                  });
+            .then((resp: ActualizaDireccionUsuario) => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `Se cambio el ${dato} correctamente`,
+               });
 
-                  setDatoAnterior(resp.data.direccion);
-               }
+               setDatoAnterior(resp.direccion);
             })
             .catch((error: Error) => {
                mostrarNotificacion({

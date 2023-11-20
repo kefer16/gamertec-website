@@ -3,7 +3,6 @@ import { ComprobanteStyled } from "../../comprobante/styles/Comprobante.styled";
 import { useContext, useEffect, useState } from "react";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { PedidoService } from "../../../services/pedido.service";
-import { RespuestaEntity } from "../../../entities/respuesta.entity";
 import { Button } from "primereact/button";
 import {
    IPedidoCabeceraListarUno,
@@ -65,19 +64,14 @@ export const PedidoDetalle = ({ pedido_id }: Props) => {
       const obtenerDatos = async () => {
          const pedido: PedidoService = new PedidoService();
          obtenerSesion();
-         pedido
-            .listarUno(pedido_id)
-            .then((resp: RespuestaEntity<IPedidoCabeceraListarUno>) => {
-               if (resp.data) {
-                  setDireccion(resp.data.direccion);
-                  setTelefono(resp.data.telefono);
-                  setSubTotal(resp.data.sub_total);
-                  setCostoEnvio(resp.data.costo_envio);
-                  setTotal(resp.data.total);
-                  // setPedido(resp.data);
-                  setPedidoDetalle(resp.data.lst_pedido_detalle);
-               }
-            });
+         pedido.listarUno(pedido_id).then((resp: IPedidoCabeceraListarUno) => {
+            setDireccion(resp.direccion);
+            setTelefono(resp.telefono);
+            setSubTotal(resp.sub_total);
+            setCostoEnvio(resp.costo_envio);
+            setTotal(resp.total);
+            setPedidoDetalle(resp.lst_pedido_detalle);
+         });
       };
       obtenerDatos();
    }, [obtenerSesion, pedido_id]);

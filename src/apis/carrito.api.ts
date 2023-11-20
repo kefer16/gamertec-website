@@ -3,7 +3,7 @@ import { CarritoEntity } from "../entities/carrito.entities";
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class CarritoApi {
-   static async Registrar(data: CarritoEntity): Promise<AxiosResponse> {
+   async registrar(data: CarritoEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -24,14 +24,14 @@ export class CarritoApi {
       }
    }
 
-   static async Actualizar(
-      ID: number,
+   async actualizar(
+      carrito_id: number,
       data: CarritoEntity
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               carrito_id: ID,
+               carrito_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export class CarritoApi {
       }
    }
 
-   static async ListarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -65,11 +65,11 @@ export class CarritoApi {
       }
    }
 
-   static async Historial(ID: number): Promise<AxiosResponse> {
+   async historial(carrito_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               carrito_id: ID,
+               carrito_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -83,11 +83,11 @@ export class CarritoApi {
       }
    }
 
-   static async BuscarPorID(ID: number): Promise<AxiosResponse> {
+   async buscarPorId(carrito_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               carrito_id: ID,
+               carrito_id,
             },
          };
          return await axios.get(`${CarritoEntity.url}/uno`, config);
@@ -97,11 +97,11 @@ export class CarritoApi {
       }
    }
 
-   static async EliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(carrito_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               carrito_id: ID,
+               carrito_id,
             },
          };
          return await axios.delete(`${CarritoEntity.url}/eliminar`, config);
@@ -111,9 +111,7 @@ export class CarritoApi {
       }
    }
 
-   static async ObtenerCarritoPorUsuario(
-      usuario_id: number
-   ): Promise<AxiosResponse> {
+   async listarCaracteristicas(usuario_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -130,7 +128,7 @@ export class CarritoApi {
       }
    }
 
-   async obtenerCantidadCarrito(usuario_id: number): Promise<AxiosResponse> {
+   async listarCantidadCarrito(usuario_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {

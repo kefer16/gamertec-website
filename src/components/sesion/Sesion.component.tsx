@@ -1,8 +1,6 @@
 import { createContext, useRef, useState } from "react";
 import { SesionGamertec } from "../../interfaces/sesion.interface";
 import { CarritoService } from "../../services/carrito.service";
-import { RespuestaEntity } from "../../entities/respuesta.entity";
-import { CarritoCantidadUsuario } from "../../interfaces/carrito.interface";
 import { Toast } from "primereact/toast";
 
 export interface NotificacionProps {
@@ -107,14 +105,12 @@ export const SesionProvider = ({ children }: any) => {
       setPrivilegio("INV");
    };
    const obtenerCantidadCarrito = async () => {
-      const servCarrito = new CarritoService();
+      const srvCarrito = new CarritoService();
 
-      await servCarrito
-         .obtenerCantidadCarrito(sesionGamertec.usuario.usuario_id)
-         .then((resp: RespuestaEntity<CarritoCantidadUsuario[]>) => {
-            if (resp.data) {
-               setCantidadCarrito(resp.data[0].cantidad);
-            }
+      await srvCarrito
+         .listarCantidadCarrito(sesionGamertec.usuario.usuario_id)
+         .then((resp) => {
+            setCantidadCarrito(resp[0].cantidad);
          });
    };
 

@@ -3,20 +3,19 @@ import { DepartamentoEntity } from "../entities/departamento.entity";
 import { ComboboxProps } from "../interfaces/combobox.interface";
 
 export class DepartamentoService {
-   static listarComboDepartamento = async (): Promise<ComboboxProps[]> => {
-      const array: ComboboxProps[] = [];
+   private apiDepartamento = new DepartamentoApi();
 
-      await DepartamentoApi.ListarTodos()
-         .then((respuesta) => {
-            respuesta.data.data.forEach((element: DepartamentoEntity) => {
-               array.push({
-                  valor: element.departamento_id,
-                  descripcion: element.nombre,
-               });
+   private rspListarDepartamentoCombobox: ComboboxProps[] = [];
+
+   async listarTodos(): Promise<ComboboxProps[]> {
+      await this.apiDepartamento.listarTodos().then((resp) => {
+         resp.data.data.forEach((element: DepartamentoEntity) => {
+            this.rspListarDepartamentoCombobox.push({
+               valor: element.departamento_id,
+               descripcion: element.nombre,
             });
-         })
-         .catch((error: any) => {});
-
-      return array;
-   };
+         });
+      });
+      return this.rspListarDepartamentoCombobox;
+   }
 }

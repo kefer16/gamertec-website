@@ -1,7 +1,6 @@
 import { Button } from "primereact/button";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ApiModelo } from "../../apis/modelo.api";
 import {
    convertirFormatoMoneda,
    fechaActualISO,
@@ -9,11 +8,8 @@ import {
 } from "../../utils/funciones.utils";
 
 import { Comentarios } from "./Comentarios";
-import { ComentarioService } from "../../entities/comentario.entities";
 import { CarritoEntity } from "../../entities/carrito.entities";
-import { CarritoApi } from "../../apis/carrito.api";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
-import { ModeloDescripcionProps } from "../../interfaces/modelo.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { IconShoppingCartPlus } from "@tabler/icons-react";
 import {
@@ -35,6 +31,12 @@ import { Dialog } from "primereact/dialog";
 import { IconShoppingCartUp, IconPlus, IconMinus } from "@tabler/icons-react";
 import { Avatar } from "primereact/avatar";
 import { InputText } from "primereact/inputtext";
+import { ComentarioEntity } from "../../entities/comentario.entity";
+import { ComentarioService } from "../../services/comentario.service";
+import { ComentarioResponse } from "../../responses/comentario.response";
+import { ModeloService } from "../../services/modelo.service";
+import { ModeloDescripcionResponse } from "../../responses/modelo.response";
+import { CarritoService } from "../../services/carrito.service";
 
 interface Props {
    modelo_id: number;
@@ -62,50 +64,75 @@ export const Descripcion = ({ modelo_id }: Props) => {
    const [modalComentario, setModalComentario] = useState<boolean>(false);
    const [calificacionGeneral, setCalificacionGeneral] = useState<number>(0);
    const [arrayComentarios, setArrayComentarios] = useState<
-      ComentarioService[]
+      ComentarioResponse[]
    >([]);
 
-   const funcionObtenerComentarios = async (modelo_id: number) => {
-      let arrayComentarios: ComentarioService[] = [];
-      await ComentarioService.BuscarPorModelo(modelo_id).then((respuesta) => {
-         arrayComentarios = respuesta.data.data;
-         setArrayComentarios(arrayComentarios);
-      });
+   const funObtenerComentarios = useCallback(
+      async (modelo_id: number) => {
+         const srvComentario = new ComentarioService();
+         let arrayComentarios: ComentarioEntity[] = [];
 
-      let calificacionGeneral: number =
-         arrayComentarios.length === 0
-            ? 0
-            : arrayComentarios.reduce(
-                 (suma, item) => suma + item.valoracion,
-                 0
-              ) / arrayComentarios.length;
+         await srvComentario
+            .buscarPorModelo(modelo_id)
+            .then((resp) => {
+               arrayComentarios = [...resp];
+               setArrayComentarios(arrayComentarios);
+            })
+            .catch((error: Error) => {
+               mostrarNotificacion({
+                  tipo: "error",
+                  detalle: `surgio un error: ${error.message}`,
+               });
+            });
 
-      calificacionGeneral = Number(formatoCalificacion(calificacionGeneral));
-      setCalificacionGeneral(calificacionGeneral);
-   };
+         let calificacionGeneral: number =
+            arrayComentarios.length === 0
+               ? 0
+               : arrayComentarios.reduce(
+                    (suma, item) => suma + item.valoracion,
+                    0
+                 ) / arrayComentarios.length;
+
+         calificacionGeneral = Number(formatoCalificacion(calificacionGeneral));
+         setCalificacionGeneral(calificacionGeneral);
+      },
+      [mostrarNotificacion]
+   );
+
+   const funObtenerModeloDescripcion = useCallback(async () => {
+      const srvModelo = new ModeloService();
+      await srvModelo
+         .listarModeloDescripcion(modelo_id)
+         .then((data: ModeloDescripcionResponse) => {
+            setCategoriaNombre(data.cls_marca.cls_categoria.nombre);
+            setMarcaNombre(data.cls_marca.nombre);
+            setModeloNombre(data.nombre);
+            setDescripcion(data.descripcion);
+            setFoto(data.foto);
+            setPrecio(data.precio);
+            setCaracteristicas(data.caracteristicas);
+            setColor(data.color);
+            setStock(data._count.lst_producto);
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: `surgio un error: ${error.message}`,
+            });
+         });
+      setUsuarioId(sesionGamertec.usuario.usuario_id);
+   }, [modelo_id, sesionGamertec, mostrarNotificacion]);
 
    useEffect(() => {
-      const ObtenerData = async () => {
-         obtenerSesion();
-         await ApiModelo.ListarModeloDescripcion(modelo_id).then(
-            (data: ModeloDescripcionProps) => {
-               setCategoriaNombre(data.cls_marca.cls_categoria.nombre);
-               setMarcaNombre(data.cls_marca.nombre);
-               setModeloNombre(data.nombre);
-               setDescripcion(data.descripcion);
-               setFoto(data.foto);
-               setPrecio(data.precio);
-               setCaracteristicas(data.caracteristicas);
-               setColor(data.color);
-               setStock(data._count.lst_producto);
-            }
-         );
-         setUsuarioId(sesionGamertec.usuario.usuario_id);
-         await funcionObtenerComentarios(modelo_id);
-      };
-
-      ObtenerData();
-   }, [modelo_id, obtenerSesion, sesionGamertec]);
+      obtenerSesion();
+      funObtenerModeloDescripcion();
+      funObtenerComentarios(modelo_id);
+   }, [
+      modelo_id,
+      obtenerSesion,
+      funObtenerModeloDescripcion,
+      funObtenerComentarios,
+   ]);
 
    const funcionActivarModalLogin = () => {
       setModalLogin(true);
@@ -136,6 +163,8 @@ export const Descripcion = ({ modelo_id }: Props) => {
    };
 
    const funcionAgregarProductoCarrito = async () => {
+      const srvCarrito = new CarritoService();
+
       const data: CarritoEntity = new CarritoEntity(
          0,
          productosCarrito,
@@ -148,7 +177,8 @@ export const Descripcion = ({ modelo_id }: Props) => {
          modelo_id
       );
 
-      await CarritoApi.Registrar(data)
+      await srvCarrito
+         .registrar(data)
          .then(() => {
             mostrarNotificacion({
                tipo: "success",
@@ -247,7 +277,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
             calificacionGeneral={calificacionGeneral}
             comentarios={arrayComentarios}
             modalComentario={modalComentario}
-            funcionObtenerComentarios={funcionObtenerComentarios}
+            funcionObtenerComentarios={funObtenerComentarios}
             funcionAbrirModal={funcionActivarModalComentario}
             funcionCerrarModal={funcionDesactivarModalComentario}
          />
@@ -278,7 +308,7 @@ export const Descripcion = ({ modelo_id }: Props) => {
          <Dialog
             header="Agregar productos al carrito"
             visible={modalLogin}
-            style={{ width: "50vw" }}
+            style={{ width: "550px" }}
             onHide={() => setModalLogin(false)}
          >
             <div

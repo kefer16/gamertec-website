@@ -7,7 +7,7 @@ import {
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class PedidoApi {
-   static async crearPreferencia(usuario_id: number): Promise<AxiosResponse> {
+   async crearPreferencia(usuario_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -28,9 +28,7 @@ export class PedidoApi {
       }
    }
 
-   static async Registrar(
-      data: IPedidoCabeceraInterface
-   ): Promise<AxiosResponse> {
+   async registrar(data: IPedidoCabeceraInterface): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -50,14 +48,14 @@ export class PedidoApi {
       }
    }
 
-   static async Actualizar(
-      ID: number,
+   async actualizar(
+      pedido_id: number,
       data: PedidoCabeceraEntity
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               pedido_id: ID,
+               pedido_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -76,7 +74,7 @@ export class PedidoApi {
       }
    }
 
-   static async ListarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -91,7 +89,7 @@ export class PedidoApi {
       }
    }
 
-   static async listarUno(pedido_id: number): Promise<AxiosResponse> {
+   async listarUno(pedido_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -109,11 +107,11 @@ export class PedidoApi {
       }
    }
 
-   static async Historial(ID: number): Promise<AxiosResponse> {
+   async historial(pedido_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               pedido_id: ID,
+               pedido_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -130,11 +128,11 @@ export class PedidoApi {
       }
    }
 
-   static async BuscarPorID(ID: number): Promise<AxiosResponse> {
+   async buscarPorId(pedido_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               pedido_id: ID,
+               pedido_id,
             },
          };
          return await axios.get(`${PedidoCabeceraEntity.url}/uno`, config);
@@ -144,11 +142,11 @@ export class PedidoApi {
       }
    }
 
-   static async EliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(pedido_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               pedido_id: ID,
+               pedido_id,
             },
          };
          return await axios.delete(
@@ -161,18 +159,21 @@ export class PedidoApi {
       }
    }
 
-   static async listarUltimo(): Promise<AxiosResponse> {
+   async listarUltimo(): Promise<AxiosResponse> {
       try {
-         return await axios.get(`${PedidoCabeceraEntity.url}/ultimo`);
+         const config = {
+            headers: {
+               "Content-Type": "application/json",
+            },
+         };
+         return await axios.get(`${PedidoCabeceraEntity.url}/ultimo`, config);
       } catch (error: any) {
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }
    }
 
-   static async listarPedidoUsuario(
-      usuario_id: number
-   ): Promise<AxiosResponse> {
+   async listarPedidoUsuario(usuario_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -189,7 +190,7 @@ export class PedidoApi {
       }
    }
 
-   static async agregarSeries(
+   async agregarSeries(
       compra_detalle_id: number,
       data: IActualizaSerie[]
    ): Promise<AxiosResponse> {

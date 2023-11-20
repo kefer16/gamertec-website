@@ -11,7 +11,7 @@ import {
 import { personalizarMensajeError } from "../utils/funciones.utils";
 
 export class UsuarioApi {
-   static async logearse(
+   async logearse(
       usuario: string,
       contrasenia: string
    ): Promise<AxiosResponse> {
@@ -44,17 +44,12 @@ export class UsuarioApi {
             config
          );
       } catch (error: any) {
-         console.log("ERRO PASA", error);
-
          error.message = personalizarMensajeError(error);
          return Promise.reject(error);
       }
    }
 
-   static async actualizar(
-      ID: number,
-      data: UsuarioEntity
-   ): Promise<AxiosResponse> {
+   async actualizar(ID: number, data: UsuarioEntity): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -87,7 +82,7 @@ export class UsuarioApi {
    // 	return usuario;
    // }
 
-   static async listarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -102,7 +97,7 @@ export class UsuarioApi {
       }
    }
 
-   static async historial(idUsuario: number): Promise<AxiosResponse> {
+   async historial(idUsuario: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -120,7 +115,7 @@ export class UsuarioApi {
       }
    }
 
-   static async eliminarUno(ID: number): Promise<AxiosResponse> {
+   async eliminarUno(ID: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -134,14 +129,14 @@ export class UsuarioApi {
       }
    }
 
-   static async actualizarNombre(
-      ID: number,
+   async actualizarNombre(
+      usuario_id: number,
       data: ActualizaNombreUsuario
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               usuario_id: ID,
+               usuario_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -160,14 +155,14 @@ export class UsuarioApi {
       }
    }
 
-   static async actualizarApellido(
-      ID: number,
+   async actualizarApellido(
+      usuario_id: number,
       data: ActualizaApellidoUsuario
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               usuario_id: ID,
+               usuario_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -186,14 +181,14 @@ export class UsuarioApi {
       }
    }
 
-   static async actualizarCorreo(
-      ID: number,
+   async actualizarCorreo(
+      usuario_id: number,
       data: ActualizaCorreoUsuario
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               usuario_id: ID,
+               usuario_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -212,14 +207,14 @@ export class UsuarioApi {
       }
    }
 
-   static async actualizarDireccion(
-      ID: number,
+   async actualizarDireccion(
+      usuario_id: number,
       data: ActualizaDireccionUsuario
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               usuario_id: ID,
+               usuario_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -238,13 +233,13 @@ export class UsuarioApi {
       }
    }
    async actualizarFoto(
-      ID: number,
+      usuario_id: number,
       data: ActualizaFotoUsuario
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               usuario_id: ID,
+               usuario_id,
             },
             headers: {
                "Content-Type": "application/json",
@@ -264,13 +259,13 @@ export class UsuarioApi {
    }
 
    async actualizarContrasenia(
-      ID: number,
+      usuario_id: number,
       data: ActualizaContraseniaUsuario
    ): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
-               usuario_id: ID,
+               usuario_id,
             },
             headers: {
                "Content-Type": "application/json",

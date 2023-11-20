@@ -1,65 +1,66 @@
-import { useEffect, useState } from "react";
-import { funcionObtenerCategorias } from "../admin/categoria/Categoria";
+import { useEffect, useState, useContext, useCallback } from "react";
 import styled from "styled-components";
-import { funcionListarModelosPorFiltro } from "../../apis/producto.api";
 import { Link } from "react-router-dom";
-import { ModeloPorFiltroProps } from "../../interfaces/modelo.interface";
 import { InputText } from "primereact/inputtext";
-// import { IconSearch } from "@tabler/icons-react";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { IconSearch } from "@tabler/icons-react";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { formatoMonedaPerunana } from "../../utils/funciones.utils";
-
+import { CategoriaService } from "../../services/categoria.service";
+import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { ModeloPorFiltroResponse } from "../../responses/modelo.response";
+import { ModeloService } from "../../services/modelo.service";
 interface DropdownProps {
    name: string;
    code: string;
 }
+let arrayCategoria: DropdownProps[] = [];
 
 export const Products = () => {
+   const { mostrarNotificacion } = useContext(GamertecSesionContext);
+
    const [categoria, setCategoria] = useState<DropdownProps>({
       code: "0",
       name: "Todas las Categorias",
    });
    const [nombreModelo, setNombreModelo] = useState<string>("");
-   const [arrayCategoria, setArrayCategoria] = useState<DropdownProps[]>([]);
-   const [arrayModelo, setArrayModelo] = useState<ModeloPorFiltroProps[]>([]);
+   const [arrayModelo, setArrayModelo] = useState<ModeloPorFiltroResponse[]>(
+      []
+   );
+
+   const funObtenerCategorias = useCallback(async () => {
+      const srvCategoria = new CategoriaService();
+      await srvCategoria
+         .obtenerCategoriasCombobox()
+         .then((resp) => {
+            arrayCategoria = resp.map((item) => ({
+               code: item.code,
+               name: item.name,
+            }));
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
    useEffect(() => {
-      const obtenerData = async () => {
-         let array: DropdownProps[] = [];
-         await funcionObtenerCategorias().then((resp: DropdownProps[]) => {
-            if (resp) {
-               array = resp.map((item) => ({
-                  code: item.code,
-                  name: item.name,
-               }));
-            }
-         });
-
-         setArrayCategoria([
-            { code: "0", name: "Todas las Categorias" },
-            ...array,
-         ]);
-
-         await funcionListarModelosPorFiltro(0, "").then((response) => {
-            setArrayModelo(response);
-         });
-      };
-
-      obtenerData();
-   }, []);
+      funObtenerCategorias();
+   }, [funObtenerCategorias]);
 
    const funcionAsignarFiltroCategoria = async (
       event: React.FormEvent<HTMLFormElement>
    ) => {
       event.preventDefault();
-      await funcionListarModelosPorFiltro(
-         parseInt(categoria.code),
-         nombreModelo
-      ).then((response: ModeloPorFiltroProps[]) => {
-         setArrayModelo(response);
-      });
+      const srvModelo = new ModeloService();
+      await srvModelo
+         .listarModelosPorFiltro(parseInt(categoria.code), nombreModelo)
+         .then((resp) => {
+            setArrayModelo(resp);
+         });
    };
 
    return (
@@ -116,7 +117,7 @@ export const Products = () => {
                      gap: "1.5rem",
                   }}
                >
-                  {arrayModelo.map((item: ModeloPorFiltroProps) => {
+                  {arrayModelo.map((item: ModeloPorFiltroResponse) => {
                      return (
                         <CardProduct
                            className="shadow-2"

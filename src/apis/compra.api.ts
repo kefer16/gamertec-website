@@ -2,9 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import { CompraCabeceraEntity } from "../entities/compra_cabecera.entity";
 import { CompraRegistra } from "../interfaces/compra.interface";
 import { personalizarMensajeError } from "../utils/funciones.utils";
-
 export class CompraApi {
-   public async listarTodos(usuario_id: number): Promise<AxiosResponse> {
+   async listarTodos(usuario_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -21,7 +20,7 @@ export class CompraApi {
       }
    }
 
-   public async listarUno(compra_cabecera_id: number): Promise<AxiosResponse> {
+   async listarUno(compra_cabecera_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -37,7 +36,7 @@ export class CompraApi {
          return Promise.reject(error);
       }
    }
-   public async registrar(data: CompraRegistra): Promise<AxiosResponse> {
+   async registrar(data: CompraRegistra): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -56,7 +55,7 @@ export class CompraApi {
       }
    }
 
-   public async actualizarCompraEstado(
+   async actualizarCompraEstado(
       compra_cabecera_id: number,
       compra_abreviatura: string
    ): Promise<AxiosResponse> {

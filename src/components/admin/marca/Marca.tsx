@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
 import {
    ColumnProps,
@@ -7,16 +7,15 @@ import {
    TypeColumn,
 } from "../../controls/TableControl";
 import { MarcaRegistro } from "./MarcaRegistro";
-import { MarcaService } from "../../../entities/marca.entities";
-import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { IconAlertTriangle } from "@tabler/icons-react";
-import {
-   DropdownProps,
-   DropdownPropsAnidado,
-} from "../categoria/CategoriaRegistro";
+import { DropdownProps } from "../categoria/CategoriaRegistro";
+import { CategoriaService } from "../../../services/categoria.service";
+import { MarcaResponse } from "../../../responses/marca.response";
+import { MarcaService } from "../../../services/marca.service";
+import { MarcaEntity } from "../../../entities/marca.entities";
 
 export interface ValuesMarcaProps {
    id: number;
@@ -71,24 +70,6 @@ interface Props {
 
 let arrayCategoria: DropdownProps[] = [];
 
-export const funcionObtenerMarcas = async (): Promise<
-   DropdownPropsAnidado[]
-> => {
-   const array: DropdownPropsAnidado[] = [];
-   await MarcaService.ListarTodos()
-      .then((respuesta) => {
-         respuesta.data.data.forEach((element: MarcaService) => {
-            array.push({
-               codeAnidado: String(element.fk_categoria),
-               code: String(element.marca_id),
-               name: element.nombre,
-            });
-         });
-      })
-      .catch((error: any) => {});
-   return array;
-};
-
 export const Marca = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
@@ -103,34 +84,34 @@ export const Marca = ({ nombreFormulario }: Props) => {
       setDialogo(false);
    };
 
-   const [itemSeleccionado, setItemSeleccionado] = useState<MarcaService>(
-      new MarcaService()
+   const [itemSeleccionado, setItemSeleccionado] = useState<MarcaResponse>(
+      {} as MarcaResponse
    );
 
    const funcionListar = async () => {
+      const srvMarca = new MarcaService();
       const arrayMarca: ValuesMarcaProps[] = [];
-      await MarcaService.ListarTodos()
-         .then((response) => {
-            response.data.data.forEach(
-               (element: MarcaService, index: number) => {
-                  const newRow: ValuesMarcaProps = {
-                     id: element.marca_id,
-                     index: index + 1,
-                     categoria_id: element.fk_categoria,
-                     categoria_nombre: arrayCategoria.find(
-                        (categoria: DropdownProps) =>
-                           categoria.code === String(element.fk_categoria)
-                     )?.name,
-                     marca_nombre: element.nombre,
-                     fecha_registro: element.fecha_registro,
-                     estado: {
-                        valor: element.activo,
-                        estado: element.activo ? "Activo" : "Inactivo",
-                     },
-                  };
-                  arrayMarca.push(newRow);
-               }
-            );
+      await srvMarca
+         .listarTodos()
+         .then((resp) => {
+            resp.forEach((element: MarcaResponse, index: number) => {
+               const newRow: ValuesMarcaProps = {
+                  id: element.marca_id,
+                  index: index + 1,
+                  categoria_id: element.fk_categoria,
+                  categoria_nombre: arrayCategoria.find(
+                     (categoria: DropdownProps) =>
+                        categoria.code === String(element.fk_categoria)
+                  )?.name,
+                  marca_nombre: element.nombre,
+                  fecha_registro: element.fecha_registro,
+                  estado: {
+                     valor: element.activo,
+                     estado: element.activo ? "Activo" : "Inactivo",
+                  },
+               };
+               arrayMarca.push(newRow);
+            });
             setArrayMarca(arrayMarca);
          })
          .catch((error: any) => {
@@ -138,8 +119,23 @@ export const Marca = ({ nombreFormulario }: Props) => {
          });
    };
 
+   const funObtenerMarcas = useCallback(async () => {
+      const srvMarca = new MarcaService();
+      await srvMarca
+         .obtenerMarcasCombobox()
+         .then((resp) => {
+            arrayCategoria = resp;
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
    const funcionCrear = () => {
-      setItemSeleccionado(new MarcaService(0, "", false, 0, fechaActualISO()));
+      setItemSeleccionado(new MarcaEntity(0, "", false, 0, fechaActualISO()));
       setEsEdicion(false);
       setAbrirModal(true);
    };
@@ -159,7 +155,7 @@ export const Marca = ({ nombreFormulario }: Props) => {
       }
 
       setItemSeleccionado(
-         new MarcaService(
+         new MarcaEntity(
             itemEdicion.id,
             itemEdicion.marca_nombre,
             itemEdicion.estado.valor,
@@ -173,15 +169,16 @@ export const Marca = ({ nombreFormulario }: Props) => {
    };
 
    const funcionEliminar = async () => {
-      await MarcaService.EliminarUno(marcaSeleccionada.id)
-         .then((response) => {
+      const srvMarca = new MarcaService();
+      await srvMarca
+         .eliminarUno(marcaSeleccionada.id)
+         .then(() => {
             mostrarNotificacion({
                tipo: "success",
                detalle: `${nombreFormulario} se eliminó correctamente`,
             });
             funcionCerrarDialogo();
             funcionListar();
-            return;
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -189,7 +186,6 @@ export const Marca = ({ nombreFormulario }: Props) => {
                detalle: error.message,
             });
             funcionCerrarDialogo();
-            return;
          });
    };
 
@@ -214,15 +210,27 @@ export const Marca = ({ nombreFormulario }: Props) => {
       setAbrirModal(false);
    };
 
+   const funObtenerCategorias = useCallback(async () => {
+      const srvCategoria = new CategoriaService();
+
+      await srvCategoria
+         .obtenerCategoriasCombobox()
+         .then((resp) => {
+            arrayCategoria = resp;
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
    useEffect(() => {
-      const obtenerCategorias = async () => {
-         return await funcionObtenerCategorias();
-      };
-      obtenerCategorias().then((result) => {
-         arrayCategoria = result;
-         funcionListar();
-      });
-   }, []);
+      funObtenerCategorias();
+      funObtenerMarcas();
+      funcionListar();
+   }, [funObtenerCategorias, funObtenerMarcas]);
 
    return (
       <ContainerBodyStyled>

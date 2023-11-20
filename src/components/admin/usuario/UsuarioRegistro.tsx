@@ -137,8 +137,6 @@ export const UsuarioRegistro = ({
                funcionCerrarModal();
             })
             .catch((error: Error) => {
-               console.log("Erro", error);
-
                mostrarNotificacion({
                   tipo: "error",
                   detalle: error.message,

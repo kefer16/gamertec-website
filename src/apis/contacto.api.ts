@@ -1,9 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { ContactoEntity } from "../entities/contacto.entity";
 import { personalizarMensajeError } from "../utils/funciones.utils";
-
 export class ContactoApi {
-   public async listarTodos(): Promise<AxiosResponse> {
+   async listarTodos(): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -16,7 +15,8 @@ export class ContactoApi {
          return Promise.reject(error);
       }
    }
-   public async listarUno(usuario_id: number): Promise<AxiosResponse> {
+
+   async listarUno(usuario_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {
@@ -32,7 +32,8 @@ export class ContactoApi {
          return Promise.reject(error);
       }
    }
-   public async registrar(data: ContactoEntity): Promise<AxiosResponse> {
+
+   async registrar(data: ContactoEntity): Promise<AxiosResponse> {
       try {
          const config = {
             headers: {
@@ -41,7 +42,6 @@ export class ContactoApi {
          };
 
          const body = JSON.stringify(data);
-         console.log(data);
 
          return await axios.post(
             `${ContactoEntity.url}/registrar`,
@@ -54,7 +54,7 @@ export class ContactoApi {
       }
    }
 
-   public async actualizar(
+   async actualizar(
       contacto_id: number,
       data: ContactoEntity
    ): Promise<AxiosResponse> {
@@ -75,7 +75,7 @@ export class ContactoApi {
       }
    }
 
-   public async eliminar(contacto_id: number): Promise<AxiosResponse> {
+   async eliminar(contacto_id: number): Promise<AxiosResponse> {
       try {
          const config = {
             params: {

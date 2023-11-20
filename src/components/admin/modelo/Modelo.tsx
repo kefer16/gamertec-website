@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
    ColumnProps,
    EstadoProps,
@@ -6,10 +6,7 @@ import {
    TableControl,
    TypeColumn,
 } from "../../controls/TableControl";
-import { funcionObtenerCategorias } from "../categoria/Categoria";
 import { ModeloRegistro } from "./ModeloRegistro";
-
-import { funcionObtenerMarcas } from "../marca/Marca";
 import { ModeloEntity } from "../../../entities/modelo.entity";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
@@ -20,6 +17,9 @@ import {
    DropdownProps,
    DropdownPropsAnidado,
 } from "../categoria/CategoriaRegistro";
+import { CategoriaService } from "../../../services/categoria.service";
+import { MarcaService } from "../../../services/marca.service";
+import { ModeloService } from "../../../services/modelo.service";
 
 const columnsModelo2: ColumnProps[] = [
    {
@@ -115,8 +115,9 @@ export const funcionObteneModelo = async (): Promise<
    DropdownPropsAnidado[]
 > => {
    const array: DropdownPropsAnidado[] = [];
-   await ModeloEntity.ListarTodos().then((respuesta) => {
-      respuesta.data.data.forEach((element: ModeloEntity) => {
+   const srvModelo = new ModeloService();
+   await srvModelo.listarTodos().then((resp) => {
+      resp.forEach((element: ModeloEntity) => {
          array.push({
             codeAnidado: String(element.fk_marca),
             code: String(element.modelo_id),
@@ -144,50 +145,53 @@ export const Modelo = ({ nombreFormulario }: Props) => {
       new ModeloEntity()
    );
 
-   const funcionListar = async () => {
+   const funObtenerModelos = useCallback(async () => {
+      const srvModelo = new ModeloService();
       const arrayModelo: ValuesModeloProps[] = [];
-      await ModeloEntity.ListarTodos()
-         .then((response) => {
-            response.data.data.forEach(
-               (element: ModeloEntity, index: number) => {
-                  const newRow: ValuesModeloProps = {
-                     id: element.modelo_id,
-                     index: index + 1,
-                     fecha_registro: element.fecha_registro,
-                     categoria_id: element.fk_categoria,
-                     categoria_nombre: arrayCategoria.find(
-                        (categoria: DropdownProps) =>
-                           categoria.code === String(element.fk_categoria)
-                     )?.name,
-                     marca_id: element.fk_marca,
-                     marca_nombre: arrayMarca.find(
-                        (marca: DropdownPropsAnidado) =>
-                           marca.code === String(element.fk_marca)
-                     )?.name,
-                     modelo_nombre: element.nombre,
-                     producto_nombre: element.descripcion,
-                     foto: {
-                        img: element.foto,
-                        alt: element.descripcion,
-                     },
-                     precio: element.precio,
-                     color: element.color,
-                     caracteristicas: element.caracteristicas,
-                     estado: {
-                        valor: element.activo,
-                        estado: element.activo ? "Activo" : "Inactivo",
-                     },
-                  };
-                  arrayModelo.push(newRow);
-               }
-            );
+      await srvModelo
+         .listarTodos()
+         .then((resp) => {
+            resp.forEach((element: ModeloEntity, index: number) => {
+               const newRow: ValuesModeloProps = {
+                  id: element.modelo_id,
+                  index: index + 1,
+                  fecha_registro: element.fecha_registro,
+                  categoria_id: element.fk_categoria,
+                  categoria_nombre: arrayCategoria.find(
+                     (categoria: DropdownProps) =>
+                        categoria.code === String(element.fk_categoria)
+                  )?.name,
+                  marca_id: element.fk_marca,
+                  marca_nombre: arrayMarca.find(
+                     (marca: DropdownPropsAnidado) =>
+                        marca.code === String(element.fk_marca)
+                  )?.name,
+                  modelo_nombre: element.nombre,
+                  producto_nombre: element.descripcion,
+                  foto: {
+                     img: element.foto,
+                     alt: element.descripcion,
+                  },
+                  precio: element.precio,
+                  color: element.color,
+                  caracteristicas: element.caracteristicas,
+                  estado: {
+                     valor: element.activo,
+                     estado: element.activo ? "Activo" : "Inactivo",
+                  },
+               };
+               arrayModelo.push(newRow);
+            });
 
             setArrayModelo(arrayModelo);
          })
-         .catch((error: any) => {
-            return;
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "success",
+               detalle: error.message,
+            });
          });
-   };
+   }, [mostrarNotificacion]);
 
    const funcionCrear = () => {
       setItemSeleccionado(
@@ -242,16 +246,16 @@ export const Modelo = ({ nombreFormulario }: Props) => {
    };
 
    const funcionEliminar = async () => {
-      await ModeloEntity.EliminarUno(modeloSeleccionado.id)
-         .then((response) => {
-            if (response.data.code === 200) {
-               mostrarNotificacion({
-                  tipo: "success",
-                  detalle: `${nombreFormulario} se eliminó correctamente`,
-               });
-               funcionCerrarDialogo();
-               funcionListar();
-            }
+      const srvModelo = new ModeloService();
+      await srvModelo
+         .eliminarUno(modeloSeleccionado.id)
+         .then(() => {
+            mostrarNotificacion({
+               tipo: "success",
+               detalle: `${nombreFormulario} se eliminó correctamente`,
+            });
+            funcionCerrarDialogo();
+            funObtenerModelos();
          })
          .catch((error: Error) => {
             mostrarNotificacion({
@@ -281,21 +285,42 @@ export const Modelo = ({ nombreFormulario }: Props) => {
       setAbrirModal(false);
    };
 
+   const funObtenerCategorias = useCallback(async () => {
+      const srvCategoria = new CategoriaService();
+      await srvCategoria
+         .obtenerCategoriasCombobox()
+         .then((resp) => {
+            arrayCategoria = [...resp];
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
+   const funObtenerMarcas = useCallback(async () => {
+      const srvMarca = new MarcaService();
+
+      await srvMarca
+         .obtenerMarcasCombobox()
+         .then((resp) => {
+            arrayMarca = resp;
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
+   }, [mostrarNotificacion]);
+
    useEffect(() => {
-      const obtenerData = async () => {
-         await funcionObtenerCategorias().then((result) => {
-            arrayCategoria = result;
-         });
-
-         await funcionObtenerMarcas().then((result) => {
-            arrayMarca = result;
-         });
-
-         await funcionListar();
-      };
-
-      obtenerData();
-   }, []);
+      funObtenerCategorias();
+      funObtenerMarcas();
+      funObtenerModelos();
+   }, [funObtenerCategorias, funObtenerMarcas, funObtenerModelos]);
 
    return (
       <ContainerBodyStyled>
@@ -329,7 +354,7 @@ export const Modelo = ({ nombreFormulario }: Props) => {
             esEdicion={esEdicion}
             itemSeleccionado={itemSeleccionado}
             funcionCerrarModal={funcionCerrarModal}
-            funcionActualizarTabla={funcionListar}
+            funcionActualizarTabla={funObtenerModelos}
             arrayCategorias={arrayCategoria}
             arrayMarcas={arrayMarca}
          />

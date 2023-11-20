@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { ComentarioService } from "../../entities/comentario.entities";
 import { fechaActualISO } from "../../utils/funciones.utils";
 import { Nullable } from "primereact/ts-helpers";
 import { RatingPrimeUI } from "../controls/primeUI/RatingPrimeUI";
@@ -9,6 +8,8 @@ import { IconMessage2Up } from "@tabler/icons-react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
+import { ComentarioEntity } from "../../entities/comentario.entity";
+import { ComentarioService } from "../../services/comentario.service";
 interface Props {
    modeloId: number;
    modalComentario: boolean;
@@ -33,40 +34,40 @@ export const ModalComentario = ({
       setMensaje("");
    };
    const funcionRegistarComentario = async () => {
-      const data: ComentarioService = new ComentarioService(
-         0,
-         valoracion ?? 0,
-         "usuario",
-         titulo,
-         mensaje,
-         fechaActualISO(),
-         true,
-         1,
-         modeloId
-      );
+      const srvComentario = new ComentarioService();
 
-      await ComentarioService.Registrar(data)
-         .then((response) => {
-            if (response.data.code === 200) {
-               mostrarNotificacion({
-                  tipo: "success",
-                  detalle: "Se publicó el comentario",
-               });
+      const data: ComentarioEntity = {
+         comentario_id: 0,
+         valoracion: valoracion ?? 0,
+         usuario: "usuario",
+         titulo: titulo,
+         mensaje: mensaje,
+         fecha_registro: fechaActualISO(),
+         activo: true,
+         fk_usuario: 1,
+         fk_modelo: modeloId,
+      };
 
-               funcionLimpiarControles();
-               funcionObtenerComentarios(modeloId);
-               funcionCerrarModal();
-               return;
-            }
+      await srvComentario
+         .registrar(data)
+         .then(() => {
+            mostrarNotificacion({
+               tipo: "success",
+               detalle: "Se publicó el comentario",
+            });
+
+            funcionLimpiarControles();
+            funcionObtenerComentarios(modeloId);
+            funcionCerrarModal();
          })
          .catch((error: Error) => {
             mostrarNotificacion({
                tipo: "error",
                detalle: `surgió un error: ${error.message}`,
             });
-            return;
          });
    };
+
    return (
       <Dialog
          header="Tu opinión nos importa ¡Evalúa tu producto!"

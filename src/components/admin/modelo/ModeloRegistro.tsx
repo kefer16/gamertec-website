@@ -33,6 +33,7 @@ import {
    InputNumberValueChangeEvent,
 } from "primereact/inputnumber";
 import { InputTextarea } from "primereact/inputtextarea";
+import { ModeloService } from "../../../services/modelo.service";
 
 interface Props {
    nombreFormulario: string;
@@ -155,9 +156,12 @@ export const ModeloRegistro = ({
          parseInt(fkCategoria.code)
       );
 
+      const srvModelo = new ModeloService();
+
       if (esEdicion) {
-         await ModeloEntity.Actualizar(modeloId, data)
-            .then((response) => {
+         await srvModelo
+            .actualizar(modeloId, data)
+            .then(() => {
                mostrarNotificacion({
                   tipo: "success",
                   detalle: `${nombreFormulario} se actualizó correctamente`,
@@ -172,16 +176,15 @@ export const ModeloRegistro = ({
                });
             });
       } else {
-         await ModeloEntity.Registrar(data)
-            .then((response) => {
-               if (response.data.code === 200) {
-                  mostrarNotificacion({
-                     tipo: "success",
-                     detalle: `${nombreFormulario} se registró correctamente`,
-                  });
-                  funcionActualizarTabla();
-                  funcionCerrarModal();
-               }
+         await srvModelo
+            .registrar(data)
+            .then(() => {
+               mostrarNotificacion({
+                  tipo: "success",
+                  detalle: `${nombreFormulario} se registró correctamente`,
+               });
+               funcionActualizarTabla();
+               funcionCerrarModal();
             })
             .catch((error: Error) => {
                mostrarNotificacion({

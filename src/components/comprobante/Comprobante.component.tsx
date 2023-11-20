@@ -11,23 +11,22 @@ import {
 } from "../../utils/funciones.utils";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { PedidoService } from "../../services/pedido.service";
-
-import { RespuestaEntity } from "../../entities/respuesta.entity";
-
 import {
    IPedidoCabeceraInterface,
    RespuestaPedidoPreferencia,
 } from "../../interfaces/pedido.interface";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
-import { SesionGamertec } from "../../interfaces/sesion.interface";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+
 initMercadoPago(process.env.REACT_APP_MERCADO_PAGO_PUBLIC_KEY || "");
 
 export const Comprobante = () => {
-   const { sesionGamertec, obtenerSesion } = useContext(GamertecSesionContext);
+   const { sesionGamertec, obtenerSesion, mostrarNotificacion } = useContext(
+      GamertecSesionContext
+   );
    const [preferenciaId, setPreferenciaId] = useState<string>("");
    const [arrayCarrito, setArrayCarrito] = useState<CarritoUsuarioProps[]>([]);
 
@@ -39,13 +38,12 @@ export const Comprobante = () => {
 
    useEffect(() => {
       obtenerSesion();
-      obtenerDatosCarrito(sesionGamertec);
+      funObtenerCarrito(sesionGamertec.usuario.usuario_id);
    }, [obtenerSesion, sesionGamertec]);
 
-   const obtenerDatosCarrito = async (sesion: SesionGamertec) => {
-      await CarritoService.listarCaracteristicas(
-         sesion.usuario.usuario_id
-      ).then((array) => {
+   const funObtenerCarrito = async (usuario_id: number) => {
+      const srvCarrito = new CarritoService();
+      await srvCarrito.listarCaracteristicas(usuario_id).then((array) => {
          setArrayCarrito([...array]);
          const precioSubTotal: number = array.reduce(
             (suma, item) => suma + item.cls_modelo.precio * item.cantidad,
@@ -72,14 +70,15 @@ export const Comprobante = () => {
 
       await pedServ
          .crearPreferencia(usuarioId)
-         .then((resp: RespuestaEntity<RespuestaPedidoPreferencia>) => {
-            if (resp.data) {
-               preferencia_id = resp.data.id;
-
-               setPreferenciaId(preferencia_id);
-            }
+         .then((resp: RespuestaPedidoPreferencia) => {
+            setPreferenciaId(resp.id);
          })
-         .catch((error: any) => {});
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: error.message,
+            });
+         });
 
       const data: IPedidoCabeceraInterface = {
          distrito_id: 10102,

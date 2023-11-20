@@ -1,7 +1,5 @@
 import { PedidoApi } from "../apis/pedido.api";
-
 import { PedidoCabeceraEntity } from "../entities/pedido_cabecera.entities";
-import { RespuestaEntity } from "../entities/respuesta.entity";
 import {
    IActualizaSerie,
    IPedidoCabeceraInterface,
@@ -9,115 +7,69 @@ import {
    PedidoCabeceraUsuarioProsp,
    RespuestaPedidoPreferencia,
 } from "../interfaces/pedido.interface";
-
 export class PedidoService {
-   private respuestaPedidoCabecera =
-      new RespuestaEntity<PedidoCabeceraEntity>();
-   private respuestaArrayPedidoCabecera = new RespuestaEntity<
-      PedidoCabeceraUsuarioProsp[]
-   >();
-   private respuestaPedidoListarUno =
-      new RespuestaEntity<IPedidoCabeceraListarUno>();
+   private apiPedido = new PedidoApi();
 
-   private respuestaAgregarSeries = new RespuestaEntity<boolean>();
-   private respCrearPreferencia =
-      new RespuestaEntity<RespuestaPedidoPreferencia>();
+   private rspCrearPreferencia: RespuestaPedidoPreferencia =
+      {} as RespuestaPedidoPreferencia;
+   private rspRegistrar: PedidoCabeceraEntity = {} as PedidoCabeceraEntity;
+   private rspUltimo: PedidoCabeceraEntity = {} as PedidoCabeceraEntity;
+   private rspListarPedidoUsuario: PedidoCabeceraUsuarioProsp[] = [];
+   private rspListarUno: IPedidoCabeceraListarUno =
+      {} as IPedidoCabeceraListarUno;
+   private rspAgregarSeries: boolean = false;
 
-   public async crearPreferencia(
+   async crearPreferencia(
       usuario_id: number
-   ): Promise<RespuestaEntity<RespuestaPedidoPreferencia>> {
-      await PedidoApi.crearPreferencia(usuario_id).then((resp) => {
-         this.respCrearPreferencia = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
+   ): Promise<RespuestaPedidoPreferencia> {
+      await this.apiPedido.crearPreferencia(usuario_id).then((resp) => {
+         this.rspCrearPreferencia = resp.data.data;
       });
-      return this.respCrearPreferencia;
+      return this.rspCrearPreferencia;
    }
 
    public async registrar(
       data: IPedidoCabeceraInterface
-   ): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
-      await PedidoApi.Registrar(data)
-         .then((resp) => {
-            this.respuestaPedidoCabecera = {
-               code: resp.data.code,
-               data: resp.data.data,
-               error: resp.data.error,
-            };
-            return this.respuestaPedidoCabecera;
-         })
-         .catch(() => {
-            return this.respuestaPedidoCabecera;
-         });
-      return this.respuestaPedidoCabecera;
+   ): Promise<PedidoCabeceraEntity> {
+      await this.apiPedido.registrar(data).then((resp) => {
+         this.rspRegistrar = resp.data.data;
+      });
+      return this.rspRegistrar;
    }
 
-   public async ultimo(): Promise<RespuestaEntity<PedidoCabeceraEntity>> {
-      await PedidoApi.listarUltimo()
-         .then((resp) => {
-            this.respuestaPedidoCabecera = {
-               code: resp.data.code,
-               data: resp.data.data,
-               error: resp.data.error,
-            };
-            return this.respuestaPedidoCabecera;
-         })
-         .catch(() => {
-            return this.respuestaPedidoCabecera;
-         });
-      return this.respuestaPedidoCabecera;
+   async ultimo(): Promise<PedidoCabeceraEntity> {
+      await this.apiPedido.listarUltimo().then((resp) => {
+         this.rspUltimo = resp.data.data;
+      });
+      return this.rspUltimo;
    }
 
-   public async listarPedidoUsuario(
+   async listarPedidoUsuario(
       usuario_id: number
-   ): Promise<RespuestaEntity<PedidoCabeceraUsuarioProsp[]>> {
-      await PedidoApi.listarPedidoUsuario(usuario_id)
-         .then((resp) => {
-            this.respuestaArrayPedidoCabecera = {
-               code: resp.data.code,
-               data: resp.data.data,
-               error: resp.data.error,
-            };
-            return this.respuestaArrayPedidoCabecera;
-         })
-         .catch(() => {
-            return this.respuestaArrayPedidoCabecera;
-         });
-      return this.respuestaArrayPedidoCabecera;
+   ): Promise<PedidoCabeceraUsuarioProsp[]> {
+      await this.apiPedido.listarPedidoUsuario(usuario_id).then((resp) => {
+         this.rspListarPedidoUsuario = resp.data.data;
+      });
+      return this.rspListarPedidoUsuario;
    }
 
-   public async listarUno(
-      pedido_id: number
-   ): Promise<RespuestaEntity<IPedidoCabeceraListarUno>> {
-      await PedidoApi.listarUno(pedido_id)
-         .then((resp) => {
-            this.respuestaPedidoListarUno = {
-               code: resp.data.code,
-               data: resp.data.data,
-               error: resp.data.error,
-            };
-            return this.respuestaPedidoListarUno;
-         })
-         .catch(() => {
-            return this.respuestaPedidoListarUno;
-         });
-      return this.respuestaPedidoListarUno;
+   async listarUno(pedido_id: number): Promise<IPedidoCabeceraListarUno> {
+      await this.apiPedido.listarUno(pedido_id).then((resp) => {
+         this.rspListarUno = resp.data.data;
+      });
+      return this.rspListarUno;
    }
 
-   public async agregarSeries(
+   async agregarSeries(
       compra_detalle_id: number,
       data: IActualizaSerie[]
-   ): Promise<RespuestaEntity<boolean>> {
-      await PedidoApi.agregarSeries(compra_detalle_id, data).then((resp) => {
-         this.respuestaPedidoListarUno = {
-            code: resp.data.code,
-            data: resp.data.data,
-            error: resp.data.error,
-         };
-      });
+   ): Promise<boolean> {
+      await this.apiPedido
+         .agregarSeries(compra_detalle_id, data)
+         .then((resp) => {
+            this.rspAgregarSeries = resp.data.data;
+         });
 
-      return this.respuestaAgregarSeries;
+      return this.rspAgregarSeries;
    }
 }
