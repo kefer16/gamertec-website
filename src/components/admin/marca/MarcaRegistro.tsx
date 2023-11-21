@@ -8,11 +8,14 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { MarcaResponse } from "../../../responses/marca.response";
 import { MarcaEntity } from "../../../entities/marca.entities";
 import { MarcaService } from "../../../services/marca.service";
+import {
+   ComboboxProps,
+   arrayEstadoCombobox,
+} from "../../../interfaces/combobox.interface";
 
 interface Props {
    nombreFormulario: string;
@@ -21,7 +24,7 @@ interface Props {
    itemSeleccionado: MarcaResponse;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayCategorias: DropdownProps[];
+   arrayCategorias: ComboboxProps[];
 }
 
 export const MarcaRegistro = ({
@@ -39,13 +42,13 @@ export const MarcaRegistro = ({
    const [fecha_registro, setFecha_registro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [activo, setActivo] = useState<DropdownProps>({
+   const [activo, setActivo] = useState<ComboboxProps>({
       code: "0",
       name: "Inactivo",
    });
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
-   const [fkCategoria, setFkCategoria] = useState<DropdownProps>(
-      {} as DropdownProps
+   const [arrayEstado] = useState<ComboboxProps[]>(arrayEstadoCombobox);
+   const [fkCategoria, setFkCategoria] = useState<ComboboxProps>(
+      {} as ComboboxProps
    );
 
    useEffect(() => {
@@ -56,9 +59,9 @@ export const MarcaRegistro = ({
       );
       setFkCategoria(
          arrayCategorias.find(
-            (categoria: DropdownProps) =>
+            (categoria: ComboboxProps) =>
                categoria.code === String(itemSeleccionado.fk_categoria)
-         ) ?? ({} as DropdownProps)
+         ) ?? ({} as ComboboxProps)
       );
       setActivo(
          itemSeleccionado.activo

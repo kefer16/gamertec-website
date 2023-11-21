@@ -1,12 +1,4 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import {
-   ColumnProps,
-   EstadoProps,
-   ImagenProps,
-   TableControl,
-   TypeColumn,
-} from "../../controls/TableControl";
-
 import { UsuarioRegistro } from "./UsuarioRegistro";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { UsuarioEntity } from "../../../entities/usuario.entities";
@@ -15,126 +7,51 @@ import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import { DropdownProps } from "../categoria/CategoriaRegistro";
 import { PrivilegioService } from "../../../services/privilegio.service";
+import { TableControl } from "../../controls/TableControl";
+import {
+   ColumnasUsuario,
+   arrayColumnasFiltroUsuario,
+   arrayEstructuraColumnasUsuario,
+} from "../../../tables/usuario.table";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
-const columnsUsuario2: ColumnProps[] = [
-   {
-      type: TypeColumn.TEXT,
-      field: "index",
-      header: "N°",
-      style: { width: "1%" },
-   },
-   {
-      type: TypeColumn.DATE,
-      field: "fecha_registro",
-      header: "Fecha Registro",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "privilegio_nombre",
-      header: "Privilegio",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "usuario_nombre",
-      header: "Nombre",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "usuario_apellido",
-      header: "Apellido",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "correo",
-      header: "Correo",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.IMAGE,
-      field: "foto",
-      header: "Foto",
-      style: { width: "4%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "usuario",
-      header: "Usuario",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.STATUS,
-      field: "estado",
-      header: "Estado",
-      style: { width: "4%" },
-   },
-];
-export interface ValuesUsuarioProps {
-   id: number;
-   index: number;
-   fecha_registro: string;
-   privilegio_id: number;
-   privilegio_nombre?: string;
-   usuario_nombre: string;
-   usuario_apellido: string;
-   correo: string;
-   foto: ImagenProps;
-   usuario: string;
-   estado: EstadoProps;
-}
-const arrayFiltroGlobal: string[] = [
-   "fecha_registro",
-   "privilegio_nombre",
-   "usuario_nombre",
-   "usuario_apellido",
-   "correo",
-   "usuario",
-   "estado.estado",
-];
 interface Props {
    nombreFormulario: string;
 }
 
-let arrayPrivilegio: DropdownProps[] = [];
+let arrayPrivilegio: ComboboxProps[] = [];
 
 export const Usuario = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
 
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
-
    const [dialogo, setDialogo] = useState(false);
-   const [arrayUsuario, setArrayUsuario] = useState<ValuesUsuarioProps[]>([]);
+   const [arrayUsuario, setArrayUsuario] = useState<ColumnasUsuario[]>([]);
    const [usuarioSeleccionado, setUsuarioSeleccioando] =
-      useState<ValuesUsuarioProps>({} as ValuesUsuarioProps);
-
+      useState<ColumnasUsuario>({} as ColumnasUsuario);
    const funcionCerrarDialogo = () => {
       setDialogo(false);
    };
-
    const [itemSeleccionado, setItemSeleccionado] = useState<UsuarioEntity>(
       new UsuarioEntity()
    );
 
    const funcionListar = useCallback(async () => {
-      const arrayUsuario: ValuesUsuarioProps[] = [];
+      const arrayUsuario: ColumnasUsuario[] = [];
       const srvUsuario = new UsuarioService();
       await srvUsuario
          .listarTodos()
          .then((resp: UsuarioEntity[]) => {
             resp.forEach((element: UsuarioEntity, index: number) => {
-               const newRow: ValuesUsuarioProps = {
+               const newRow: ColumnasUsuario = {
                   id: element.usuario_id,
                   index: index + 1,
                   fecha_registro: element.fecha_registro,
                   privilegio_id: element.fk_privilegio,
                   privilegio_nombre: arrayPrivilegio.find(
-                     (privilegio: DropdownProps) =>
+                     (privilegio: ComboboxProps) =>
                         privilegio.code === String(element.fk_privilegio)
                   )?.name,
                   usuario_nombre: element.nombre,
@@ -161,6 +78,26 @@ export const Usuario = ({ nombreFormulario }: Props) => {
             });
          });
    }, [mostrarNotificacion]);
+
+   const funcionObtenerPrivilegios = useCallback(async () => {
+      const srvPrivilegio = new PrivilegioService();
+      await srvPrivilegio
+         .obtenerPrivilegiosCombobox()
+         .then((resp) => {
+            arrayPrivilegio = [...resp];
+         })
+         .catch((error: Error) => {
+            mostrarNotificacion({
+               tipo: "error",
+               detalle: `surgio un error: ${error.message}`,
+            });
+         });
+   }, [mostrarNotificacion]);
+
+   useEffect(() => {
+      funcionObtenerPrivilegios();
+      funcionListar();
+   }, [funcionObtenerPrivilegios, funcionListar]);
 
    const funcionCrear = () => {
       setItemSeleccionado(
@@ -256,26 +193,6 @@ export const Usuario = ({ nombreFormulario }: Props) => {
       setAbrirModal(false);
    };
 
-   const funcionObtenerPrivilegios = useCallback(async () => {
-      const srvPrivilegio = new PrivilegioService();
-      await srvPrivilegio
-         .obtenerPrivilegiosCombobox()
-         .then((resp) => {
-            arrayPrivilegio = [...resp];
-         })
-         .catch((error: Error) => {
-            mostrarNotificacion({
-               tipo: "error",
-               detalle: `surgio un error: ${error.message}`,
-            });
-         });
-   }, [mostrarNotificacion]);
-
-   useEffect(() => {
-      funcionObtenerPrivilegios();
-      funcionListar();
-   }, [funcionObtenerPrivilegios, funcionListar]);
-
    return (
       <ContainerBodyStyled>
          <ConfirmDialog
@@ -292,12 +209,12 @@ export const Usuario = ({ nombreFormulario }: Props) => {
             Usuario
          </h2>
 
-         <TableControl<ValuesUsuarioProps>
+         <TableControl<ColumnasUsuario>
             ancho={{ minWidth: "110rem" }}
-            columnas={columnsUsuario2}
+            columnas={arrayEstructuraColumnasUsuario}
             filas={arrayUsuario}
             filaSeleccionada={usuarioSeleccionado}
-            arrayFiltroGlobal={arrayFiltroGlobal}
+            arrayFiltroGlobal={arrayColumnasFiltroUsuario}
             funcionFilaSeleccionada={setUsuarioSeleccioando}
             funcionCrear={funcionCrear}
             funcionActualizar={funcionEditar}

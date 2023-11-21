@@ -1,12 +1,12 @@
 import { DepartamentoApi } from "../apis/departamento.api";
-import { DropdownProps } from "../components/admin/categoria/CategoriaRegistro";
 import { DepartamentoEntity } from "../entities/departamento.entity";
+import { ComboboxProps } from "../interfaces/combobox.interface";
 export class DepartamentoService {
    private apiDepartamento = new DepartamentoApi();
 
-   private rspListarDepartamentoCombobox: DropdownProps[] = [];
+   private rspListarDepartamentoCombobox: ComboboxProps[] = [];
 
-   async listarTodos(): Promise<DropdownProps[]> {
+   async listarTodos(): Promise<ComboboxProps[]> {
       await this.apiDepartamento.listarTodos().then((resp) => {
          this.rspListarDepartamentoCombobox.push({
             code: "0",

@@ -13,11 +13,6 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import {
-   DropdownProps,
-   DropdownPropsAnidado,
-   estadoCategoria,
-} from "../categoria/CategoriaRegistro";
-import {
    fechaActualISO,
    fechaVisualizarCalendario,
 } from "../../../utils/funciones.utils";
@@ -34,6 +29,11 @@ import {
 } from "primereact/inputnumber";
 import { InputTextarea } from "primereact/inputtextarea";
 import { ModeloService } from "../../../services/modelo.service";
+import {
+   ComboboxAnidadoProps,
+   ComboboxProps,
+   arrayEstadoCombobox,
+} from "../../../interfaces/combobox.interface";
 
 interface Props {
    nombreFormulario: string;
@@ -42,8 +42,8 @@ interface Props {
    itemSeleccionado: ModeloEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayCategorias: DropdownProps[];
-   arrayMarcas: DropdownPropsAnidado[];
+   arrayCategorias: ComboboxProps[];
+   arrayMarcas: ComboboxAnidadoProps[];
 }
 
 export interface ChangeValueSelect {
@@ -73,20 +73,19 @@ export const ModeloRegistro = ({
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [activo, setActivo] = useState<DropdownProps>({
+   const [activo, setActivo] = useState<ComboboxProps>({
       code: "0",
       name: "Inactivo",
    });
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
-
-   const [fkMarca, setFkMarca] = useState<DropdownPropsAnidado>(
-      {} as DropdownPropsAnidado
+   const [arrayEstado] = useState<ComboboxProps[]>(arrayEstadoCombobox);
+   const [fkMarca, setFkMarca] = useState<ComboboxAnidadoProps>(
+      {} as ComboboxAnidadoProps
    );
-   const [fkCategoria, setFkCategoria] = useState<DropdownProps>(
-      {} as DropdownProps
+   const [fkCategoria, setFkCategoria] = useState<ComboboxProps>(
+      {} as ComboboxProps
    );
    const [arrayAnidadoMarca, setArrayAnidadoMarca] = useState<
-      DropdownPropsAnidado[]
+      ComboboxAnidadoProps[]
    >([]);
 
    const [seleccionaImagen, setSeleccionaImagen] = useState<string | null>(
@@ -103,7 +102,7 @@ export const ModeloRegistro = ({
             code: valorCategoria.code,
             name: valorCategoria.name,
          });
-         const arrayNuevo: DropdownPropsAnidado[] = arrayMarcas.filter(
+         const arrayNuevo: ComboboxAnidadoProps[] = arrayMarcas.filter(
             (item) => item.codeAnidado === valorPadre
          );
 

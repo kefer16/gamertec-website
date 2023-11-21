@@ -1,6 +1,6 @@
 import { CategoriaApi } from "../apis/categoria.api";
-import { DropdownProps } from "../components/admin/categoria/CategoriaRegistro";
 import { CategoriaEntity } from "../entities/categoria.entities";
+import { ComboboxProps } from "../interfaces/combobox.interface";
 import { CategoriaResponse } from "../responses/categoria.response";
 
 export class CategoriaService {
@@ -11,7 +11,7 @@ export class CategoriaService {
    private rspListarTodos: CategoriaResponse[] = [];
    private rspHistorial: CategoriaResponse[] = [];
    private rspEliminarUno: CategoriaResponse = {} as CategoriaResponse;
-   private rspArrayCategoriaCombobox: DropdownProps[] = [];
+   private rspArrayCategoriaCombobox: ComboboxProps[] = [];
 
    public async registrar(data: CategoriaEntity): Promise<CategoriaResponse> {
       await this.apiCategoria.registrar(data).then((resp) => {
@@ -50,7 +50,7 @@ export class CategoriaService {
       });
       return this.rspEliminarUno;
    }
-   public async obtenerCategoriasCombobox(): Promise<DropdownProps[]> {
+   public async obtenerCategoriasCombobox(): Promise<ComboboxProps[]> {
       await this.apiCategoria.listarTodos().then((resp) => {
          this.rspArrayCategoriaCombobox.push({
             code: "0",

@@ -10,9 +10,12 @@ import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
+import {
+   ComboboxProps,
+   arrayEstadoCombobox,
+} from "../../../interfaces/combobox.interface";
 
 interface Props {
    nombreFormulario: string;
@@ -21,7 +24,7 @@ interface Props {
    itemSeleccionado: UsuarioEntity;
    funcionCerrarModal: () => void;
    funcionActualizarTabla: () => void;
-   arrayPrivilegios: DropdownProps[];
+   arrayPrivilegios: ComboboxProps[];
 }
 
 export const UsuarioRegistro = ({
@@ -44,14 +47,14 @@ export const UsuarioRegistro = ({
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [activo, setActivo] = useState<DropdownProps>({
+   const [activo, setActivo] = useState<ComboboxProps>({
       code: "0",
       name: "Inactivo",
    });
-   const [fk_privilegio, setFk_privilegio] = useState<DropdownProps>(
-      {} as DropdownProps
+   const [fk_privilegio, setFk_privilegio] = useState<ComboboxProps>(
+      {} as ComboboxProps
    );
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+   const [arrayEstado] = useState<ComboboxProps[]>(arrayEstadoCombobox);
 
    useEffect(() => {
       setUsuarioId(itemSeleccionado.usuario_id);
@@ -77,9 +80,9 @@ export const UsuarioRegistro = ({
       );
       setFk_privilegio(
          arrayPrivilegios.find(
-            (privilegio: DropdownProps) =>
+            (privilegio: ComboboxProps) =>
                privilegio.code === String(itemSeleccionado.fk_privilegio)
-         ) ?? ({} as DropdownProps)
+         ) ?? ({} as ComboboxProps)
       );
    }, [itemSeleccionado, arrayPrivilegios]);
 

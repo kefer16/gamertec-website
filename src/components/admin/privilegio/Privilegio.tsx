@@ -1,10 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import {
-   ColumnProps,
-   EstadoProps,
-   TableControl,
-   TypeColumn,
-} from "../../controls/TableControl";
+import { TableControl } from "../../controls/TableControl";
 import { PrivilegioRegistro } from "./PrivilegioRegistro";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
@@ -14,55 +9,11 @@ import { fechaActualISO } from "../../../utils/funciones.utils";
 import { PrivilegioService } from "../../../services/privilegio.service";
 import { PrivilegioResponse } from "../../../responses/privilegio.response";
 import { PrivilegioEntity } from "../../../entities/privilegio.entities";
-
-const columnsPrivilegio2: ColumnProps[] = [
-   {
-      type: TypeColumn.TEXT,
-      field: "index",
-      header: "N°",
-      style: { width: "1%" },
-   },
-   {
-      type: TypeColumn.DATE,
-      field: "fecha_registro",
-      header: "Fecha Registro",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "tipo",
-      header: "Tipo",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "abreviatura",
-      header: "Abreviatura",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.STATUS,
-      field: "estado",
-      header: "Estado",
-      style: { width: "10%" },
-   },
-];
-
-export interface ValuesPrivilegioProps {
-   id: number;
-   index: number;
-   fecha_registro: string;
-   tipo: string;
-   abreviatura: string;
-   estado: EstadoProps;
-}
-
-const arrayFiltroGlobal: string[] = [
-   "fecha_registro",
-   "tipo",
-   "abreviatura",
-   "estado.estado",
-];
+import {
+   ColumnasPrivilegio,
+   arrayColumnasFiltroPrivilegio,
+   arrayEstruturaColumnasPrivilegio,
+} from "../../../tables/privilegio.table";
 
 interface Props {
    nombreFormulario: string;
@@ -74,11 +25,11 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
    const [esEdicion, setEsEdicion] = useState(false);
 
    const [dialogo, setDialogo] = useState(false);
-   const [arrayPrivilegio, setArrayPrivilegio] = useState<
-      ValuesPrivilegioProps[]
-   >([]);
+   const [arrayPrivilegio, setArrayPrivilegio] = useState<ColumnasPrivilegio[]>(
+      []
+   );
    const [privilegioSeleccionado, setPrivilegioSeleccionado] =
-      useState<ValuesPrivilegioProps>({} as ValuesPrivilegioProps);
+      useState<ColumnasPrivilegio>({} as ColumnasPrivilegio);
 
    const funcionCerrarDialogo = () => {
       setDialogo(false);
@@ -88,13 +39,13 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
    );
 
    const funcionListar = useCallback(async () => {
-      const arrayPrivilegio: ValuesPrivilegioProps[] = [];
+      const arrayPrivilegio: ColumnasPrivilegio[] = [];
       const srvPrivilegio = new PrivilegioService();
       await srvPrivilegio
          .listarTodos()
          .then((resp) => {
             resp.forEach((element: PrivilegioResponse, index: number) => {
-               const newRow: ValuesPrivilegioProps = {
+               const newRow: ColumnasPrivilegio = {
                   id: element.privilegio_id,
                   index: index + 1,
                   fecha_registro: element.fecha_registro,
@@ -212,12 +163,12 @@ export const Privilegio = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <TableControl<ValuesPrivilegioProps>
+         <TableControl<ColumnasPrivilegio>
             ancho={{ minWidth: "70rem" }}
-            columnas={columnsPrivilegio2}
+            columnas={arrayEstruturaColumnasPrivilegio}
             filas={arrayPrivilegio}
             filaSeleccionada={privilegioSeleccionado}
-            arrayFiltroGlobal={arrayFiltroGlobal}
+            arrayFiltroGlobal={arrayColumnasFiltroPrivilegio}
             funcionFilaSeleccionada={setPrivilegioSeleccionado}
             funcionCrear={funcionCrear}
             funcionActualizar={funcionEditar}

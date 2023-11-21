@@ -1,6 +1,4 @@
-/* eslint-disable indent */
 import { useEffect, useState } from "react";
-
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { CSSProperties } from "styled-components";
@@ -14,24 +12,16 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { IconFilterOff, IconSearch } from "@tabler/icons-react";
 import { ToolbarControl } from "./ToobarControl";
+import {
+   ColumnaEstadoProps,
+   ColumnaImagenProps,
+   TablaEstructuraColumnaProps,
+   TablaTipoColumna,
+} from "../../tables/tabla.table";
 
-export enum TypeColumn {
-   TEXT = "text",
-   STATUS = "status",
-   IMAGE = "image",
-   DATE = "date",
-   MONEY = "money",
-   NUMBER = "number",
-}
-export interface ColumnProps {
-   type: TypeColumn;
-   field: string;
-   header: string;
-   style: CSSProperties;
-}
 interface Props<T> {
    ancho: CSSProperties;
-   columnas: ColumnProps[];
+   columnas: TablaEstructuraColumnaProps[];
    filas: T[];
    filaSeleccionada: T;
    arrayFiltroGlobal: string[];
@@ -40,15 +30,6 @@ interface Props<T> {
    funcionActualizar?: () => void;
    funcionEliminar?: () => void;
    funcionHistoria?: () => void;
-}
-export interface ImagenProps {
-   img: string;
-   alt: string;
-}
-
-export interface EstadoProps {
-   valor: boolean;
-   estado: string;
 }
 
 const defaultFilters: DataTableFilterMeta = {
@@ -172,9 +153,9 @@ export const TableControl = <T extends object>({
                {!columnas ? (
                   <></>
                ) : (
-                  columnas.map((item: ColumnProps) => {
+                  columnas.map((item: TablaEstructuraColumnaProps) => {
                      switch (item.type) {
-                        case TypeColumn.TEXT: {
+                        case TablaTipoColumna.TEXT: {
                            return (
                               <Column
                                  key={item.field}
@@ -185,9 +166,10 @@ export const TableControl = <T extends object>({
                               />
                            );
                         }
-                        case TypeColumn.STATUS: {
+                        case TablaTipoColumna.STATUS: {
                            const body = (fila: any) => {
-                              const estado: EstadoProps = fila[`${item.field}`];
+                              const estado: ColumnaEstadoProps =
+                                 fila[`${item.field}`];
                               return (
                                  <Tag
                                     value={estado.estado}
@@ -207,9 +189,10 @@ export const TableControl = <T extends object>({
                               />
                            );
                         }
-                        case TypeColumn.IMAGE: {
+                        case TablaTipoColumna.IMAGE: {
                            const body = (fila: any) => {
-                              const imagen: ImagenProps = fila[`${item.field}`];
+                              const imagen: ColumnaImagenProps =
+                                 fila[`${item.field}`];
 
                               return (
                                  <img
@@ -230,7 +213,7 @@ export const TableControl = <T extends object>({
                               />
                            );
                         }
-                        case TypeColumn.DATE: {
+                        case TablaTipoColumna.DATE: {
                            const body = (fila: any) => {
                               const fecha: Date = fila[`${item.field}`];
                               return fechaVisualDateToString(fecha);
@@ -248,7 +231,7 @@ export const TableControl = <T extends object>({
                               />
                            );
                         }
-                        case TypeColumn.MONEY: {
+                        case TablaTipoColumna.MONEY: {
                            const body = (fila: any) => {
                               const money: number = fila[`${item.field}`];
                               return formatoMonedaPerunana(money);
@@ -267,7 +250,7 @@ export const TableControl = <T extends object>({
                               />
                            );
                         }
-                        case TypeColumn.NUMBER: {
+                        case TablaTipoColumna.NUMBER: {
                            return (
                               <Column
                                  key={item.field}

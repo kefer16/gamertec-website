@@ -11,16 +11,14 @@ import { CategoriaService } from "../../services/categoria.service";
 import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { ModeloPorFiltroResponse } from "../../responses/modelo.response";
 import { ModeloService } from "../../services/modelo.service";
-interface DropdownProps {
-   name: string;
-   code: string;
-}
-let arrayCategoria: DropdownProps[] = [];
+import { ComboboxProps } from "../../interfaces/combobox.interface";
+
+let arrayCategoria: ComboboxProps[] = [];
 
 export const Products = () => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
 
-   const [categoria, setCategoria] = useState<DropdownProps>({
+   const [categoria, setCategoria] = useState<ComboboxProps>({
       code: "0",
       name: "Todas las Categorias",
    });

@@ -1,19 +1,20 @@
-export interface ChangeValueCombobox {
-	valor: string;
-	valorAnidado: string;
-}
-
 export interface ComboboxProps {
-	valor: number;
-	descripcion: string;
-}
-
-export interface IComboboxProps {
-	valor: number;
-	descripcion: string;
+   name: string;
+   code: string;
 }
 export interface ComboboxAnidadoProps {
-	valor: number;
-	valorAnidado: number;
-	descripcion: string;
+   name: string;
+   code: string;
+   codeAnidado: string;
 }
+
+export const arrayEstadoCombobox: ComboboxProps[] = [
+   {
+      code: "1",
+      name: "Activo",
+   },
+   {
+      code: "0",
+      name: "Inactivo",
+   },
+];

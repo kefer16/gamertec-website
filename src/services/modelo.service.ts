@@ -1,5 +1,6 @@
 import { ModeloApi } from "../apis/modelo.api";
 import { ModeloEntity } from "../entities/modelo.entity";
+import { ComboboxAnidadoProps } from "../interfaces/combobox.interface";
 import {
    ModeloDescripcionResponse,
    ModeloPorFiltroResponse,
@@ -19,7 +20,7 @@ export class ModeloService {
    private rspListarModeloPorFiltro: ModeloPorFiltroResponse[] = [];
    private rspListarModeloDescripcion: ModeloDescripcionResponse =
       {} as ModeloDescripcionResponse;
-   // private rspArrayAnidadoMarcaCombobox: DropdownPropsAnidado[] = [];
+   private rspArrayAnidadoModeloCombobox: ComboboxAnidadoProps[] = [];
 
    public async registrar(data: ModeloEntity): Promise<ModeloResponse> {
       await this.apiModelo.registrar(data).then((resp) => {
@@ -85,5 +86,18 @@ export class ModeloService {
          this.rspListarModeloDescripcion = resp.data.data;
       });
       return this.rspListarModeloDescripcion;
+   }
+
+   async listarModeloCombobox(): Promise<ComboboxAnidadoProps[]> {
+      await this.apiModelo.listarTodos().then((resp) => {
+         resp.data.data.forEach((element: ModeloEntity) => {
+            this.rspArrayAnidadoModeloCombobox.push({
+               codeAnidado: String(element.fk_marca),
+               code: String(element.modelo_id),
+               name: element.nombre,
+            });
+         });
+      });
+      return this.rspArrayAnidadoModeloCombobox;
    }
 }

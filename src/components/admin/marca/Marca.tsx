@@ -1,83 +1,36 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import {
-   ColumnProps,
-   EstadoProps,
-   TableControl,
-   TypeColumn,
-} from "../../controls/TableControl";
 import { MarcaRegistro } from "./MarcaRegistro";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { IconAlertTriangle } from "@tabler/icons-react";
-import { DropdownProps } from "../categoria/CategoriaRegistro";
 import { CategoriaService } from "../../../services/categoria.service";
 import { MarcaResponse } from "../../../responses/marca.response";
 import { MarcaService } from "../../../services/marca.service";
 import { MarcaEntity } from "../../../entities/marca.entities";
+import {
+   ColumnasMarca,
+   arrayColumnasFiltroMarca,
+   arrayEstructuraColumnasMarca,
+} from "../../../tables/marca.table";
+import { TableControl } from "../../controls/TableControl";
+import { ComboboxProps } from "../../../interfaces/combobox.interface";
 
-export interface ValuesMarcaProps {
-   id: number;
-   index: number;
-   fecha_registro: string;
-   categoria_id: number;
-   categoria_nombre?: string;
-   marca_nombre: string;
-   estado: EstadoProps;
-}
-const arrayFiltroGlobal: string[] = [
-   "fecha_registro",
-   "categoria_nombre",
-   "marca_nombre",
-   "estado.estado",
-];
-const columnsMarcas2: ColumnProps[] = [
-   {
-      type: TypeColumn.TEXT,
-      field: "index",
-      header: "N°",
-      style: { width: "1%" },
-   },
-   {
-      type: TypeColumn.DATE,
-      field: "fecha_registro",
-      header: "Fecha Registro",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "categoria_nombre",
-      header: "Categoria",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "marca_nombre",
-      header: "Marca",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.STATUS,
-      field: "estado",
-      header: "Estado",
-      style: { width: "20%" },
-   },
-];
 interface Props {
    nombreFormulario: string;
 }
 
-let arrayCategoria: DropdownProps[] = [];
+let arrayCategoria: ComboboxProps[] = [];
 
 export const Marca = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
-   const [marcaSeleccionada, setMarcaSeleccionada] = useState<ValuesMarcaProps>(
-      {} as ValuesMarcaProps
+   const [marcaSeleccionada, setMarcaSeleccionada] = useState<ColumnasMarca>(
+      {} as ColumnasMarca
    );
-   const [arrayMarca, setArrayMarca] = useState<ValuesMarcaProps[]>([]);
+   const [arrayMarca, setArrayMarca] = useState<ColumnasMarca[]>([]);
    const [dialogo, setDialogo] = useState(false);
    const [itemSeleccionado, setItemSeleccionado] = useState<MarcaResponse>(
       {} as MarcaResponse
@@ -100,17 +53,17 @@ export const Marca = ({ nombreFormulario }: Props) => {
 
    const funObtenerMarcas = useCallback(async () => {
       const srvMarca = new MarcaService();
-      const arrayMarca: ValuesMarcaProps[] = [];
+      const arrayMarca: ColumnasMarca[] = [];
       await srvMarca
          .listarTodos()
          .then((resp) => {
             resp.forEach((element: MarcaResponse, index: number) => {
-               const newRow: ValuesMarcaProps = {
+               const newRow: ColumnasMarca = {
                   id: element.marca_id,
                   index: index + 1,
                   categoria_id: element.fk_categoria,
                   categoria_nombre: arrayCategoria.find(
-                     (categoria: DropdownProps) =>
+                     (categoria: ComboboxProps) =>
                         categoria.code === String(element.fk_categoria)
                   )?.name,
                   marca_nombre: element.nombre,
@@ -230,12 +183,12 @@ export const Marca = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <TableControl<ValuesMarcaProps>
+         <TableControl<ColumnasMarca>
             ancho={{ minWidth: "70rem" }}
-            columnas={columnsMarcas2}
+            columnas={arrayEstructuraColumnasMarca}
             filas={arrayMarca}
             filaSeleccionada={marcaSeleccionada}
-            arrayFiltroGlobal={arrayFiltroGlobal}
+            arrayFiltroGlobal={arrayColumnasFiltroMarca}
             funcionFilaSeleccionada={setMarcaSeleccionada}
             funcionCrear={funcionCrear}
             funcionActualizar={funcionEditar}

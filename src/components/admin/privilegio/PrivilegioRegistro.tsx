@@ -9,10 +9,13 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { DropdownProps, estadoCategoria } from "../categoria/CategoriaRegistro";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { PrivilegioService } from "../../../services/privilegio.service";
 import { PrivilegioEntity } from "../../../entities/privilegio.entities";
+import {
+   ComboboxProps,
+   arrayEstadoCombobox,
+} from "../../../interfaces/combobox.interface";
 
 interface Props {
    nombreFormulario: string;
@@ -34,7 +37,7 @@ export const PrivilegioRegistro = ({
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [privilegioId, setPrivilegioId] = useState(0);
    const [tipo, setTipo] = useState("");
-   const [activo, setActivo] = useState<DropdownProps>({
+   const [activo, setActivo] = useState<ComboboxProps>({
       code: "0",
       name: "Inactivo",
    });
@@ -42,7 +45,7 @@ export const PrivilegioRegistro = ({
       new Date()
    );
    const [abreviatura, setAbreviatura] = useState("");
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+   const [arrayEstado] = useState<ComboboxProps[]>(arrayEstadoCombobox);
 
    useEffect(() => {
       setPrivilegioId(itemSeleccionado.privilegio_id);

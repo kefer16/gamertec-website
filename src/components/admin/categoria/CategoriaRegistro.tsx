@@ -11,16 +11,10 @@ import { Button } from "primereact/button";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { CategoriaEntity } from "../../../entities/categoria.entities";
 import { CategoriaService } from "../../../services/categoria.service";
-
-export interface DropdownProps {
-   name: string;
-   code: string;
-}
-export interface DropdownPropsAnidado {
-   name: string;
-   code: string;
-   codeAnidado: string;
-}
+import {
+   ComboboxProps,
+   arrayEstadoCombobox,
+} from "../../../interfaces/combobox.interface";
 interface Props {
    nombreFormulario: string;
    abrir: boolean;
@@ -30,16 +24,6 @@ interface Props {
    funcionActualizarTabla: () => void;
 }
 
-export const estadoCategoria: DropdownProps[] = [
-   {
-      code: "1",
-      name: "Activo",
-   },
-   {
-      code: "0",
-      name: "Inactivo",
-   },
-];
 export const CategoryRegister = ({
    nombreFormulario,
    abrir,
@@ -51,14 +35,14 @@ export const CategoryRegister = ({
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [categoriaId, setCategoriaId] = useState(0);
    const [nombre, setNombre] = useState("");
-   const [activo, setActivo] = useState<DropdownProps>({
+   const [activo, setActivo] = useState<ComboboxProps>({
       code: "0",
       name: "Inactivo",
    });
    const [fechaRegistro, setFechaRegistro] = useState<string | Date | Date[]>(
       new Date()
    );
-   const [arrayEstado] = useState<DropdownProps[]>(estadoCategoria);
+   const [arrayEstado] = useState<ComboboxProps[]>(arrayEstadoCombobox);
 
    useEffect(() => {
       setCategoriaId(itemSeleccionado.categoria_id);

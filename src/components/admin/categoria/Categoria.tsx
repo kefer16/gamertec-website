@@ -1,9 +1,3 @@
-import {
-   ColumnProps,
-   EstadoProps,
-   TableControl,
-   TypeColumn,
-} from "../../controls/TableControl";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { CategoryRegister } from "./CategoriaRegistro";
 import { fechaActualISO } from "../../../utils/funciones.utils";
@@ -14,62 +8,25 @@ import { IconAlertTriangle } from "@tabler/icons-react";
 import { CategoriaService } from "../../../services/categoria.service";
 import { CategoriaResponse } from "../../../responses/categoria.response";
 import { CategoriaEntity } from "../../../entities/categoria.entities";
-
-const columnsCategorias2: ColumnProps[] = [
-   {
-      type: TypeColumn.TEXT,
-      field: "index",
-      header: "N°",
-      style: { width: "1%" },
-   },
-   {
-      type: TypeColumn.DATE,
-      field: "fecha_registro",
-      header: "Fecha Registro",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "categoria_nombre",
-      header: "Categoria",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.STATUS,
-      field: "estado",
-      header: "Estado",
-      style: { width: "15%" },
-   },
-];
-
-export interface ValuesCategoriaProps {
-   id: number;
-   index: number;
-   categoria_nombre: string;
-   fecha_registro: string;
-   fecha_actualizacion: string;
-   estado: EstadoProps;
-}
-
-const arrayFiltroGlobal: string[] = [
-   "fecha_registro",
-   "categoria_nombre",
-   "estado.estado",
-];
-
+import {
+   ColumnasCategoria,
+   arrayColumnasFiltroCategoria,
+   arrayEstructuraColumnasCategoria,
+} from "../../../tables/categoria.table";
+import { TableControl } from "../../controls/TableControl";
 interface Props {
    nombreFormulario: string;
 }
 
 export const Categoria = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
-   const [arrayCategoria, setArrayCategoria] = useState<ValuesCategoriaProps[]>(
+   const [arrayCategoria, setArrayCategoria] = useState<ColumnasCategoria[]>(
       []
    );
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
-      useState<ValuesCategoriaProps>({} as ValuesCategoriaProps);
+      useState<ColumnasCategoria>({} as ColumnasCategoria);
    const [dialogo, setDialogo] = useState(false);
 
    const funcionCerrarDialogo = () => {
@@ -81,13 +38,13 @@ export const Categoria = ({ nombreFormulario }: Props) => {
    );
 
    const funcionListar = useCallback(async () => {
-      const arrayCategorias: ValuesCategoriaProps[] = [];
+      const arrayCategorias: ColumnasCategoria[] = [];
       const srvCategoria = new CategoriaService();
       await srvCategoria
          .listarTodos()
          .then((resp) => {
             resp.forEach((element: CategoriaResponse, index: number) => {
-               const newRow: ValuesCategoriaProps = {
+               const newRow: ColumnasCategoria = {
                   id: element.categoria_id,
                   index: index + 1,
                   categoria_nombre: element.nombre,
@@ -211,12 +168,12 @@ export const Categoria = ({ nombreFormulario }: Props) => {
             {nombreFormulario}
          </h2>
 
-         <TableControl<ValuesCategoriaProps>
+         <TableControl<ColumnasCategoria>
             ancho={{ minWidth: "50rem" }}
-            columnas={columnsCategorias2}
+            columnas={arrayEstructuraColumnasCategoria}
             filas={arrayCategoria}
             filaSeleccionada={categoriaSeleccionada}
-            arrayFiltroGlobal={arrayFiltroGlobal}
+            arrayFiltroGlobal={arrayColumnasFiltroCategoria}
             funcionFilaSeleccionada={setCategoriaSeleccionada}
             funcionCrear={funcionCrearCategoria}
             funcionActualizar={funcionEditarCategoria}

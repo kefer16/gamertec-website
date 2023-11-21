@@ -1,6 +1,6 @@
 import { MarcaApi } from "../apis/marca.api";
-import { DropdownPropsAnidado } from "../components/admin/categoria/CategoriaRegistro";
 import { MarcaEntity } from "../entities/marca.entities";
+import { ComboboxAnidadoProps } from "../interfaces/combobox.interface";
 import { MarcaResponse } from "../responses/marca.response";
 
 export class MarcaService {
@@ -12,7 +12,7 @@ export class MarcaService {
    private rspHistorial: MarcaResponse[] = [];
    private rspBuscarPorId: MarcaResponse = {} as MarcaResponse;
    private rspEliminarUno: MarcaResponse = {} as MarcaResponse;
-   private rspArrayAnidadoMarcaCombobox: DropdownPropsAnidado[] = [];
+   private rspArrayAnidadoMarcaCombobox: ComboboxAnidadoProps[] = [];
 
    public async registrar(data: MarcaEntity): Promise<MarcaResponse> {
       await this.apiMarca.registrar(data).then((resp) => {
@@ -59,7 +59,7 @@ export class MarcaService {
       return this.rspEliminarUno;
    }
 
-   public async obtenerMarcasCombobox(): Promise<DropdownPropsAnidado[]> {
+   public async obtenerMarcasCombobox(): Promise<ComboboxAnidadoProps[]> {
       await this.apiMarca.listarTodos().then((resp) => {
          resp.data.data.forEach((element: MarcaResponse) => {
             this.rspArrayAnidadoMarcaCombobox.push({

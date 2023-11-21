@@ -1,6 +1,6 @@
 import { PrivilegioApi } from "../apis/privilegio.api";
-import { DropdownProps } from "../components/admin/categoria/CategoriaRegistro";
 import { PrivilegioEntity } from "../entities/privilegio.entities";
+import { ComboboxProps } from "../interfaces/combobox.interface";
 import { PrivilegioResponse } from "../responses/privilegio.response";
 
 export class PrivilegioService {
@@ -12,7 +12,7 @@ export class PrivilegioService {
    private rspHistorial: PrivilegioResponse[] = [];
    private rspBuscarPorId: PrivilegioResponse = {} as PrivilegioResponse;
    private rspEliminarUno: PrivilegioResponse = {} as PrivilegioResponse;
-   private rspArrayCombobox: DropdownProps[] = [];
+   private rspArrayCombobox: ComboboxProps[] = [];
 
    public async registrar(data: PrivilegioEntity): Promise<PrivilegioResponse> {
       await this.apiPrivilegio.registrar(data).then((resp) => {
@@ -65,7 +65,7 @@ export class PrivilegioService {
       return this.rspEliminarUno;
    }
 
-   public async obtenerPrivilegiosCombobox(): Promise<DropdownProps[]> {
+   public async obtenerPrivilegiosCombobox(): Promise<ComboboxProps[]> {
       await this.apiPrivilegio.listarTodos().then((resp) => {
          resp.data.data.forEach((element: PrivilegioResponse) => {
             this.rspArrayCombobox.push({

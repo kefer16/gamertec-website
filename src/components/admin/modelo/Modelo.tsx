@@ -1,11 +1,4 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import {
-   ColumnProps,
-   EstadoProps,
-   ImagenProps,
-   TableControl,
-   TypeColumn,
-} from "../../controls/TableControl";
 import { ModeloRegistro } from "./ModeloRegistro";
 import { ModeloEntity } from "../../../entities/modelo.entity";
 import { ContainerBodyStyled } from "../../global/styles/ContainerStyled";
@@ -13,129 +6,36 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { GamertecSesionContext } from "../../sesion/Sesion.component";
 import { fechaActualISO } from "../../../utils/funciones.utils";
-import {
-   DropdownProps,
-   DropdownPropsAnidado,
-} from "../categoria/CategoriaRegistro";
 import { CategoriaService } from "../../../services/categoria.service";
 import { MarcaService } from "../../../services/marca.service";
 import { ModeloService } from "../../../services/modelo.service";
+import {
+   ColumnasModelo,
+   arrayColumnasFiltroModelo,
+   arrayEstructuraColumnasModelo,
+} from "../../../tables/modelo.table";
+import { TableControl } from "../../controls/TableControl";
+import {
+   ComboboxAnidadoProps,
+   ComboboxProps,
+} from "../../../interfaces/combobox.interface";
 
-const columnsModelo2: ColumnProps[] = [
-   {
-      type: TypeColumn.TEXT,
-      field: "index",
-      header: "N°",
-      style: { width: "1%" },
-   },
-   {
-      type: TypeColumn.DATE,
-      field: "fecha_registro",
-      header: "Fecha Registro",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "categoria_nombre",
-      header: "Categoria",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "marca_nombre",
-      header: "Marca",
-      style: { width: "5%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "modelo_nombre",
-      header: "Modelo",
-      style: { width: "10%" },
-   },
-   {
-      type: TypeColumn.IMAGE,
-      field: "foto",
-      header: "Foto",
-      style: { width: "1%" },
-   },
-   {
-      type: TypeColumn.TEXT,
-      field: "producto_nombre",
-      header: "Nombre Producto",
-      style: { width: "15%" },
-   },
-   {
-      type: TypeColumn.MONEY,
-      field: "precio",
-      header: "Precio",
-      style: { width: "4%" },
-   },
-   {
-      type: TypeColumn.STATUS,
-      field: "estado",
-      header: "Estado",
-      style: { width: "4%" },
-   },
-];
-
-export interface ValuesModeloProps {
-   id: number;
-   index: number;
-   fecha_registro: string;
-   categoria_id: number;
-   categoria_nombre?: string;
-   marca_id: number;
-   marca_nombre?: string;
-   modelo_nombre: string;
-   producto_nombre: string;
-   foto: ImagenProps;
-   precio: number;
-   color: string;
-   caracteristicas: string;
-   estado: EstadoProps;
-}
-const arrayFiltroGlobal: string[] = [
-   "fecha_registro",
-   "categoria_nombre",
-   "marca_nombre",
-   "modelo_nombre",
-   "producto_nombre",
-   "precio",
-   "caracteristicas",
-   "estado.estado",
-];
 interface Props {
    nombreFormulario: string;
 }
 
-let arrayCategoria: DropdownProps[] = [];
-let arrayMarca: DropdownPropsAnidado[] = [];
-
-export const funcionObteneModelo = async (): Promise<
-   DropdownPropsAnidado[]
-> => {
-   const array: DropdownPropsAnidado[] = [];
-   const srvModelo = new ModeloService();
-   await srvModelo.listarTodos().then((resp) => {
-      resp.forEach((element: ModeloEntity) => {
-         array.push({
-            codeAnidado: String(element.fk_marca),
-            code: String(element.modelo_id),
-            name: element.nombre,
-         });
-      });
-   });
-   return array;
-};
+let arrayCategoria: ComboboxProps[] = [];
+let arrayMarca: ComboboxAnidadoProps[] = [];
 
 export const Modelo = ({ nombreFormulario }: Props) => {
    const { mostrarNotificacion } = useContext(GamertecSesionContext);
    const [abrirModal, setAbrirModal] = useState(false);
    const [esEdicion, setEsEdicion] = useState(false);
    const [dialogo, setDialogo] = useState(false);
-   const [arrayModelo, setArrayModelo] = useState<ValuesModeloProps[]>([]);
-   const [modeloSeleccionado, setModeloSeleccionado] =
-      useState<ValuesModeloProps>({} as ValuesModeloProps);
+   const [arrayModelo, setArrayModelo] = useState<ColumnasModelo[]>([]);
+   const [modeloSeleccionado, setModeloSeleccionado] = useState<ColumnasModelo>(
+      {} as ColumnasModelo
+   );
 
    const funcionCerrarDialogo = () => {
       setDialogo(false);
@@ -147,23 +47,23 @@ export const Modelo = ({ nombreFormulario }: Props) => {
 
    const funObtenerModelos = useCallback(async () => {
       const srvModelo = new ModeloService();
-      const arrayModelo: ValuesModeloProps[] = [];
+      const arrayModelo: ColumnasModelo[] = [];
       await srvModelo
          .listarTodos()
          .then((resp) => {
             resp.forEach((element: ModeloEntity, index: number) => {
-               const newRow: ValuesModeloProps = {
+               const newRow: ColumnasModelo = {
                   id: element.modelo_id,
                   index: index + 1,
                   fecha_registro: element.fecha_registro,
                   categoria_id: element.fk_categoria,
                   categoria_nombre: arrayCategoria.find(
-                     (categoria: DropdownProps) =>
+                     (categoria: ComboboxProps) =>
                         categoria.code === String(element.fk_categoria)
                   )?.name,
                   marca_id: element.fk_marca,
                   marca_nombre: arrayMarca.find(
-                     (marca: DropdownPropsAnidado) =>
+                     (marca: ComboboxAnidadoProps) =>
                         marca.code === String(element.fk_marca)
                   )?.name,
                   modelo_nombre: element.nombre,
@@ -336,12 +236,12 @@ export const Modelo = ({ nombreFormulario }: Props) => {
          <h2 style={{ textAlign: "center", margin: "50px 0 20px 0" }}>
             {nombreFormulario}
          </h2>
-         <TableControl<ValuesModeloProps>
+         <TableControl<ColumnasModelo>
             ancho={{ minWidth: "110rem" }}
-            columnas={columnsModelo2}
+            columnas={arrayEstructuraColumnasModelo}
             filas={arrayModelo}
             filaSeleccionada={modeloSeleccionado}
-            arrayFiltroGlobal={arrayFiltroGlobal}
+            arrayFiltroGlobal={arrayColumnasFiltroModelo}
             funcionFilaSeleccionada={setModeloSeleccionado}
             funcionCrear={funcionCrear}
             funcionActualizar={funcionEditar}

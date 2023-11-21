@@ -11,44 +11,44 @@ import { GamertecSesionContext } from "../sesion/Sesion.component";
 import { InputText } from "primereact/inputtext";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { ContainerBodyStyled } from "../global/styles/ContainerStyled";
-import {
-   DropdownProps,
-   DropdownPropsAnidado,
-} from "../admin/categoria/CategoriaRegistro";
 import { ChangeValueSelect } from "../admin/modelo/ModeloRegistro";
+import {
+   ComboboxAnidadoProps,
+   ComboboxProps,
+} from "../../interfaces/combobox.interface";
 
 export const PreCompra = () => {
    const { sesionGamertec, mostrarNotificacion } = useContext(
       GamertecSesionContext
    );
    // departamento
-   const [arrayDepartamento, setArrayDepartamento] = useState<DropdownProps[]>(
+   const [arrayDepartamento, setArrayDepartamento] = useState<ComboboxProps[]>(
       []
    );
-   const [departamentoId, setDepartamentoId] = useState<DropdownProps>({
+   const [departamentoId, setDepartamentoId] = useState<ComboboxProps>({
       code: "0",
       name: "",
    });
-   const [arrayProvincia, setArrayProvincia] = useState<DropdownPropsAnidado[]>(
+   const [arrayProvincia, setArrayProvincia] = useState<ComboboxAnidadoProps[]>(
       []
    );
    // provincia
    const [arrayAnidadoProvincia, setArrayAnidadoProvincia] = useState<
-      DropdownPropsAnidado[]
+      ComboboxAnidadoProps[]
    >([]);
-   const [provinciaId, setProvinciaId] = useState<DropdownPropsAnidado>({
+   const [provinciaId, setProvinciaId] = useState<ComboboxAnidadoProps>({
       code: "0",
       codeAnidado: "0",
       name: "",
    });
    // distrito
-   const [arrayDistrito, setArrayDistrito] = useState<DropdownPropsAnidado[]>(
+   const [arrayDistrito, setArrayDistrito] = useState<ComboboxAnidadoProps[]>(
       []
    );
    const [arrayAnidadoDistrito, setArrayAnidadoDistrito] = useState<
-      DropdownPropsAnidado[]
+      ComboboxAnidadoProps[]
    >([]);
-   const [distritoId, setDistritoId] = useState<DropdownPropsAnidado>({
+   const [distritoId, setDistritoId] = useState<ComboboxAnidadoProps>({
       code: "0",
       codeAnidado: "0",
       name: "",
@@ -162,7 +162,7 @@ export const PreCompra = () => {
             code: valorCategoria.code,
             name: valorCategoria.name,
          });
-         const arrayNuevo: DropdownPropsAnidado[] = arrayProvincia.filter(
+         const arrayNuevo: ComboboxAnidadoProps[] = arrayProvincia.filter(
             (item) => item.codeAnidado === valorPadre
          );
 
@@ -187,7 +187,7 @@ export const PreCompra = () => {
             codeAnidado: valorCategoria.codeAnidado,
             name: valorCategoria.name,
          });
-         const arrayNuevo: DropdownPropsAnidado[] = arrayDistrito.filter(
+         const arrayNuevo: ComboboxAnidadoProps[] = arrayDistrito.filter(
             (item) => item.codeAnidado === valorPadre
          );
 
